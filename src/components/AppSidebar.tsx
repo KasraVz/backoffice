@@ -3,13 +3,15 @@ import {
   ChevronRight, 
   ChevronDown, 
   FileText, 
-  BookOpen, 
-  Settings, 
-  Layers, 
-  Monitor, 
-  BarChart3, 
   Handshake, 
-  ShoppingCart 
+  ShoppingCart,
+  CreditCard,
+  FileBarChart,
+  Ticket,
+  MessageCircle,
+  Zap,
+  Award,
+  UserCog
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -43,16 +45,6 @@ const mainMenuItems = [
     ]
   },
   { 
-    title: "FDE Simulator Management", 
-    url: "/fde-simulator", 
-    icon: Monitor 
-  },
-  { 
-    title: "Performance Analytics", 
-    url: "/analytics", 
-    icon: BarChart3 
-  },
-  { 
     title: "Partners", 
     url: "/partners", 
     icon: Handshake 
@@ -61,6 +53,41 @@ const mainMenuItems = [
     title: "Orders", 
     url: "/orders", 
     icon: ShoppingCart 
+  },
+  { 
+    title: "Payments", 
+    url: "/payments", 
+    icon: CreditCard 
+  },
+  { 
+    title: "Reports & Certs", 
+    url: "/reports-certs", 
+    icon: FileBarChart 
+  },
+  { 
+    title: "Tickets", 
+    url: "/tickets", 
+    icon: Ticket 
+  },
+  { 
+    title: "Community", 
+    url: "/community", 
+    icon: MessageCircle 
+  },
+  { 
+    title: "SUPEX", 
+    url: "/supex", 
+    icon: Zap 
+  },
+  { 
+    title: "Awards", 
+    url: "/awards", 
+    icon: Award 
+  },
+  { 
+    title: "Manage Admins", 
+    url: "/manage-admins", 
+    icon: UserCog 
   },
 ];
 

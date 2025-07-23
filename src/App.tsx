@@ -9,6 +9,8 @@ import Questionnaires from "./pages/Questionnaires";
 import QuestionnaireManagement from "./pages/QuestionnaireManagement";
 import QuestionnaireBuilder from "./pages/QuestionnaireBuilder";
 import AssessmentBank from "./pages/AssessmentBank";
+import UserSubmissionReview from "./pages/UserSubmissionReview";
+import SubmissionDetails from "./pages/SubmissionDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/questionnaires" element={<Questionnaires />} />
           <Route path="/questionnaires/management" element={<QuestionnaireManagement />} />
           <Route path="/questionnaires/assessment-bank" element={<AssessmentBank />} />
+          <Route path="/questionnaires/submission-review" element={<UserSubmissionReview />} />
+          <Route path="/questionnaires/submission-review/:id" element={<SubmissionDetails />} />
           <Route path="/questionnaires/builder/:id" element={<QuestionnaireBuilder />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

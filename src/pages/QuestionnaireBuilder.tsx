@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { GripVertical, X, Plus } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 // Mock data for available questions
 const mockQuestions = [
@@ -43,13 +43,21 @@ const mockQuestions = [
 export default function QuestionnaireBuilder() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
   const [selectedQuestions, setSelectedQuestions] = useState<typeof mockQuestions>([]);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [groupFilter, setGroupFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Mock questionnaire data - in real app this would come from API
-  const questionnaireName = "FPA - Seed Stage v1.3";
+  // Get questionnaire data from location state (for new questionnaires) or load from API (for existing)
+  const questionnaireData = location.state || {
+    name: "Sample Questionnaire",
+    indexCode: "FPA",
+    stage: "Seed",
+    title: "FPA - Seed Stage v1.3"
+  };
+
+  const questionnaireName = questionnaireData.title;
 
   const filteredQuestions = mockQuestions.filter(question => {
     const matchesCategory = categoryFilter === "all" || question.category === categoryFilter;

@@ -37,6 +37,23 @@ export default function QuestionnaireManagement() {
     stage: ""
   });
 
+  const handleCreateNew = () => {
+    if (newQuestionnaire.name && newQuestionnaire.indexCode && newQuestionnaire.stage) {
+      // Generate questionnaire title based on form fields
+      const questionnaireTitle = `${newQuestionnaire.indexCode} - ${newQuestionnaire.stage} v1.0`;
+      
+      // Navigate to builder with the questionnaire data
+      navigate(`/questionnaires/builder/new`, {
+        state: {
+          name: newQuestionnaire.name,
+          indexCode: newQuestionnaire.indexCode,
+          stage: newQuestionnaire.stage,
+          title: questionnaireTitle
+        }
+      });
+    }
+  };
+
   const handleCreateQuestionnaire = () => {
     console.log("Creating questionnaire:", newQuestionnaire);
     setIsModalOpen(false);
@@ -156,7 +173,10 @@ export default function QuestionnaireManagement() {
               <Button variant="outline" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleCreateQuestionnaire}>
+              <Button 
+                onClick={handleCreateNew}
+                disabled={!newQuestionnaire.name || !newQuestionnaire.indexCode || !newQuestionnaire.stage}
+              >
                 Save and Open Builder
               </Button>
             </DialogFooter>

@@ -37,11 +37,11 @@ const mainMenuItems = [
     url: "/questionnaires",
     icon: FileText,
     children: [
-      { title: "Answer Item Library", url: "/questionnaires/answer-item-library" },
-      { title: "Question Lifecycle Mgmt", url: "/questionnaires/question-lifecycle" },
-      { title: "Question Properties", url: "/questionnaires/question-properties" },
-      { title: "Questionnaire Assembly", url: "/questionnaires/assembly" },
+      { title: "Questionnaire Management", url: "/questionnaires/management" },
+      { title: "Assessment Bank", url: "/questionnaires/assessment-bank" },
       { title: "User Submission Review", url: "/questionnaires/submission-review" },
+      { title: "FDE Simulator Management", url: "/questionnaires/fde-simulator" },
+      { title: "Performance Analytics", url: "/questionnaires/analytics" },
     ]
   },
   { 

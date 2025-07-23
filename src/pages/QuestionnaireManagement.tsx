@@ -6,7 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
+import { Plus, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Mock data for the table
 const mockQuestionnaires = {
@@ -25,6 +26,7 @@ const mockQuestionnaires = {
 };
 
 export default function QuestionnaireManagement() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("drafts");
   const [indexFilter, setIndexFilter] = useState("all");
   const [stageFilter, setStageFilter] = useState("all");
@@ -78,6 +80,18 @@ export default function QuestionnaireManagement() {
 
   return (
     <div className="flex-1 space-y-6 p-6">
+      {/* Back to Menu Button */}
+      <div className="mb-4">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/questionnaires')}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Menu
+        </Button>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-foreground">Questionnaire Management</h1>

@@ -152,7 +152,7 @@ export default function PerformanceAnalytics() {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col py-0 my-0 px-[8px] mx-0">
-          <header className="h-14 flex items-center border-b bg-background py-0 my-[19px] mx-[28px] px-[6px]">
+          <header className="h-14 flex items-center border-b bg-background mx-[28px] px-[6px] my-[29px] py-[43px]">
             <SidebarTrigger className="mr-4" />
             <h1 className="text-2xl font-bold">Performance Analytics</h1>
             

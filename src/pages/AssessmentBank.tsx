@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Plus, Edit, Trash2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CreateQuestionModal } from "@/components/CreateQuestionModal";
@@ -98,15 +99,56 @@ export default function AssessmentBank() {
   const [activeTab, setActiveTab] = useState("questions");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<any>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState<any>(null);
   const [questions, setQuestions] = useState(mockQuestions);
   const { toast } = useToast();
 
   const handleQuestionCreated = (newQuestion: any) => {
-    setQuestions(prev => [...prev, newQuestion]);
+    if (editingQuestion) {
+      // Update existing question
+      setQuestions(prev => prev.map(q => q.id === editingQuestion.id ? { ...newQuestion, id: editingQuestion.id } : q));
+      toast({
+        title: "Question updated successfully",
+        description: "The question has been updated in the assessment bank."
+      });
+    } else {
+      // Add new question
+      setQuestions(prev => [...prev, newQuestion]);
+      toast({
+        title: "Question created successfully", 
+        description: "The new question has been added to the assessment bank."
+      });
+    }
+    setEditingQuestion(null);
   };
 
   const openCreateModal = () => {
+    setEditingQuestion(null);
     setShowCreateModal(true);
+  };
+
+  const openEditModal = (question: any) => {
+    setEditingQuestion(question);
+    setShowCreateModal(true);
+  };
+
+  const openDeleteDialog = (question: any) => {
+    setQuestionToDelete(question);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteQuestion = () => {
+    if (questionToDelete) {
+      setQuestions(prev => prev.filter(q => q.id !== questionToDelete.id));
+      toast({
+        title: "Question deleted",
+        description: "The question has been permanently deleted."
+      });
+      setQuestionToDelete(null);
+      setShowDeleteDialog(false);
+    }
   };
 
   return (
@@ -196,10 +238,10 @@ export default function AssessmentBank() {
                       <TableCell>{question.lastModified}</TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => openEditModal(question)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => openDeleteDialog(question)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -244,7 +286,28 @@ export default function AssessmentBank() {
             open={showCreateModal}
             onOpenChange={setShowCreateModal}
             onQuestionCreated={handleQuestionCreated}
+            editingQuestion={editingQuestion}
           />
+
+          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to permanently delete this question? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={handleDeleteQuestion}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </main>
       </div>
     </SidebarProvider>

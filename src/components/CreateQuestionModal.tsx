@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Plus, X, Settings } from "lucide-react";
@@ -15,6 +16,7 @@ interface CreateQuestionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onQuestionCreated: (question: any) => void;
+  editingQuestion?: any;
 }
 
 const behavioralCodes = [
@@ -51,7 +53,7 @@ const subCategories: Record<string, string[]> = {
   "Product Development & Technology": ["Product Roadmap", "Technology Stack", "Development Process", "Minimum Viable Product (MVP)"]
 };
 
-export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated }: CreateQuestionModalProps) {
+export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, editingQuestion }: CreateQuestionModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [questionData, setQuestionData] = useState({
     questionText: "",
@@ -66,10 +68,37 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated }: C
     columnB: [] as string[],
     weights: {} as Record<string, { weight?: number; expertWeight?: number; machineWeight?: number }>,
     rankings: {} as Record<string, number>,
-    matchedPairs: [] as Array<{ a: string; b: string }>
+    matchedPairs: [] as Array<{ a: string; b: string }>,
+    correctAnswers: [] as number[], // For single/multiple choice
+    correctRanking: {} as Record<string, number> // For ranking
   });
   
   const { toast } = useToast();
+
+  // Pre-populate form when editing
+  useEffect(() => {
+    if (editingQuestion && open) {
+      setQuestionData({
+        questionText: editingQuestion.title || "",
+        behavioralCode: editingQuestion.behavioralCode || "",
+        category: editingQuestion.category || "",
+        subCategory: editingQuestion.subCategory || "",
+        scope: editingQuestion.scope || "general",
+        industry: editingQuestion.industry || "",
+        answerType: editingQuestion.type || "" as any,
+        choices: editingQuestion.choices || [],
+        columnA: editingQuestion.columnA || [],
+        columnB: editingQuestion.columnB || [],
+        weights: editingQuestion.weights || {},
+        rankings: editingQuestion.rankings || {},
+        matchedPairs: editingQuestion.matchedPairs || [],
+        correctAnswers: editingQuestion.correctAnswers || [],
+        correctRanking: editingQuestion.correctRanking || {}
+      });
+    } else if (!editingQuestion && open) {
+      resetForm();
+    }
+  }, [editingQuestion, open]);
 
   const steps = [
     { number: 1, title: "Details & Properties" },
@@ -93,7 +122,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated }: C
       columnB: [],
       weights: {},
       rankings: {},
-      matchedPairs: []
+      matchedPairs: [],
+      correctAnswers: [],
+      correctRanking: {}
     });
   };
 
@@ -432,14 +463,52 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated }: C
             <h3 className="text-lg font-medium">Set Scoring & Weights</h3>
             
             {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && (
-              <div className="space-y-4">
-                {questionData.choices.map((choice, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <span className="flex-1">{choice}</span>
-                    <WeightPopover choiceId={`choice-${index}`} choiceText={choice} />
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="mb-4">
+                  <h4 className="font-medium mb-2">Select the correct answer(s) and set weights.</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Use the checkbox/radio button to mark the correct answer(s). Use the 'Set Weights' button to assign specific scores for partial credit or penalties.
+                  </p>
+                </div>
+                <div className="space-y-4">
+                  {questionData.choices.map((choice, index) => (
+                    <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
+                      {questionData.answerType === "single-choice" ? (
+                        <div className="flex items-center space-x-2">
+                          <input 
+                            type="radio" 
+                            name="correct-answer"
+                            checked={questionData.correctAnswers.includes(index)}
+                            onChange={() => setQuestionData(prev => ({ 
+                              ...prev, 
+                              correctAnswers: [index] 
+                            }))}
+                          />
+                        </div>
+                      ) : (
+                        <Checkbox
+                          checked={questionData.correctAnswers.includes(index)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setQuestionData(prev => ({ 
+                                ...prev, 
+                                correctAnswers: [...prev.correctAnswers, index] 
+                              }));
+                            } else {
+                              setQuestionData(prev => ({ 
+                                ...prev, 
+                                correctAnswers: prev.correctAnswers.filter(i => i !== index) 
+                              }));
+                            }
+                          }}
+                        />
+                      )}
+                      <span className="flex-1">{choice}</span>
+                      <WeightPopover choiceId={`choice-${index}`} choiceText={choice} />
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
             {questionData.answerType === "ranking" && (
@@ -537,7 +606,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated }: C
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Question</DialogTitle>
+          <DialogTitle>{editingQuestion ? "Edit Question" : "Create New Question"}</DialogTitle>
         </DialogHeader>
 
         {/* Stepper */}

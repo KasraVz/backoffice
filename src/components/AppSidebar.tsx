@@ -201,7 +201,12 @@ export function AppSidebar() {
   const toggleExpanded = (title: string) => {
     setExpandedItems(prev => prev.includes(title) ? prev.filter(item => item !== title) : [...prev, title]);
   };
-  const isExpanded = (title: string) => expandedItems.includes(title);
+  
+  // Auto-expand parent when child is active, or check manual expansion
+  const isExpanded = (title: string, children: any[]) => {
+    const hasActiveChild = children.some(child => isActive(child.url));
+    return hasActiveChild || expandedItems.includes(title);
+  };
   const getParentNavClasses = (active: boolean) => {
     if (active) {
       return "bg-blue-600 text-white font-medium";
@@ -222,7 +227,7 @@ export function AppSidebar() {
               {mainMenuItems.map(item => {
               const ItemIcon = item.icon;
               const hasChildren = item.children && item.children.length > 0;
-              const itemExpanded = isExpanded(item.title);
+              const itemExpanded = isExpanded(item.title, item.children || []);
               const parentActive = hasChildren ? isParentActive(item.children!) : false;
               return <div key={item.title}>
                     <SidebarMenuItem>

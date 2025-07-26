@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Plus, ArrowLeft } from "lucide-react";
+import { Plus, ArrowLeft, Pen, Eye, Trash2, Send, Copy, Archive, RotateCcw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -75,26 +75,42 @@ export default function QuestionnaireManagement() {
               size="sm"
               onClick={() => navigate(`/questionnaires/builder/${row.id}`)}
             >
-              Edit Builder
+              <Pen className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="sm">Preview</Button>
-            <Button variant="default" size="sm">Publish</Button>
-            <Button variant="destructive" size="sm">Delete</Button>
+            <Button variant="outline" size="sm">
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button variant="default" size="sm">
+              <Send className="h-4 w-4" />
+            </Button>
+            <Button variant="destructive" size="sm">
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         );
       case "active":
         return (
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">View</Button>
-            <Button variant="outline" size="sm">Duplicate</Button>
-            <Button variant="secondary" size="sm">Archive</Button>
+            <Button variant="outline" size="sm">
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="sm">
+              <Copy className="h-4 w-4" />
+            </Button>
+            <Button variant="secondary" size="sm">
+              <Archive className="h-4 w-4" />
+            </Button>
           </div>
         );
       case "archived":
         return (
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">View Results</Button>
-            <Button variant="default" size="sm">Restore to Draft</Button>
+            <Button variant="outline" size="sm">
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button variant="default" size="sm">
+              <RotateCcw className="h-4 w-4" />
+            </Button>
           </div>
         );
       default:

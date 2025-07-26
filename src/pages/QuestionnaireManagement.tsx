@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,28 +9,101 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { Plus, ArrowLeft, Pen, Eye, Trash2, Send, Copy, Archive, RotateCcw, Rocket, ArrowUp, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 
-// Mock data for the table
 const mockQuestionnaires = {
   drafts: [
-    { id: 1, name: "FPA General - Pre-seed v1.0", indexCode: "FPA", stage: "Pre-seed", industry: "General", version: "1.0", status: "Draft", questions: 25, lastModified: "2024-01-15" },
-    { id: 2, name: "EEA Fintech - Seed v1.2", indexCode: "EEA", stage: "Seed", industry: "Fintech", version: "1.2", status: "Draft", questions: 18, lastModified: "2024-01-12" },
+    { 
+      id: 1, 
+      name: "FPA General - Pre-seed v1.0", 
+      indexCode: "FPA", 
+      stage: "Pre-seed", 
+      industry: "General", 
+      version: "1.0", 
+      status: "Draft", 
+      questions: 25, 
+      lastModified: "2024-01-15",
+      selectedQuestions: [
+        "Which of the following best defines a 'problem worth solving'?",
+        "Match each revenue model with the typical product or service.",
+        "A core principle of Agile software development is..."
+      ]
+    },
+    { 
+      id: 2, 
+      name: "EEA Fintech - Seed v1.2", 
+      indexCode: "EEA", 
+      stage: "Seed", 
+      industry: "Fintech", 
+      version: "1.2", 
+      status: "Draft", 
+      questions: 18, 
+      lastModified: "2024-01-12",
+      selectedQuestions: [
+        "What is the most critical regulatory consideration for fintech startups?",
+        "Which payment processing model offers the best scalability?"
+      ]
+    },
   ],
   active: [
-    { id: 3, name: "FPA General - Series A v2.0", indexCode: "FPA", stage: "Series A", industry: "General", version: "2.0", status: "Active", questions: 32, lastModified: "2024-01-10" },
-    { id: 4, name: "EEA Healthcare - Seed v1.5", indexCode: "EEA", stage: "Seed", industry: "Healthcare", version: "1.5", status: "Active", questions: 15, lastModified: "2024-01-08" },
+    { 
+      id: 3, 
+      name: "FPA General - Series A v2.0", 
+      indexCode: "FPA", 
+      stage: "Series A", 
+      industry: "General", 
+      version: "2.0", 
+      status: "Active", 
+      questions: 32, 
+      lastModified: "2024-01-10",
+      selectedQuestions: []
+    },
+    { 
+      id: 4, 
+      name: "EEA Healthcare - Seed v1.5", 
+      indexCode: "EEA", 
+      stage: "Seed", 
+      industry: "Healthcare", 
+      version: "1.5", 
+      status: "Active", 
+      questions: 15, 
+      lastModified: "2024-01-08",
+      selectedQuestions: []
+    },
   ],
   archived: [
-    { id: 5, name: "FPA SaaS - Series B v3.0", indexCode: "FPA", stage: "Series B", industry: "SaaS", version: "3.0", status: "Archived", questions: 28, lastModified: "2023-12-20" },
-    { id: 6, name: "EEA General - Seed v2.0", indexCode: "EEA", stage: "Seed", industry: "General", version: "2.0", status: "Archived", questions: 22, lastModified: "2023-12-15" },
+    { 
+      id: 5, 
+      name: "FPA SaaS - Series B v3.0", 
+      indexCode: "FPA", 
+      stage: "Series B", 
+      industry: "SaaS", 
+      version: "3.0", 
+      status: "Archived", 
+      questions: 28, 
+      lastModified: "2023-12-20",
+      selectedQuestions: []
+    },
+    { 
+      id: 6, 
+      name: "EEA General - Seed v2.0", 
+      indexCode: "EEA", 
+      stage: "Seed", 
+      industry: "General", 
+      version: "2.0", 
+      status: "Archived", 
+      questions: 22, 
+      lastModified: "2023-12-15",
+      selectedQuestions: []
+    },
   ]
 };
 
 export default function QuestionnaireManagement() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("draftActive");
   const [indexFilter, setIndexFilter] = useState("all");
   const [stageFilter, setStageFilter] = useState("all");
@@ -45,6 +118,32 @@ export default function QuestionnaireManagement() {
     stage: "",
     industry: ""
   });
+
+  // Handle questionnaire data returned from QuestionnaireBuilder
+  useEffect(() => {
+    if (location.state?.updatedQuestionnaire) {
+      const updated = location.state.updatedQuestionnaire;
+      setQuestionnaires(prev => ({
+        ...prev,
+        drafts: prev.drafts.map(q => 
+          q.id === updated.id 
+            ? { ...q, selectedQuestions: updated.selectedQuestions, questions: updated.questions, lastModified: updated.lastModified }
+            : q
+        )
+      }));
+      // Clear the location state
+      window.history.replaceState({}, document.title);
+    } else if (location.state?.newQuestionnaire) {
+      const newQ = location.state.newQuestionnaire;
+      const newId = Math.max(...questionnaires.drafts.map(q => q.id), ...questionnaires.active.map(q => q.id), ...questionnaires.archived.map(q => q.id)) + 1;
+      setQuestionnaires(prev => ({
+        ...prev,
+        drafts: [...prev.drafts, { ...newQ, id: newId, status: "Draft" }]
+      }));
+      // Clear the location state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleCreateNew = () => {
     if (newQuestionnaire.name && newQuestionnaire.indexCode && newQuestionnaire.stage) {

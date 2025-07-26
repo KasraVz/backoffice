@@ -63,13 +63,37 @@ export default function QuestionnaireBuilder() {
   const [generalCount, setGeneralCount] = useState(0);
   const [industryCount, setIndustryCount] = useState(0);
 
+  // Get the correct questionnaire data based on mode
+  const currentQuestionnaire = questionnaireData?.mode === 'edit' ? questionnaireData.questionnaire : questionnaireData;
+
   // Get question limits based on index code
-  const limits = questionLimits[questionnaireData?.indexCode as keyof typeof questionLimits] || { general: 50, industrySpecific: 25 };
+  const limits = questionLimits[currentQuestionnaire?.indexCode as keyof typeof questionLimits] || { general: 50, industrySpecific: 25 };
   
   // Get industry-specific questions
-  const industryQuestions = questionnaireData?.industry && questionnaireData.industry !== "General" && questionnaireData.industry !== "None (General)"
-    ? sampleIndustryQuestions[questionnaireData.industry as keyof typeof sampleIndustryQuestions] || []
+  const industryQuestions = currentQuestionnaire?.industry && currentQuestionnaire.industry !== "General" && currentQuestionnaire.industry !== "None (General)"
+    ? sampleIndustryQuestions[currentQuestionnaire.industry as keyof typeof sampleIndustryQuestions] || []
     : [];
+
+  // Initialize questions for edit mode
+  useEffect(() => {
+    if (questionnaireData?.mode === 'edit' && questionnaireData?.questionnaire?.selectedQuestions) {
+      const questions = questionnaireData.questionnaire.selectedQuestions;
+      setSelectedQuestions(questions);
+      
+      // Count general and industry questions
+      let generalCnt = 0;
+      let industryCnt = 0;
+      questions.forEach((question: string) => {
+        if (sampleGeneralQuestions.includes(question)) {
+          generalCnt++;
+        } else {
+          industryCnt++;
+        }
+      });
+      setGeneralCount(generalCnt);
+      setIndustryCount(industryCnt);
+    }
+  }, [questionnaireData]);
 
   const addQuestion = (question: string, type: 'general' | 'industry') => {
     if (type === 'general' && generalCount >= limits.general) return;
@@ -103,6 +127,39 @@ export default function QuestionnaireBuilder() {
     setSelectedQuestions(items);
   };
 
+  const handleSaveAndClose = () => {
+    // Create updated questionnaire data with selected questions
+    if (questionnaireData?.mode === 'edit') {
+      const updatedQuestionnaire = {
+        ...questionnaireData.questionnaire,
+        selectedQuestions: selectedQuestions,
+        questions: selectedQuestions.length, // Update question count
+        lastModified: new Date().toISOString().split('T')[0]
+      };
+
+      // Navigate back to management with the updated data
+      navigate('/questionnaires/management', { 
+        state: { 
+          updatedQuestionnaire: updatedQuestionnaire
+        } 
+      });
+    } else {
+      // New questionnaire
+      const newQuestionnaire = {
+        ...questionnaireData,
+        selectedQuestions: selectedQuestions,
+        questions: selectedQuestions.length,
+        lastModified: new Date().toISOString().split('T')[0]
+      };
+
+      navigate('/questionnaires/management', { 
+        state: { 
+          newQuestionnaire: newQuestionnaire
+        } 
+      });
+    }
+  };
+
   if (!questionnaireData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -116,6 +173,7 @@ export default function QuestionnaireBuilder() {
     );
   }
 
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full">
@@ -126,7 +184,7 @@ export default function QuestionnaireBuilder() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">Questionnaire Builder</h1>
-                <p className="text-muted-foreground mt-1">{questionnaireData.name}</p>
+                <p className="text-muted-foreground mt-1">{currentQuestionnaire.name}</p>
               </div>
               <div className="flex gap-3">
                 <Button 
@@ -135,7 +193,7 @@ export default function QuestionnaireBuilder() {
                 >
                   Cancel
                 </Button>
-                <Button>Save and Close</Button>
+                <Button onClick={handleSaveAndClose}>Save and Close</Button>
               </div>
             </div>
 
@@ -148,13 +206,13 @@ export default function QuestionnaireBuilder() {
                   {/* Filter Context Display */}
                   <div className="space-y-2">
                     <p className="text-sm font-medium">Showing questions matching:</p>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary">Index: {questionnaireData.indexCode}</Badge>
-                      <Badge variant="secondary">Stage: {questionnaireData.stage}</Badge>
-                      {questionnaireData.industry && questionnaireData.industry !== "General" && questionnaireData.industry !== "None (General)" && (
-                        <Badge variant="secondary">Industry: {questionnaireData.industry}</Badge>
-                      )}
-                    </div>
+                     <div className="flex flex-wrap gap-2">
+                       <Badge variant="secondary">Index: {currentQuestionnaire.indexCode}</Badge>
+                       <Badge variant="secondary">Stage: {currentQuestionnaire.stage}</Badge>
+                       {currentQuestionnaire.industry && currentQuestionnaire.industry !== "General" && currentQuestionnaire.industry !== "None (General)" && (
+                         <Badge variant="secondary">Industry: {currentQuestionnaire.industry}</Badge>
+                       )}
+                     </div>
                   </div>
                 </CardHeader>
                 
@@ -192,14 +250,14 @@ export default function QuestionnaireBuilder() {
                   <Separator />
 
                   {/* Section 2: Industry-Specific Questions */}
-                  {questionnaireData.industry && questionnaireData.industry !== "General" && questionnaireData.industry !== "None (General)" && (
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-3 flex items-center justify-between">
-                        {questionnaireData.industry}-Specific Questions
-                        <span className="text-sm text-muted-foreground">
-                          {industryCount >= limits.industrySpecific ? 'Limit reached' : `${industryQuestions.length} available`}
-                        </span>
-                      </h3>
+                   {currentQuestionnaire.industry && currentQuestionnaire.industry !== "General" && currentQuestionnaire.industry !== "None (General)" && (
+                     <div className="flex-1">
+                       <h3 className="font-semibold mb-3 flex items-center justify-between">
+                         {currentQuestionnaire.industry}-Specific Questions
+                         <span className="text-sm text-muted-foreground">
+                           {industryCount >= limits.industrySpecific ? 'Limit reached' : `${industryQuestions.length} available`}
+                         </span>
+                       </h3>
                       <div className="space-y-2 overflow-y-auto max-h-64">
                         {industryQuestions.map((question, index) => (
                           <div 
@@ -228,7 +286,7 @@ export default function QuestionnaireBuilder() {
               {/* Right Panel: Selected Questions */}
               <Card className="flex flex-col">
                 <CardHeader>
-                  <CardTitle>Building: {questionnaireData.name}</CardTitle>
+                  <CardTitle>Building: {currentQuestionnaire.name}</CardTitle>
                   
                   {/* Question Limit Counters */}
                   <div className="space-y-2">

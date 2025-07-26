@@ -6,22 +6,25 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Plus, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 // Mock data for the table
 const mockQuestionnaires = {
   drafts: [
-    { id: 1, name: "Q1 2024 Assessment", indexCode: "FPA", stage: "Seed", version: "v1.0", questions: 25, lastModified: "2024-01-15" },
-    { id: 2, name: "Market Analysis Survey", indexCode: "GEB", stage: "Pre-seed", version: "v2.1", questions: 18, lastModified: "2024-01-12" },
+    { id: 1, name: "FPA General - Pre-seed v1.0", indexCode: "FPA", stage: "Pre-seed", industry: "General", status: "Draft", questions: 25, lastModified: "2024-01-15" },
+    { id: 2, name: "EEA Fintech - Seed v1.2", indexCode: "EEA", stage: "Seed", industry: "Fintech", status: "Draft", questions: 18, lastModified: "2024-01-12" },
   ],
   active: [
-    { id: 3, name: "Annual Review 2024", indexCode: "FPA", stage: "Series A", version: "v3.0", questions: 32, lastModified: "2024-01-10" },
-    { id: 4, name: "Customer Feedback", indexCode: "TEC", stage: "Seed", version: "v1.5", questions: 15, lastModified: "2024-01-08" },
+    { id: 3, name: "FPA General - Series A v2.0", indexCode: "FPA", stage: "Series A", industry: "General", status: "Active", questions: 32, lastModified: "2024-01-10" },
+    { id: 4, name: "EEA Healthcare - Seed v1.5", indexCode: "EEA", stage: "Seed", industry: "Healthcare", status: "Active", questions: 15, lastModified: "2024-01-08" },
   ],
   archived: [
-    { id: 5, name: "Q4 2023 Review", indexCode: "FPA", stage: "Series B", version: "v4.0", questions: 28, lastModified: "2023-12-20" },
-    { id: 6, name: "Product Launch Survey", indexCode: "GEB", stage: "Seed", version: "v2.0", questions: 22, lastModified: "2023-12-15" },
+    { id: 5, name: "FPA SaaS - Series B v3.0", indexCode: "FPA", stage: "Series B", industry: "SaaS", status: "Archived", questions: 28, lastModified: "2023-12-20" },
+    { id: 6, name: "EEA General - Seed v2.0", indexCode: "EEA", stage: "Seed", industry: "General", status: "Archived", questions: 22, lastModified: "2023-12-15" },
   ]
 };
 
@@ -34,13 +37,14 @@ export default function QuestionnaireManagement() {
   const [newQuestionnaire, setNewQuestionnaire] = useState({
     name: "",
     indexCode: "",
-    stage: ""
+    stage: "",
+    scope: "General",
+    industry: ""
   });
 
   const handleCreateNew = () => {
     if (newQuestionnaire.name && newQuestionnaire.indexCode && newQuestionnaire.stage) {
-      // Generate questionnaire title based on form fields
-      const questionnaireTitle = `${newQuestionnaire.indexCode} - ${newQuestionnaire.stage} v1.0`;
+      const industry = newQuestionnaire.scope === "Industry-Specific" ? newQuestionnaire.industry : "General";
       
       // Navigate to builder with the questionnaire data
       navigate(`/questionnaires/builder/new`, {
@@ -48,17 +52,21 @@ export default function QuestionnaireManagement() {
           name: newQuestionnaire.name,
           indexCode: newQuestionnaire.indexCode,
           stage: newQuestionnaire.stage,
-          title: questionnaireTitle
+          scope: newQuestionnaire.scope,
+          industry: industry
         }
       });
+      
+      // Reset and close modal
+      setIsModalOpen(false);
+      setNewQuestionnaire({ name: "", indexCode: "", stage: "", scope: "General", industry: "" });
     }
   };
 
-  const handleCreateQuestionnaire = () => {
-    console.log("Creating questionnaire:", newQuestionnaire);
-    setIsModalOpen(false);
-    setNewQuestionnaire({ name: "", indexCode: "", stage: "" });
-  };
+  const isFormValid = newQuestionnaire.name && 
+    newQuestionnaire.indexCode && 
+    newQuestionnaire.stage && 
+    (newQuestionnaire.scope === "General" || newQuestionnaire.industry);
 
   const renderActionButtons = (row: any, tab: string) => {
     switch (tab) {
@@ -102,87 +110,119 @@ export default function QuestionnaireManagement() {
   };
 
   return (
-    <div className="flex-1 space-y-6 p-6">
-      {/* Back to Menu Button */}
-      <div className="mb-4">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/questionnaires')}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Menu
-        </Button>
-      </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <main className="flex-1 bg-background">
+          <div className="flex-1 space-y-6 p-6">
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-foreground">Questionnaire Management</h1>
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create New Questionnaire
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-background border border-border">
-            <DialogHeader>
-              <DialogTitle>Create New Draft Questionnaire</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="questionnaire-name">Questionnaire Name</Label>
-                <Input
-                  id="questionnaire-name"
-                  value={newQuestionnaire.name}
-                  onChange={(e) => setNewQuestionnaire({ ...newQuestionnaire, name: e.target.value })}
-                  placeholder="Enter questionnaire name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="index-code">Select Index Code</Label>
-                <Select value={newQuestionnaire.indexCode} onValueChange={(value) => setNewQuestionnaire({ ...newQuestionnaire, indexCode: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an index code" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="FPA">FPA</SelectItem>
-                    <SelectItem value="GEB">GEB</SelectItem>
-                    <SelectItem value="TEC">TEC</SelectItem>
-                    <SelectItem value="MRK">MRK</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="stage">Select Stage</Label>
-                <Select value={newQuestionnaire.stage} onValueChange={(value) => setNewQuestionnaire({ ...newQuestionnaire, stage: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a stage" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="Pre-seed">Pre-seed</SelectItem>
-                    <SelectItem value="Seed">Seed</SelectItem>
-                    <SelectItem value="Series A">Series A</SelectItem>
-                    <SelectItem value="Series B">Series B</SelectItem>
-                    <SelectItem value="Series C">Series C</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl font-bold text-foreground">Questionnaire Management</h1>
+              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogTrigger asChild>
+                  <Button className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Create New Questionnaire
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-background border border-border max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Create New Questionnaire</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="questionnaire-name">Questionnaire Name</Label>
+                      <Input
+                        id="questionnaire-name"
+                        value={newQuestionnaire.name}
+                        onChange={(e) => setNewQuestionnaire({ ...newQuestionnaire, name: e.target.value })}
+                        placeholder="e.g., FPA General - Pre-Seed v1.0"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="index-code">Select Index Code</Label>
+                      <Select value={newQuestionnaire.indexCode} onValueChange={(value) => setNewQuestionnaire({ ...newQuestionnaire, indexCode: value })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Index Code" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border border-border z-50">
+                          <SelectItem value="FPA">FPA</SelectItem>
+                          <SelectItem value="EEA">EEA</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="stage">Select Stage</Label>
+                      <Select value={newQuestionnaire.stage} onValueChange={(value) => setNewQuestionnaire({ ...newQuestionnaire, stage: value })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Stage" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border border-border z-50">
+                          <SelectItem value="Pre-seed">Pre-seed</SelectItem>
+                          <SelectItem value="Seed">Seed</SelectItem>
+                          <SelectItem value="Series A">Series A</SelectItem>
+                          <SelectItem value="Series B">Series B</SelectItem>
+                          <SelectItem value="Series C">Series C</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {newQuestionnaire.indexCode && (
+                      <div className="space-y-3">
+                        <Label>Scope</Label>
+                        <RadioGroup 
+                          value={newQuestionnaire.scope} 
+                          onValueChange={(value) => setNewQuestionnaire({ ...newQuestionnaire, scope: value, industry: value === "General" ? "" : newQuestionnaire.industry })}
+                          className="flex gap-6"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="General" id="general" />
+                            <Label htmlFor="general">General</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="Industry-Specific" id="industry-specific" />
+                            <Label htmlFor="industry-specific">Industry-Specific</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                    )}
+                    
+                    {newQuestionnaire.scope === "Industry-Specific" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="industry">Select an Industry</Label>
+                        <Select value={newQuestionnaire.industry} onValueChange={(value) => setNewQuestionnaire({ ...newQuestionnaire, industry: value })}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Industry" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background border border-border z-50">
+                            <SelectItem value="Fintech">Fintech</SelectItem>
+                            <SelectItem value="Healthcare">Healthcare</SelectItem>
+                            <SelectItem value="SaaS">SaaS</SelectItem>
+                            <SelectItem value="E-commerce">E-commerce</SelectItem>
+                            <SelectItem value="EdTech">EdTech</SelectItem>
+                            <SelectItem value="CleanTech">CleanTech</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleCreateNew}
+                      disabled={!isFormValid}
+                    >
+                      Save and Open Builder
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleCreateNew}
-                disabled={!newQuestionnaire.name || !newQuestionnaire.indexCode || !newQuestionnaire.stage}
-              >
-                Save and Open Builder
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -234,8 +274,11 @@ export default function QuestionnaireManagement() {
         <TabsContent value="archived" className="space-y-4">
           <DataTable data={getCurrentData()} tab="archived" renderActions={renderActionButtons} />
         </TabsContent>
-      </Tabs>
-    </div>
+            </Tabs>
+          </div>
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
 
@@ -251,12 +294,12 @@ function DataTable({ data, tab, renderActions }: DataTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Questionnaire Name</TableHead>
+            <TableHead>Name</TableHead>
             <TableHead>Index Code</TableHead>
             <TableHead>Stage</TableHead>
-            <TableHead>Version</TableHead>
+            <TableHead>Industry</TableHead>
             <TableHead># of Questions</TableHead>
-            <TableHead>Last Modified</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -266,9 +309,9 @@ function DataTable({ data, tab, renderActions }: DataTableProps) {
               <TableCell className="font-medium">{row.name}</TableCell>
               <TableCell>{row.indexCode}</TableCell>
               <TableCell>{row.stage}</TableCell>
-              <TableCell>{row.version}</TableCell>
+              <TableCell>{row.industry}</TableCell>
               <TableCell>{row.questions}</TableCell>
-              <TableCell>{row.lastModified}</TableCell>
+              <TableCell>{row.status}</TableCell>
               <TableCell>{renderActions(row, tab)}</TableCell>
             </TableRow>
           ))}

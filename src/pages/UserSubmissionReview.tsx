@@ -15,33 +15,28 @@ import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
 // Mock data for submissions
-const mockSubmissions = [
-  {
-    id: 9501,
-    userName: "Priya Sharma",
-    userEmail: "priya.s@example.com",
-    questionnaireName: "FPA - Seed Stage v1.3",
-    finalScore: "88/100",
-    dateSubmitted: "2025-07-22"
-  },
-  {
-    id: 9502,
-    userName: "John Chen",
-    userEmail: "j.chen@example.com",
-    questionnaireName: "GEB v2.1",
-    finalScore: "76/100",
-    dateSubmitted: "2025-07-21"
-  },
-  {
-    id: 9503,
-    userName: "Sarah Johnson",
-    userEmail: "sarah.j@example.com",
-    questionnaireName: "FPA - Seed Stage v1.3",
-    finalScore: "92/100",
-    dateSubmitted: "2025-07-20"
-  }
-];
-
+const mockSubmissions = [{
+  id: 9501,
+  userName: "Priya Sharma",
+  userEmail: "priya.s@example.com",
+  questionnaireName: "FPA - Seed Stage v1.3",
+  finalScore: "88/100",
+  dateSubmitted: "2025-07-22"
+}, {
+  id: 9502,
+  userName: "John Chen",
+  userEmail: "j.chen@example.com",
+  questionnaireName: "GEB v2.1",
+  finalScore: "76/100",
+  dateSubmitted: "2025-07-21"
+}, {
+  id: 9503,
+  userName: "Sarah Johnson",
+  userEmail: "sarah.j@example.com",
+  questionnaireName: "FPA - Seed Stage v1.3",
+  finalScore: "92/100",
+  dateSubmitted: "2025-07-20"
+}];
 export default function UserSubmissionReview() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState("all");
@@ -50,52 +45,33 @@ export default function UserSubmissionReview() {
   const [hasSearched, setHasSearched] = useState(false);
   const [results, setResults] = useState<typeof mockSubmissions>([]);
   const navigate = useNavigate();
-
   const handleSearch = () => {
     // Simulate search logic
     let filteredResults = mockSubmissions;
-    
     if (searchTerm) {
-      filteredResults = filteredResults.filter(submission =>
-        submission.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        submission.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        submission.id.toString().includes(searchTerm)
-      );
+      filteredResults = filteredResults.filter(submission => submission.userName.toLowerCase().includes(searchTerm.toLowerCase()) || submission.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) || submission.id.toString().includes(searchTerm));
     }
-    
     if (selectedQuestionnaire !== "all") {
-      filteredResults = filteredResults.filter(submission =>
-        submission.questionnaireName === selectedQuestionnaire
-      );
+      filteredResults = filteredResults.filter(submission => submission.questionnaireName === selectedQuestionnaire);
     }
-    
     setResults(filteredResults);
     setHasSearched(true);
   };
-
   const handleViewDetails = (submissionId: number) => {
     navigate(`/questionnaires/submission-review/${submissionId}`);
   };
-
   const renderResultsArea = () => {
     if (!hasSearched) {
-      return (
-        <div className="flex items-center justify-center h-64 text-muted-foreground">
+      return <div className="flex items-center justify-center h-64 text-muted-foreground">
           Please use the filters above to search for user submissions.
-        </div>
-      );
+        </div>;
     }
-
     if (results.length === 0) {
-      return (
-        <div className="flex items-center justify-center h-64 text-muted-foreground">
+      return <div className="flex items-center justify-center h-64 text-muted-foreground">
           No submissions found matching your criteria.
-        </div>
-      );
+        </div>;
     }
-
-    return (
-      <div className="space-y-4">
+    return <div className="space-y-4">
         <div className="text-sm text-muted-foreground">
           Showing 1-{results.length} of {results.length} results
         </div>
@@ -113,8 +89,7 @@ export default function UserSubmissionReview() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {results.map((submission) => (
-              <TableRow key={submission.id}>
+            {results.map(submission => <TableRow key={submission.id}>
                 <TableCell>{submission.id}</TableCell>
                 <TableCell>{submission.userName}</TableCell>
                 <TableCell>{submission.userEmail}</TableCell>
@@ -122,17 +97,12 @@ export default function UserSubmissionReview() {
                 <TableCell>{submission.finalScore}</TableCell>
                 <TableCell>{submission.dateSubmitted}</TableCell>
                 <TableCell className="text-center">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleViewDetails(submission.id)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleViewDetails(submission.id)}>
                     <Eye className="mr-2 h-4 w-4" />
                     View Details
                   </Button>
                 </TableCell>
-              </TableRow>
-            ))}
+              </TableRow>)}
           </TableBody>
         </Table>
 
@@ -148,16 +118,13 @@ export default function UserSubmissionReview() {
             Next
           </Button>
         </div>
-      </div>
-    );
+      </div>;
   };
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 flex items-center border-b bg-background px-6">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[28px]">
             <SidebarTrigger className="mr-4" />
             <h1 className="text-2xl font-bold">User Submission Review</h1>
           </header>
@@ -171,13 +138,7 @@ export default function UserSubmissionReview() {
                     <Label htmlFor="search-user">Search User</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                      <Input
-                        id="search-user"
-                        placeholder="Search by User Name, Email, or ID..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
+                      <Input id="search-user" placeholder="Search by User Name, Email, or ID..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
                     </div>
                   </div>
 
@@ -200,49 +161,25 @@ export default function UserSubmissionReview() {
                     <div className="flex gap-2">
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !startDate && "text-muted-foreground"
-                            )}
-                          >
+                          <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {startDate ? format(startDate, "MMM dd") : "Start Date"}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={startDate}
-                            onSelect={setStartDate}
-                            initialFocus
-                            className="p-3 pointer-events-auto"
-                          />
+                          <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus className="p-3 pointer-events-auto" />
                         </PopoverContent>
                       </Popover>
 
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !endDate && "text-muted-foreground"
-                            )}
-                          >
+                          <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {endDate ? format(endDate, "MMM dd") : "End Date"}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={endDate}
-                            onSelect={setEndDate}
-                            initialFocus
-                            className="p-3 pointer-events-auto"
-                          />
+                          <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus className="p-3 pointer-events-auto" />
                         </PopoverContent>
                       </Popover>
                     </div>
@@ -265,6 +202,5 @@ export default function UserSubmissionReview() {
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 }

@@ -38,6 +38,7 @@ export default function QuestionnaireManagement() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<any>(null);
+  const [questionnaires, setQuestionnaires] = useState(mockQuestionnaires);
   const [newQuestionnaire, setNewQuestionnaire] = useState({
     name: "",
     indexCode: "",
@@ -79,9 +80,42 @@ export default function QuestionnaireManagement() {
     setIsDeleteConfirmOpen(true);
   };
 
+  const handlePublish = (questionnaire: any) => {
+    setQuestionnaires(prev => ({
+      ...prev,
+      drafts: prev.drafts.map(q => 
+        q.id === questionnaire.id ? { ...q, status: "Active" } : q
+      ),
+      active: [...prev.active, { ...questionnaire, status: "Active" }]
+    }));
+  };
+
+  const handleArchive = (questionnaire: any) => {
+    setQuestionnaires(prev => ({
+      ...prev,
+      active: prev.active.filter(q => q.id !== questionnaire.id),
+      archived: [...prev.archived, { ...questionnaire, status: "Archived" }]
+    }));
+  };
+
+  const handleActivate = (questionnaire: any) => {
+    setQuestionnaires(prev => ({
+      ...prev,
+      archived: prev.archived.filter(q => q.id !== questionnaire.id),
+      drafts: [...prev.drafts, { ...questionnaire, status: "Draft" }]
+    }));
+    setActiveTab("draftActive");
+  };
+
   const confirmDelete = () => {
-    // Here you would delete the questionnaire from your data
-    console.log("Deleting questionnaire:", selectedQuestionnaire?.name);
+    if (selectedQuestionnaire) {
+      setQuestionnaires(prev => ({
+        ...prev,
+        drafts: prev.drafts.filter(q => q.id !== selectedQuestionnaire.id),
+        active: prev.active.filter(q => q.id !== selectedQuestionnaire.id),
+        archived: prev.archived.filter(q => q.id !== selectedQuestionnaire.id)
+      }));
+    }
     setIsDeleteConfirmOpen(false);
     setSelectedQuestionnaire(null);
   };
@@ -109,6 +143,7 @@ export default function QuestionnaireManagement() {
           <Button 
             variant="default" 
             size="sm"
+            onClick={() => handlePublish(row)}
             title="Publish"
           >
             <Rocket className="h-4 w-4" />
@@ -144,6 +179,7 @@ export default function QuestionnaireManagement() {
           <Button 
             variant="secondary" 
             size="sm"
+            onClick={() => handleArchive(row)}
             title="Archive"
           >
             <Archive className="h-4 w-4" />
@@ -164,6 +200,7 @@ export default function QuestionnaireManagement() {
           <Button 
             variant="default" 
             size="sm"
+            onClick={() => handleActivate(row)}
             title="Activate"
           >
             <ArrowUp className="h-4 w-4" />
@@ -197,9 +234,9 @@ export default function QuestionnaireManagement() {
 
   const getCurrentData = () => {
     if (activeTab === "draftActive") {
-      return [...mockQuestionnaires.drafts, ...mockQuestionnaires.active];
+      return [...questionnaires.drafts, ...questionnaires.active];
     } else if (activeTab === "archived") {
-      return mockQuestionnaires.archived;
+      return questionnaires.archived;
     }
     return [];
   };

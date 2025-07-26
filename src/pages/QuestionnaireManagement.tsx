@@ -127,7 +127,12 @@ export default function QuestionnaireManagement() {
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => navigate(`/questionnaires/builder/${row.id}`)}
+            onClick={() => navigate(`/questionnaires/builder`, {
+              state: {
+                questionnaire: row,
+                mode: 'edit'
+              }
+            })}
             title="Edit Builder"
           >
             <Pen className="h-4 w-4" />

@@ -1,9 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-
 const Index = () => {
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
@@ -11,7 +9,7 @@ const Index = () => {
             <SidebarTrigger className="mr-4" />
             <h1 className="text-lg font-semibold">Dashboard</h1>
           </header>
-          <main className="flex-1 p-6 bg-background">
+          <main className="flex-1 p-6 bg-background mx-[27px]">
             <div className="max-w-4xl">
               <h2 className="text-2xl font-bold mb-4">Welcome to the Admin Panel</h2>
               <p className="text-muted-foreground mb-6">
@@ -35,8 +33,6 @@ const Index = () => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default Index;

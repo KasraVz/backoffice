@@ -55,6 +55,10 @@ const subCategories: Record<string, string[]> = {
 
 export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, editingQuestion }: CreateQuestionModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [selectedColumnAIndex, setSelectedColumnAIndex] = useState<number | null>(null);
+  const [selectedColumnBIndex, setSelectedColumnBIndex] = useState<number | null>(null);
+  const [usedItems, setUsedItems] = useState<{ columnA: number[], columnB: number[] }>({ columnA: [], columnB: [] });
+  
   const [questionData, setQuestionData] = useState({
     questionText: "",
     behavioralCode: "",
@@ -68,7 +72,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     columnB: [] as string[],
     weights: {} as Record<string, { weight?: number; expertWeight?: number; machineWeight?: number }>,
     rankings: {} as Record<string, number>,
-    matchedPairs: [] as Array<{ a: string; b: string }>,
+    matchedPairs: [] as Array<{ a: string; b: string; aIndex: number; bIndex: number }>,
     correctAnswers: [] as number[], // For single/multiple choice
     correctRanking: {} as Record<string, number> // For ranking
   });
@@ -109,6 +113,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
 
   const resetForm = () => {
     setCurrentStep(1);
+    setSelectedColumnAIndex(null);
+    setSelectedColumnBIndex(null);
+    setUsedItems({ columnA: [], columnB: [] });
     setQuestionData({
       questionText: "",
       behavioralCode: "",
@@ -177,6 +184,57 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     setQuestionData(prev => ({
       ...prev,
       choices: prev.choices.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Helper functions for matching pairs
+  const handleColumnASelection = (index: number) => {
+    if (usedItems.columnA.includes(index)) return;
+    setSelectedColumnAIndex(selectedColumnAIndex === index ? null : index);
+  };
+
+  const handleColumnBSelection = (index: number) => {
+    if (usedItems.columnB.includes(index)) return;
+    setSelectedColumnBIndex(selectedColumnBIndex === index ? null : index);
+  };
+
+  const canCreatePair = selectedColumnAIndex !== null && selectedColumnBIndex !== null;
+
+  const createPair = () => {
+    if (!canCreatePair || selectedColumnAIndex === null || selectedColumnBIndex === null) return;
+    
+    const newPair = {
+      a: questionData.columnA[selectedColumnAIndex],
+      b: questionData.columnB[selectedColumnBIndex],
+      aIndex: selectedColumnAIndex,
+      bIndex: selectedColumnBIndex
+    };
+
+    setQuestionData(prev => ({
+      ...prev,
+      matchedPairs: [...prev.matchedPairs, newPair]
+    }));
+
+    setUsedItems(prev => ({
+      columnA: [...prev.columnA, selectedColumnAIndex],
+      columnB: [...prev.columnB, selectedColumnBIndex]
+    }));
+
+    setSelectedColumnAIndex(null);
+    setSelectedColumnBIndex(null);
+  };
+
+  const removePair = (pairIndex: number) => {
+    const pair = questionData.matchedPairs[pairIndex];
+    
+    setQuestionData(prev => ({
+      ...prev,
+      matchedPairs: prev.matchedPairs.filter((_, i) => i !== pairIndex)
+    }));
+
+    setUsedItems(prev => ({
+      columnA: prev.columnA.filter(index => index !== pair.aIndex),
+      columnB: prev.columnB.filter(index => index !== pair.bIndex)
     }));
   };
 
@@ -542,15 +600,105 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               </div>
             )}
 
-            {questionData.answerType === "matching" && (
-              <div className="space-y-4">
-                <p className="text-muted-foreground">Create matching pairs and set their weights:</p>
-                {questionData.matchedPairs.map((pair, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <span>{pair.a} ↔ {pair.b}</span>
-                    <WeightPopover choiceId={`pair-${index}`} choiceText={`${pair.a} ↔ ${pair.b}`} />
+            {questionData.answerType === "matching" && questionData.columnA.length > 0 && questionData.columnB.length > 0 && (
+              <div className="space-y-6">
+                {/* Pairing Area */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Create Matching Pairs and Set Weights</h4>
+                  <div className="grid grid-cols-3 gap-4 items-center">
+                    {/* Column A */}
+                    <div className="space-y-2">
+                      <Label className="font-medium">Column A</Label>
+                      {questionData.columnA.map((item, index) => (
+                        <Button
+                          key={index}
+                          variant={selectedColumnAIndex === index ? "default" : "outline"}
+                          className={`w-full h-auto p-3 text-left justify-start ${
+                            usedItems.columnA.includes(index) 
+                              ? "opacity-50 cursor-not-allowed bg-muted" 
+                              : selectedColumnAIndex === index 
+                                ? "border-2 border-primary" 
+                                : ""
+                          }`}
+                          onClick={() => handleColumnASelection(index)}
+                          disabled={usedItems.columnA.includes(index)}
+                        >
+                          {item}
+                        </Button>
+                      ))}
+                    </div>
+
+                    {/* Create Pair Button */}
+                    <div className="flex justify-center">
+                      <Button
+                        variant="default"
+                        disabled={!canCreatePair}
+                        onClick={createPair}
+                        className="whitespace-nowrap"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Create Pair
+                      </Button>
+                    </div>
+
+                    {/* Column B */}
+                    <div className="space-y-2">
+                      <Label className="font-medium">Column B</Label>
+                      {questionData.columnB.map((item, index) => (
+                        <Button
+                          key={index}
+                          variant={selectedColumnBIndex === index ? "default" : "outline"}
+                          className={`w-full h-auto p-3 text-left justify-start ${
+                            usedItems.columnB.includes(index) 
+                              ? "opacity-50 cursor-not-allowed bg-muted" 
+                              : selectedColumnBIndex === index 
+                                ? "border-2 border-primary" 
+                                : ""
+                          }`}
+                          onClick={() => handleColumnBSelection(index)}
+                          disabled={usedItems.columnB.includes(index)}
+                        >
+                          {item}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                </div>
+
+                {/* Correctly Matched Pairs */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Correctly Matched Pairs</h4>
+                  {questionData.matchedPairs.length === 0 ? (
+                    <div className="p-6 border rounded-lg bg-muted/10 text-center">
+                      <p className="text-muted-foreground">No pairs created yet. Select items from both columns and click "Create Pair".</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {questionData.matchedPairs.map((pair, index) => (
+                        <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-background">
+                          <span className="font-medium">{pair.a} ↔ {pair.b}</span>
+                          <div className="flex items-center gap-2">
+                            <WeightPopover choiceId={`pair-${index}`} choiceText={`${pair.a} ↔ ${pair.b}`} />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removePair(index)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {questionData.answerType === "matching" && (questionData.columnA.length === 0 || questionData.columnB.length === 0) && (
+              <div className="p-6 border rounded-lg bg-muted/10 text-center">
+                <p className="text-muted-foreground">Please go back to Step 2 to add items to both columns first.</p>
               </div>
             )}
           </div>

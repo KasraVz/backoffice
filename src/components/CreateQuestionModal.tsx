@@ -103,7 +103,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
   const steps = [
     { number: 1, title: "Details & Properties" },
     { number: 2, title: "Define Answer Choices" }, 
-    { number: 3, title: "Set Scoring & Weights" },
+    { number: 3, title: "Correct Answers and Weights" },
     { number: 4, title: "Preview & Confirm" }
   ];
 

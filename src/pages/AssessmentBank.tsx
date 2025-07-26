@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CreateQuestionModal } from "@/components/CreateQuestionModal";
 
 // Mock data
 const mockQuestions = [
@@ -17,6 +18,7 @@ const mockQuestions = [
     title: "When a key feature launch is delayed, what is the best course of action?",
     type: "SJT",
     category: "Crisis",
+    status: "Published",
     lastModified: "2025-07-22"
   },
   {
@@ -24,6 +26,7 @@ const mockQuestions = [
     title: "Is validating market fit before building an MVP essential?",
     type: "True/False",
     category: "Market Entry",
+    status: "Draft",
     lastModified: "2025-07-21"
   }
 ];
@@ -94,11 +97,12 @@ const mockBehavioralCodes = [
 export default function AssessmentBank() {
   const [activeTab, setActiveTab] = useState("questions");
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [questions, setQuestions] = useState(mockQuestions);
   const { toast } = useToast();
 
-  const handleCreateQuestion = () => {
-    navigate('/questionnaires/assessment-bank/create');
+  const handleQuestionCreated = (newQuestion: any) => {
+    setQuestions(prev => [...prev, newQuestion]);
   };
 
   return (
@@ -121,7 +125,7 @@ export default function AssessmentBank() {
 
             <TabsContent value="questions" className="space-y-6">
               <div className="flex justify-end">
-                <Button onClick={handleCreateQuestion}>
+                <Button onClick={() => setShowCreateModal(true)}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create New Question
                 </Button>
@@ -168,17 +172,23 @@ export default function AssessmentBank() {
                     <TableHead>Title</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Category</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Last Modified</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockQuestions.map((question) => (
+                  {questions.map((question) => (
                     <TableRow key={question.id}>
                       <TableCell>{question.id}</TableCell>
                       <TableCell className="max-w-md truncate">{question.title}</TableCell>
                       <TableCell>{question.type}</TableCell>
                       <TableCell>{question.category}</TableCell>
+                      <TableCell>
+                        <Badge variant={question.status === "Published" ? "default" : "secondary"}>
+                          {question.status}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{question.lastModified}</TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
@@ -225,6 +235,12 @@ export default function AssessmentBank() {
               </Table>
             </TabsContent>
           </Tabs>
+
+          <CreateQuestionModal 
+            open={showCreateModal}
+            onOpenChange={setShowCreateModal}
+            onQuestionCreated={handleQuestionCreated}
+          />
         </main>
       </div>
     </SidebarProvider>

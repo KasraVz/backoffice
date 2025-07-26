@@ -707,44 +707,111 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       case 4:
         return (
           <div className="space-y-6">
-            <h3 className="text-lg font-medium">Preview & Confirm</h3>
-            
-            <div className="p-6 border rounded-lg bg-muted/20">
-              <h4 className="font-medium mb-4">Question Preview</h4>
-              <div className="space-y-4">
-                <p className="text-lg">{questionData.questionText}</p>
-                
-                {questionData.behavioralCode && (
-                  <Badge variant="secondary">Behavioral Code: {questionData.behavioralCode}</Badge>
-                )}
-                
-                {questionData.category && (
-                  <Badge variant="outline">Category: {questionData.category}</Badge>
-                )}
+            {/* Section 1: Properties Summary */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Question Details Summary</h3>
+              <div className="grid grid-cols-2 gap-6 p-4 border rounded-lg bg-muted/10">
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Behavioral Code</Label>
+                    <p className="text-sm">{questionData.behavioralCode || "Not selected"}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Category</Label>
+                    <p className="text-sm">{questionData.category || "Not selected"}</p>
+                  </div>
+                  {questionData.subCategory && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Sub-Category</Label>
+                      <p className="text-sm">{questionData.subCategory}</p>
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Scope</Label>
+                    <p className="text-sm">{questionData.scope === "general" ? "General" : "Industry-Specific"}</p>
+                  </div>
+                  {questionData.scope === "industry-specific" && questionData.industry && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Industry</Label>
+                      <p className="text-sm">{questionData.industry}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
 
-                <div className="space-y-2">
-                  <Label>Answer Options:</Label>
-                  {questionData.answerType === "single-choice" && (
-                    <div className="space-y-2">
-                      {questionData.choices.map((choice, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <input type="radio" disabled />
-                          <span>{choice}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+            {/* Section 2: End-User Preview */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Live Preview</h3>
+              <div className="p-6 border rounded-lg bg-background">
+                <div className="space-y-6">
+                  {/* Question Text */}
+                  <div>
+                    <p className="text-lg font-medium">{questionData.questionText}</p>
+                  </div>
                   
-                  {questionData.answerType === "multiple-choice" && (
-                    <div className="space-y-2">
-                      {questionData.choices.map((choice, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <input type="checkbox" disabled />
-                          <span>{choice}</span>
+                  {/* Answer Options */}
+                  <div className="space-y-4">
+                    {questionData.answerType === "single-choice" && (
+                      <div className="space-y-3">
+                        {questionData.choices.map((choice, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <input type="radio" name="preview-radio" disabled className="text-primary" />
+                            <span className="text-sm">{choice}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {questionData.answerType === "multiple-choice" && (
+                      <div className="space-y-3">
+                        {questionData.choices.map((choice, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <input type="checkbox" disabled className="text-primary" />
+                            <span className="text-sm">{choice}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {questionData.answerType === "ranking" && (
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium">Rank the following options (drag to reorder):</Label>
+                        {questionData.choices.map((choice, index) => (
+                          <div key={index} className="flex items-center space-x-3 p-2 border rounded bg-muted/20">
+                            <span className="text-sm font-medium text-muted-foreground">{index + 1}.</span>
+                            <span className="text-sm">{choice}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {questionData.answerType === "matching" && (
+                      <div className="space-y-4">
+                        <Label className="text-sm font-medium">Match items from Column A with Column B:</Label>
+                        <div className="grid grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">Column A</Label>
+                            {questionData.columnA.map((item, index) => (
+                              <div key={index} className="p-2 border rounded bg-muted/20">
+                                <span className="text-sm">{item}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">Column B</Label>
+                            {questionData.columnB.map((item, index) => (
+                              <div key={index} className="p-2 border rounded bg-muted/20">
+                                <span className="text-sm">{item}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

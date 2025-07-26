@@ -17,18 +17,55 @@ const mockQuestions = [
   {
     id: 101,
     title: "When a key feature launch is delayed, what is the best course of action?",
-    type: "SJT",
+    type: "single-choice",
     category: "Crisis",
     status: "Published",
-    lastModified: "2025-07-22"
+    lastModified: "2025-07-22",
+    // Complete question data for editing
+    questionText: "When a key feature launch is delayed, what is the best course of action?",
+    behavioralCode: "Responsibility",
+    subCategory: "Crisis Management",
+    scope: "general" as const,
+    industry: "",
+    answerType: "single-choice" as const,
+    choices: [
+      "Immediately communicate the delay to stakeholders and provide a revised timeline",
+      "Continue working without announcing the delay until closer to the new deadline",
+      "Release the feature with fewer functionalities to meet the original deadline",
+      "Blame external factors and maintain the original timeline"
+    ],
+    correctAnswers: [0],
+    weights: {
+      "choice-0": { weight: 10, expertWeight: 10, machineWeight: 10 },
+      "choice-1": { weight: 3, expertWeight: 2, machineWeight: 4 },
+      "choice-2": { weight: 5, expertWeight: 6, machineWeight: 4 },
+      "choice-3": { weight: 0, expertWeight: 0, machineWeight: 1 }
+    }
   },
   {
     id: 102,
-    title: "Is validating market fit before building an MVP essential?",
-    type: "True/False",
-    category: "Market Entry", 
+    title: "Match the business model with its primary revenue stream",
+    type: "matching",
+    category: "Business Model & Revenue Strategy",
     status: "Draft",
-    lastModified: "2025-07-21"
+    lastModified: "2025-07-21",
+    // Complete question data for editing
+    questionText: "Match the business model with its primary revenue stream",
+    behavioralCode: "Achievement",
+    subCategory: "Revenue Streams",
+    scope: "industry-specific" as const,
+    industry: "technology",
+    answerType: "matching" as const,
+    columnA: ["SaaS Platform", "E-commerce Marketplace", "Freemium App"],
+    columnB: ["Commission per transaction", "Monthly subscription fees", "In-app purchases"],
+    matchedPairs: [
+      { a: "SaaS Platform", b: "Monthly subscription fees", aIndex: 0, bIndex: 1 },
+      { a: "E-commerce Marketplace", b: "Commission per transaction", aIndex: 1, bIndex: 0 }
+    ],
+    weights: {
+      "pair-0": { weight: 5, expertWeight: 5, machineWeight: 5 },
+      "pair-1": { weight: 5, expertWeight: 5, machineWeight: 5 }
+    }
   }
 ];
 

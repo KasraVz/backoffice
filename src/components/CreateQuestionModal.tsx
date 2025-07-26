@@ -83,13 +83,13 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
   useEffect(() => {
     if (editingQuestion && open) {
       setQuestionData({
-        questionText: editingQuestion.title || "",
+        questionText: editingQuestion.questionText || editingQuestion.title || "",
         behavioralCode: editingQuestion.behavioralCode || "",
         category: editingQuestion.category || "",
         subCategory: editingQuestion.subCategory || "",
         scope: editingQuestion.scope || "general",
         industry: editingQuestion.industry || "",
-        answerType: editingQuestion.type || "" as any,
+        answerType: editingQuestion.answerType || editingQuestion.type || "" as any,
         choices: editingQuestion.choices || [],
         columnA: editingQuestion.columnA || [],
         columnB: editingQuestion.columnB || [],
@@ -99,6 +99,19 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
         correctAnswers: editingQuestion.correctAnswers || [],
         correctRanking: editingQuestion.correctRanking || {}
       });
+
+      // Restore used items for matching questions
+      if (editingQuestion.matchedPairs && editingQuestion.matchedPairs.length > 0) {
+        const usedColumnA: number[] = [];
+        const usedColumnB: number[] = [];
+        
+        editingQuestion.matchedPairs.forEach((pair: any) => {
+          if (typeof pair.aIndex === 'number') usedColumnA.push(pair.aIndex);
+          if (typeof pair.bIndex === 'number') usedColumnB.push(pair.bIndex);
+        });
+
+        setUsedItems({ columnA: usedColumnA, columnB: usedColumnB });
+      }
     } else if (!editingQuestion && open) {
       resetForm();
     }
@@ -149,12 +162,27 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
 
   const handleSave = (status: "draft" | "published") => {
     const newQuestion = {
-      id: Date.now(),
-      title: questionData.questionText.substring(0, 50) + "...",
+      id: editingQuestion?.id || Date.now(),
+      title: questionData.questionText,
       type: questionData.answerType,
       category: questionData.category,
       status: status === "draft" ? "Draft" : "Published",
-      lastModified: new Date().toISOString().split('T')[0]
+      lastModified: new Date().toISOString().split('T')[0],
+      // Save all question data for editing
+      questionText: questionData.questionText,
+      behavioralCode: questionData.behavioralCode,
+      subCategory: questionData.subCategory,
+      scope: questionData.scope,
+      industry: questionData.industry,
+      answerType: questionData.answerType,
+      choices: questionData.choices,
+      columnA: questionData.columnA,
+      columnB: questionData.columnB,
+      weights: questionData.weights,
+      rankings: questionData.rankings,
+      matchedPairs: questionData.matchedPairs,
+      correctAnswers: questionData.correctAnswers,
+      correctRanking: questionData.correctRanking
     };
 
     onQuestionCreated(newQuestion);
@@ -240,6 +268,11 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
 
   const WeightPopover = ({ choiceId, choiceText }: { choiceId: string; choiceText: string }) => {
     const [weights, setWeights] = useState(questionData.weights[choiceId] || {});
+
+    // Update local weights when parent weights change (for editing)
+    useEffect(() => {
+      setWeights(questionData.weights[choiceId] || {});
+    }, [questionData.weights, choiceId]);
 
     const handleSaveWeights = () => {
       setQuestionData(prev => ({

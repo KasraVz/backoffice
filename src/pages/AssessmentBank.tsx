@@ -13,125 +13,133 @@ import { useToast } from "@/hooks/use-toast";
 import { CreateQuestionModal } from "@/components/CreateQuestionModal";
 
 // Mock data
-const mockQuestions = [
-  {
-    id: 101,
-    title: "When a key feature launch is delayed, what is the best course of action?",
-    type: "single-choice",
-    category: "Crisis",
-    status: "Published",
-    lastModified: "2025-07-22",
-    // Complete question data for editing
-    questionText: "When a key feature launch is delayed, what is the best course of action?",
-    behavioralCode: "Responsibility",
-    subCategory: "Crisis Management",
-    scope: "general" as const,
-    industry: "",
-    answerType: "single-choice" as const,
-    choices: [
-      "Immediately communicate the delay to stakeholders and provide a revised timeline",
-      "Continue working without announcing the delay until closer to the new deadline",
-      "Release the feature with fewer functionalities to meet the original deadline",
-      "Blame external factors and maintain the original timeline"
-    ],
-    correctAnswers: [0],
-    weights: {
-      "choice-0": { weight: 10, expertWeight: 10, machineWeight: 10 },
-      "choice-1": { weight: 3, expertWeight: 2, machineWeight: 4 },
-      "choice-2": { weight: 5, expertWeight: 6, machineWeight: 4 },
-      "choice-3": { weight: 0, expertWeight: 0, machineWeight: 1 }
-    }
-  },
-  {
-    id: 102,
-    title: "Match the business model with its primary revenue stream",
-    type: "matching",
-    category: "Business Model & Revenue Strategy",
-    status: "Draft",
-    lastModified: "2025-07-21",
-    // Complete question data for editing
-    questionText: "Match the business model with its primary revenue stream",
-    behavioralCode: "Achievement",
-    subCategory: "Revenue Streams",
-    scope: "industry-specific" as const,
-    industry: "technology",
-    answerType: "matching" as const,
-    columnA: ["SaaS Platform", "E-commerce Marketplace", "Freemium App"],
-    columnB: ["Commission per transaction", "Monthly subscription fees", "In-app purchases"],
-    matchedPairs: [
-      { a: "SaaS Platform", b: "Monthly subscription fees", aIndex: 0, bIndex: 1 },
-      { a: "E-commerce Marketplace", b: "Commission per transaction", aIndex: 1, bIndex: 0 }
-    ],
-    weights: {
-      "pair-0": { weight: 5, expertWeight: 5, machineWeight: 5 },
-      "pair-1": { weight: 5, expertWeight: 5, machineWeight: 5 }
+const mockQuestions = [{
+  id: 101,
+  title: "When a key feature launch is delayed, what is the best course of action?",
+  type: "single-choice",
+  category: "Crisis",
+  status: "Published",
+  lastModified: "2025-07-22",
+  // Complete question data for editing
+  questionText: "When a key feature launch is delayed, what is the best course of action?",
+  behavioralCode: "Responsibility",
+  subCategory: "Crisis Management",
+  scope: "general" as const,
+  industry: "",
+  answerType: "single-choice" as const,
+  choices: ["Immediately communicate the delay to stakeholders and provide a revised timeline", "Continue working without announcing the delay until closer to the new deadline", "Release the feature with fewer functionalities to meet the original deadline", "Blame external factors and maintain the original timeline"],
+  correctAnswers: [0],
+  weights: {
+    "choice-0": {
+      weight: 10,
+      expertWeight: 10,
+      machineWeight: 10
+    },
+    "choice-1": {
+      weight: 3,
+      expertWeight: 2,
+      machineWeight: 4
+    },
+    "choice-2": {
+      weight: 5,
+      expertWeight: 6,
+      machineWeight: 4
+    },
+    "choice-3": {
+      weight: 0,
+      expertWeight: 0,
+      machineWeight: 1
     }
   }
-];
-
-const mockBehavioralCodes = [
-  {
-    id: 1,
-    codeName: "Comfortable with risk",
-    description: "The ability to handle uncertain situations and calculated risks."
-  },
-  {
-    id: 2,
-    codeName: "Comfortable with being the center of attention",
-    description: "The comfort level with public speaking and leadership visibility."
-  },
-  {
-    id: 3,
-    codeName: "Energetic",
-    description: "The drive and enthusiasm to pursue goals actively."
-  },
-  {
-    id: 4,
-    codeName: "Comfortable with long-term goals",
-    description: "The ability to focus on and work towards distant objectives."
-  },
-  {
-    id: 5,
-    codeName: "Curious",
-    description: "The desire to learn and explore new ideas and opportunities."
-  },
-  {
-    id: 6,
-    codeName: "Responsibility",
-    description: "The willingness to be accountable for decisions and outcomes."
-  },
-  {
-    id: 7,
-    codeName: "Achievement",
-    description: "The drive to accomplish goals and exceed expectations."
-  },
-  {
-    id: 8,
-    codeName: "Organized",
-    description: "The ability to structure tasks and manage resources efficiently."
-  },
-  {
-    id: 9,
-    codeName: "Managing emotions",
-    description: "The skill in controlling emotional responses under pressure."
-  },
-  {
-    id: 10,
-    codeName: "Self-efficacy",
-    description: "The belief in one's ability to execute tasks successfully."
-  },
-  {
-    id: 11,
-    codeName: "Resilience and persistence",
-    description: "The ability to recover from setbacks and maintain effort."
-  },
-  {
-    id: 12,
-    codeName: "Ability to delegate responsibility to others",
-    description: "The skill in entrusting tasks and authority to team members."
+}, {
+  id: 102,
+  title: "Match the business model with its primary revenue stream",
+  type: "matching",
+  category: "Business Model & Revenue Strategy",
+  status: "Draft",
+  lastModified: "2025-07-21",
+  // Complete question data for editing
+  questionText: "Match the business model with its primary revenue stream",
+  behavioralCode: "Achievement",
+  subCategory: "Revenue Streams",
+  scope: "industry-specific" as const,
+  industry: "technology",
+  answerType: "matching" as const,
+  columnA: ["SaaS Platform", "E-commerce Marketplace", "Freemium App"],
+  columnB: ["Commission per transaction", "Monthly subscription fees", "In-app purchases"],
+  matchedPairs: [{
+    a: "SaaS Platform",
+    b: "Monthly subscription fees",
+    aIndex: 0,
+    bIndex: 1
+  }, {
+    a: "E-commerce Marketplace",
+    b: "Commission per transaction",
+    aIndex: 1,
+    bIndex: 0
+  }],
+  weights: {
+    "pair-0": {
+      weight: 5,
+      expertWeight: 5,
+      machineWeight: 5
+    },
+    "pair-1": {
+      weight: 5,
+      expertWeight: 5,
+      machineWeight: 5
+    }
   }
-];
-
+}];
+const mockBehavioralCodes = [{
+  id: 1,
+  codeName: "Comfortable with risk",
+  description: "The ability to handle uncertain situations and calculated risks."
+}, {
+  id: 2,
+  codeName: "Comfortable with being the center of attention",
+  description: "The comfort level with public speaking and leadership visibility."
+}, {
+  id: 3,
+  codeName: "Energetic",
+  description: "The drive and enthusiasm to pursue goals actively."
+}, {
+  id: 4,
+  codeName: "Comfortable with long-term goals",
+  description: "The ability to focus on and work towards distant objectives."
+}, {
+  id: 5,
+  codeName: "Curious",
+  description: "The desire to learn and explore new ideas and opportunities."
+}, {
+  id: 6,
+  codeName: "Responsibility",
+  description: "The willingness to be accountable for decisions and outcomes."
+}, {
+  id: 7,
+  codeName: "Achievement",
+  description: "The drive to accomplish goals and exceed expectations."
+}, {
+  id: 8,
+  codeName: "Organized",
+  description: "The ability to structure tasks and manage resources efficiently."
+}, {
+  id: 9,
+  codeName: "Managing emotions",
+  description: "The skill in controlling emotional responses under pressure."
+}, {
+  id: 10,
+  codeName: "Self-efficacy",
+  description: "The belief in one's ability to execute tasks successfully."
+}, {
+  id: 11,
+  codeName: "Resilience and persistence",
+  description: "The ability to recover from setbacks and maintain effort."
+}, {
+  id: 12,
+  codeName: "Ability to delegate responsibility to others",
+  description: "The skill in entrusting tasks and authority to team members."
+}];
 export default function AssessmentBank() {
   const [activeTab, setActiveTab] = useState("questions");
   const [searchQuery, setSearchQuery] = useState("");
@@ -140,12 +148,16 @@ export default function AssessmentBank() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState<any>(null);
   const [questions, setQuestions] = useState(mockQuestions);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleQuestionCreated = (newQuestion: any) => {
     if (editingQuestion) {
       // Update existing question
-      setQuestions(prev => prev.map(q => q.id === editingQuestion.id ? { ...newQuestion, id: editingQuestion.id } : q));
+      setQuestions(prev => prev.map(q => q.id === editingQuestion.id ? {
+        ...newQuestion,
+        id: editingQuestion.id
+      } : q));
       toast({
         title: "Question updated successfully",
         description: "The question has been updated in the assessment bank."
@@ -154,28 +166,24 @@ export default function AssessmentBank() {
       // Add new question
       setQuestions(prev => [...prev, newQuestion]);
       toast({
-        title: "Question created successfully", 
+        title: "Question created successfully",
         description: "The new question has been added to the assessment bank."
       });
     }
     setEditingQuestion(null);
   };
-
   const openCreateModal = () => {
     setEditingQuestion(null);
     setShowCreateModal(true);
   };
-
   const openEditModal = (question: any) => {
     setEditingQuestion(question);
     setShowCreateModal(true);
   };
-
   const openDeleteDialog = (question: any) => {
     setQuestionToDelete(question);
     setShowDeleteDialog(true);
   };
-
   const handleDeleteQuestion = () => {
     if (questionToDelete) {
       setQuestions(prev => prev.filter(q => q.id !== questionToDelete.id));
@@ -187,24 +195,21 @@ export default function AssessmentBank() {
       setShowDeleteDialog(false);
     }
   };
-
   const handlePublishQuestion = (question: any) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === question.id 
-        ? { ...q, status: "Published", lastModified: new Date().toISOString().split('T')[0] }
-        : q
-    ));
+    setQuestions(prev => prev.map(q => q.id === question.id ? {
+      ...q,
+      status: "Published",
+      lastModified: new Date().toISOString().split('T')[0]
+    } : q));
     toast({
       title: "Question published",
       description: "The question has been successfully published."
     });
   };
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 mx-[28px]">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <SidebarTrigger />
@@ -229,12 +234,7 @@ export default function AssessmentBank() {
               <div className="flex justify-between items-center">
                 <div className="relative w-80">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input 
-                    placeholder="Search by question title..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
+                  <Input placeholder="Search by question title..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
                 </div>
                 <div className="flex gap-4">
                   <Select>
@@ -273,8 +273,7 @@ export default function AssessmentBank() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {questions.map((question) => (
-                    <TableRow key={question.id}>
+                  {questions.map(question => <TableRow key={question.id}>
                       <TableCell>{question.id}</TableCell>
                       <TableCell className="max-w-md truncate">{question.title}</TableCell>
                       <TableCell>{question.type}</TableCell>
@@ -290,23 +289,15 @@ export default function AssessmentBank() {
                            <Button variant="outline" size="sm" onClick={() => openEditModal(question)}>
                              <Edit className="h-4 w-4" />
                            </Button>
-                           {question.status === "Draft" && (
-                             <Button 
-                               variant="outline" 
-                               size="sm" 
-                               onClick={() => handlePublishQuestion(question)}
-                               className="text-green-600 hover:text-green-700"
-                             >
+                           {question.status === "Draft" && <Button variant="outline" size="sm" onClick={() => handlePublishQuestion(question)} className="text-green-600 hover:text-green-700">
                                <Upload className="h-4 w-4" />
-                             </Button>
-                           )}
+                             </Button>}
                            <Button variant="outline" size="sm" onClick={() => openDeleteDialog(question)}>
                              <Trash2 className="h-4 w-4" />
                            </Button>
                          </div>
                        </TableCell>
-                    </TableRow>
-                  ))}
+                    </TableRow>)}
                 </TableBody>
               </Table>
             </TabsContent>
@@ -329,24 +320,17 @@ export default function AssessmentBank() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockBehavioralCodes.map((code) => (
-                    <TableRow key={code.id}>
+                  {mockBehavioralCodes.map(code => <TableRow key={code.id}>
                       <TableCell>{code.id}</TableCell>
                       <TableCell>{code.codeName}</TableCell>
                       <TableCell>{code.description}</TableCell>
-                    </TableRow>
-                  ))}
+                    </TableRow>)}
                 </TableBody>
               </Table>
             </TabsContent>
           </Tabs>
 
-          <CreateQuestionModal 
-            open={showCreateModal}
-            onOpenChange={setShowCreateModal}
-            onQuestionCreated={handleQuestionCreated}
-            editingQuestion={editingQuestion}
-          />
+          <CreateQuestionModal open={showCreateModal} onOpenChange={setShowCreateModal} onQuestionCreated={handleQuestionCreated} editingQuestion={editingQuestion} />
 
           <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
             <AlertDialogContent>
@@ -358,10 +342,7 @@ export default function AssessmentBank() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
-                <AlertDialogAction 
-                  onClick={handleDeleteQuestion}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
+                <AlertDialogAction onClick={handleDeleteQuestion} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                   Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -369,6 +350,5 @@ export default function AssessmentBank() {
           </AlertDialog>
         </main>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 }

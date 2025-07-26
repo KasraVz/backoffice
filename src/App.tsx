@@ -9,6 +9,7 @@ import Questionnaires from "./pages/Questionnaires";
 import QuestionnaireManagement from "./pages/QuestionnaireManagement";
 import QuestionnaireBuilder from "./pages/QuestionnaireBuilder";
 import AssessmentBank from "./pages/AssessmentBank";
+import CreateQuestion from "./pages/CreateQuestion";
 import UserSubmissionReview from "./pages/UserSubmissionReview";
 import SubmissionDetails from "./pages/SubmissionDetails";
 import PerformanceAnalytics from "./pages/PerformanceAnalytics";
@@ -27,7 +28,8 @@ const App = () => (
           <Route path="/users" element={<Users />} />
           <Route path="/questionnaires" element={<Questionnaires />} />
           <Route path="/questionnaires/management" element={<QuestionnaireManagement />} />
-          <Route path="/questionnaires/assessment-bank" element={<AssessmentBank />} />
+        <Route path="/questionnaires/assessment-bank" element={<AssessmentBank />} />
+        <Route path="/questionnaires/assessment-bank/create" element={<CreateQuestion />} />
           <Route path="/questionnaires/submission-review" element={<UserSubmissionReview />} />
           <Route path="/questionnaires/submission-review/:id" element={<SubmissionDetails />} />
           <Route path="/questionnaires/analytics" element={<PerformanceAnalytics />} />

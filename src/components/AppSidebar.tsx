@@ -195,17 +195,39 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [manuallyCollapsed, setManuallyCollapsed] = useState<string[]>([]);
   const collapsed = state === "collapsed";
   const isActive = (path: string) => currentPath === path;
   const isParentActive = (children: any[]) => children.some(child => isActive(child.url));
   const toggleExpanded = (title: string) => {
-    setExpandedItems(prev => prev.includes(title) ? prev.filter(item => item !== title) : [...prev, title]);
+    const hasActiveChild = mainMenuItems.find(item => item.title === title)?.children?.some(child => isActive(child.url));
+    
+    if (hasActiveChild) {
+      // If has active child, toggle the manually collapsed state
+      setManuallyCollapsed(prev => 
+        prev.includes(title) 
+          ? prev.filter(item => item !== title) 
+          : [...prev, title]
+      );
+    } else {
+      // Normal expand/collapse behavior
+      setExpandedItems(prev => 
+        prev.includes(title) 
+          ? prev.filter(item => item !== title) 
+          : [...prev, title]
+      );
+    }
   };
   
-  // Auto-expand parent when child is active, or check manual expansion
+  // Auto-expand parent when child is active, unless manually collapsed
   const isExpanded = (title: string, children: any[]) => {
     const hasActiveChild = children.some(child => isActive(child.url));
-    return hasActiveChild || expandedItems.includes(title);
+    const isManuallyCollapsed = manuallyCollapsed.includes(title);
+    
+    if (hasActiveChild && !isManuallyCollapsed) {
+      return true;
+    }
+    return expandedItems.includes(title);
   };
   const getParentNavClasses = (active: boolean) => {
     if (active) {

@@ -462,7 +462,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
           <div className="space-y-6">
             <h3 className="text-lg font-medium">Set Scoring & Weights</h3>
             
-            {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && (
+            {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && questionData.choices.length > 0 && (
               <>
                 <div className="mb-4">
                   <h4 className="font-medium mb-2">Select the correct answer(s) and set weights.</h4>
@@ -509,6 +509,12 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                   ))}
                 </div>
               </>
+            )}
+
+            {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && questionData.choices.length === 0 && (
+              <div className="p-6 border rounded-lg bg-muted/10 text-center">
+                <p className="text-muted-foreground">Please go back to Step 2 to add answer choices first.</p>
+              </div>
             )}
 
             {questionData.answerType === "ranking" && (

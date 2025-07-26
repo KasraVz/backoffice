@@ -158,11 +158,14 @@ export default function QuestionnaireManagement() {
                           <SelectValue placeholder="Select Stage" />
                         </SelectTrigger>
                         <SelectContent className="bg-background border border-border z-50">
+                          <SelectItem value="ideation">Ideation</SelectItem>
                           <SelectItem value="Pre-seed">Pre-seed</SelectItem>
                           <SelectItem value="Seed">Seed</SelectItem>
                           <SelectItem value="Series A">Series A</SelectItem>
-                          <SelectItem value="Series B">Series B</SelectItem>
-                          <SelectItem value="Series C">Series C</SelectItem>
+                          <SelectItem value="growth stage (Series B & C)">Growth Stage (Series B & C)</SelectItem>
+                          <SelectItem value="expansion">Expansion</SelectItem>
+                          <SelectItem value="maturity">Maturity</SelectItem>
+                          <SelectItem value="exit/evolution">Exit/Evolution</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -230,11 +233,14 @@ export default function QuestionnaireManagement() {
             </SelectTrigger>
             <SelectContent className="bg-background border border-border z-50">
               <SelectItem value="all">All Stages</SelectItem>
+              <SelectItem value="ideation">Ideation</SelectItem>
               <SelectItem value="Pre-seed">Pre-seed</SelectItem>
               <SelectItem value="Seed">Seed</SelectItem>
               <SelectItem value="Series A">Series A</SelectItem>
-              <SelectItem value="Series B">Series B</SelectItem>
-              <SelectItem value="Series C">Series C</SelectItem>
+              <SelectItem value="growth stage (Series B & C)">Growth Stage (Series B & C)</SelectItem>
+              <SelectItem value="expansion">Expansion</SelectItem>
+              <SelectItem value="maturity">Maturity</SelectItem>
+              <SelectItem value="exit/evolution">Exit/Evolution</SelectItem>
             </SelectContent>
           </Select>
         </div>

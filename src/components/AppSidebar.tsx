@@ -201,29 +201,19 @@ export function AppSidebar() {
   const isParentActive = (children: any[]) => children.some(child => isActive(child.url));
   const toggleExpanded = (title: string) => {
     const hasActiveChild = mainMenuItems.find(item => item.title === title)?.children?.some(child => isActive(child.url));
-    
     if (hasActiveChild) {
       // If has active child, toggle the manually collapsed state
-      setManuallyCollapsed(prev => 
-        prev.includes(title) 
-          ? prev.filter(item => item !== title) 
-          : [...prev, title]
-      );
+      setManuallyCollapsed(prev => prev.includes(title) ? prev.filter(item => item !== title) : [...prev, title]);
     } else {
       // Normal expand/collapse behavior
-      setExpandedItems(prev => 
-        prev.includes(title) 
-          ? prev.filter(item => item !== title) 
-          : [...prev, title]
-      );
+      setExpandedItems(prev => prev.includes(title) ? prev.filter(item => item !== title) : [...prev, title]);
     }
   };
-  
+
   // Auto-expand parent when child is active, unless manually collapsed
   const isExpanded = (title: string, children: any[]) => {
     const hasActiveChild = children.some(child => isActive(child.url));
     const isManuallyCollapsed = manuallyCollapsed.includes(title);
-    
     if (hasActiveChild && !isManuallyCollapsed) {
       return true;
     }
@@ -242,7 +232,7 @@ export function AppSidebar() {
     return "text-gray-400 hover:bg-gray-700 hover:text-white ml-6";
   };
   return <Sidebar className="w-[280px] bg-gray-800 border-r border-gray-700 fixed left-0 top-0 h-screen">
-      <SidebarContent className="bg-gray-800 px-0 mx-px">
+      <SidebarContent className="bg-gray-800 px-0 mx-px py-[15px]">
         <SidebarGroup className="px-0 py-0">
           <SidebarGroupContent>
             <SidebarMenu className="space-y-0">

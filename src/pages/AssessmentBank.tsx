@@ -25,7 +25,7 @@ const mockQuestions = [
     id: 102,
     title: "Is validating market fit before building an MVP essential?",
     type: "True/False",
-    category: "Market Entry",
+    category: "Market Entry", 
     status: "Draft",
     lastModified: "2025-07-21"
   }
@@ -105,6 +105,10 @@ export default function AssessmentBank() {
     setQuestions(prev => [...prev, newQuestion]);
   };
 
+  const openCreateModal = () => {
+    setShowCreateModal(true);
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -125,7 +129,7 @@ export default function AssessmentBank() {
 
             <TabsContent value="questions" className="space-y-6">
               <div className="flex justify-end">
-                <Button onClick={() => setShowCreateModal(true)}>
+                <Button onClick={openCreateModal}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create New Question
                 </Button>

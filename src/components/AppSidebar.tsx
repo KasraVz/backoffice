@@ -236,9 +236,9 @@ export function AppSidebar() {
                     </SidebarMenuItem>
 
                     {/* Render children */}
-                    {hasChildren && itemExpanded && !collapsed && <div className="bg-gray-900">
+                    {hasChildren && itemExpanded && !collapsed && <div className="bg-gray-900 my-1">
                         {item.children!.map(child => <SidebarMenuItem key={child.title}>
-                            <SidebarMenuButton asChild className={`w-full justify-start px-4 py-2.5 text-sm ${getChildNavClasses(isActive(child.url))} transition-all duration-200`}>
+                            <SidebarMenuButton asChild className={`w-full justify-start px-4 py-2.5 text-sm ${getChildNavClasses(isActive(child.url))} transition-all duration-200 my-0.5`}>
                               <NavLink to={child.url} className="flex items-center w-full">
                                 <span className="truncate pl-7">{child.title}</span>
                               </NavLink>

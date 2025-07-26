@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Edit, Trash2, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CreateQuestionModal } from "@/components/CreateQuestionModal";
 
@@ -188,6 +188,18 @@ export default function AssessmentBank() {
     }
   };
 
+  const handlePublishQuestion = (question: any) => {
+    setQuestions(prev => prev.map(q => 
+      q.id === question.id 
+        ? { ...q, status: "Published", lastModified: new Date().toISOString().split('T')[0] }
+        : q
+    ));
+    toast({
+      title: "Question published",
+      description: "The question has been successfully published."
+    });
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -273,16 +285,26 @@ export default function AssessmentBank() {
                         </Badge>
                       </TableCell>
                       <TableCell>{question.lastModified}</TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button variant="outline" size="sm" onClick={() => openEditModal(question)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => openDeleteDialog(question)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+                       <TableCell>
+                         <div className="flex space-x-2">
+                           <Button variant="outline" size="sm" onClick={() => openEditModal(question)}>
+                             <Edit className="h-4 w-4" />
+                           </Button>
+                           {question.status === "Draft" && (
+                             <Button 
+                               variant="outline" 
+                               size="sm" 
+                               onClick={() => handlePublishQuestion(question)}
+                               className="text-green-600 hover:text-green-700"
+                             >
+                               <Upload className="h-4 w-4" />
+                             </Button>
+                           )}
+                           <Button variant="outline" size="sm" onClick={() => openDeleteDialog(question)}>
+                             <Trash2 className="h-4 w-4" />
+                           </Button>
+                         </div>
+                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

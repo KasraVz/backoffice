@@ -127,6 +127,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     questionText: "",
     behavioralCode: "",
     indexCode: "",
+    stage: "",
     category: "",
     subCategory: "",
     scope: "General" as "General" | "Industry-Specific",
@@ -151,6 +152,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
         questionText: editingQuestion.questionText || editingQuestion.title || "",
         behavioralCode: editingQuestion.behavioralCode || "",
         indexCode: editingQuestion.indexCode || "",
+        stage: editingQuestion.stage || "",
         category: editingQuestion.category || "",
         subCategory: editingQuestion.subCategory || "",
         scope: editingQuestion.scope || "General",
@@ -199,6 +201,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       questionText: "",
       behavioralCode: "",
       indexCode: "",
+      stage: "",
       category: "",
       subCategory: "",
       scope: "General",
@@ -239,6 +242,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       questionText: questionData.questionText,
       behavioralCode: questionData.behavioralCode,
       indexCode: questionData.indexCode,
+      stage: questionData.stage,
       subCategory: questionData.subCategory,
       scope: questionData.scope,
       industry: questionData.industry,
@@ -429,6 +433,28 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                   {behavioralCodes.map((code) => (
                     <SelectItem key={code} value={code}>{code}</SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="stage">Select a Stage</Label>
+              <Select 
+                value={questionData.stage} 
+                onValueChange={(value) => setQuestionData(prev => ({ ...prev, stage: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ideation">Ideation</SelectItem>
+                  <SelectItem value="Pre-seed">Pre-seed</SelectItem>
+                  <SelectItem value="Seed">Seed</SelectItem>
+                  <SelectItem value="Series A">Series A</SelectItem>
+                  <SelectItem value="growth stage (Series B & C)">Growth Stage (Series B & C)</SelectItem>
+                  <SelectItem value="expansion">Expansion</SelectItem>
+                  <SelectItem value="maturity">Maturity</SelectItem>
+                  <SelectItem value="exit/evolution">Exit/Evolution</SelectItem>
                 </SelectContent>
               </Select>
             </div>

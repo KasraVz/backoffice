@@ -7,7 +7,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Plus, ArrowLeft, Pen, Eye, Trash2, Send, Copy, Archive, RotateCcw } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, ArrowLeft, Pen, Eye, Trash2, Send, Copy, Archive, RotateCcw, Rocket, ArrowUp, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -30,10 +31,13 @@ const mockQuestionnaires = {
 
 export default function QuestionnaireManagement() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("drafts");
+  const [activeTab, setActiveTab] = useState("draftActive");
   const [indexFilter, setIndexFilter] = useState("all");
   const [stageFilter, setStageFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<any>(null);
   const [newQuestionnaire, setNewQuestionnaire] = useState({
     name: "",
     indexCode: "",
@@ -65,61 +69,139 @@ export default function QuestionnaireManagement() {
     newQuestionnaire.stage &&
     newQuestionnaire.industry;
 
-  const renderActionButtons = (row: any, tab: string) => {
-    switch (tab) {
-      case "drafts":
-        return (
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => navigate(`/questionnaires/builder/${row.id}`)}
-            >
-              <Pen className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm">
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button variant="default" size="sm">
-              <Send className="h-4 w-4" />
-            </Button>
-            <Button variant="destructive" size="sm">
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      case "active":
-        return (
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm">
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button variant="secondary" size="sm">
-              <Archive className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      case "archived":
-        return (
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button variant="default" size="sm">
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-          </div>
-        );
+  const handlePreview = (questionnaire: any) => {
+    setSelectedQuestionnaire(questionnaire);
+    setIsPreviewOpen(true);
+  };
+
+  const handleDelete = (questionnaire: any) => {
+    setSelectedQuestionnaire(questionnaire);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    // Here you would delete the questionnaire from your data
+    console.log("Deleting questionnaire:", selectedQuestionnaire?.name);
+    setIsDeleteConfirmOpen(false);
+    setSelectedQuestionnaire(null);
+  };
+
+  const renderActionButtons = (row: any) => {
+    if (row.status === "Draft") {
+      return (
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate(`/questionnaires/builder/${row.id}`)}
+            title="Edit Builder"
+          >
+            <Pen className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => handlePreview(row)}
+            title="Preview"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="default" 
+            size="sm"
+            title="Publish"
+          >
+            <Rocket className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="destructive" 
+            size="sm"
+            onClick={() => handleDelete(row)}
+            title="Delete"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      );
+    } else if (row.status === "Active") {
+      return (
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => handlePreview(row)}
+            title="View"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            title="Duplicate"
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="secondary" 
+            size="sm"
+            title="Archive"
+          >
+            <Archive className="h-4 w-4" />
+          </Button>
+        </div>
+      );
+    } else if (row.status === "Archived") {
+      return (
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => handlePreview(row)}
+            title="Preview"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="default" 
+            size="sm"
+            title="Activate"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="destructive" 
+            size="sm"
+            onClick={() => handleDelete(row)}
+            title="Delete"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "Draft":
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-300">Draft</Badge>;
+      case "Active":
+        return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300">Active</Badge>;
+      case "Archived":
+        return <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-gray-300">Archived</Badge>;
       default:
-        return null;
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const getCurrentData = () => {
-    return mockQuestionnaires[activeTab as keyof typeof mockQuestionnaires] || [];
+    if (activeTab === "draftActive") {
+      return [...mockQuestionnaires.drafts, ...mockQuestionnaires.active];
+    } else if (activeTab === "archived") {
+      return mockQuestionnaires.archived;
+    }
+    return [];
   };
 
   return (
@@ -222,9 +304,8 @@ export default function QuestionnaireManagement() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="drafts">Drafts</TabsTrigger>
-          <TabsTrigger value="active">Active</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="draftActive">Draft & Active</TabsTrigger>
           <TabsTrigger value="archived">Archived</TabsTrigger>
         </TabsList>
 
@@ -237,9 +318,7 @@ export default function QuestionnaireManagement() {
             <SelectContent className="bg-background border border-border z-50">
               <SelectItem value="all">All Index Codes</SelectItem>
               <SelectItem value="FPA">FPA</SelectItem>
-              <SelectItem value="GEB">GEB</SelectItem>
-              <SelectItem value="TEC">TEC</SelectItem>
-              <SelectItem value="MRK">MRK</SelectItem>
+              <SelectItem value="EEA">EEA</SelectItem>
             </SelectContent>
           </Select>
 
@@ -262,18 +341,96 @@ export default function QuestionnaireManagement() {
         </div>
 
         {/* Table Content for each tab */}
-        <TabsContent value="drafts" className="space-y-4">
-          <DataTable data={getCurrentData()} tab="drafts" renderActions={renderActionButtons} />
-        </TabsContent>
-
-        <TabsContent value="active" className="space-y-4">
-          <DataTable data={getCurrentData()} tab="active" renderActions={renderActionButtons} />
+        <TabsContent value="draftActive" className="space-y-4">
+          <DataTable data={getCurrentData()} getStatusBadge={getStatusBadge} renderActions={renderActionButtons} />
         </TabsContent>
 
         <TabsContent value="archived" className="space-y-4">
-          <DataTable data={getCurrentData()} tab="archived" renderActions={renderActionButtons} />
+          <DataTable data={getCurrentData()} getStatusBadge={getStatusBadge} renderActions={renderActionButtons} />
         </TabsContent>
-            </Tabs>
+      </Tabs>
+
+      {/* Preview Modal */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="bg-background border border-border max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex justify-between items-center">
+              Preview: {selectedQuestionnaire?.name}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsPreviewOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-6">
+            {selectedQuestionnaire && (
+              <div className="space-y-6">
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-2">Sample Question 1</h3>
+                  <p className="text-muted-foreground mb-4">What is your company's current revenue stage?</p>
+                  <RadioGroup defaultValue="option1">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="option1" id="option1" />
+                      <Label htmlFor="option1">Pre-revenue</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="option2" id="option2" />
+                      <Label htmlFor="option2">$0-$100K ARR</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="option3" id="option3" />
+                      <Label htmlFor="option3">$100K-$1M ARR</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-2">Sample Question 2</h3>
+                  <p className="text-muted-foreground mb-4">How many full-time employees does your company have?</p>
+                  <Input placeholder="Enter number of employees" />
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="flex justify-between">
+            <Button variant="outline">Previous Question</Button>
+            <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>
+              Close Preview
+            </Button>
+            <Button variant="outline">Next Question</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
+        <DialogContent className="bg-background border border-border max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>Are you sure you want to permanently delete this {selectedQuestionnaire?.status?.toLowerCase()} questionnaire? This action cannot be undone.</p>
+            <p className="font-medium mt-2">{selectedQuestionnaire?.name}</p>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDeleteConfirmOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={confirmDelete}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
           </div>
         </main>
       </div>
@@ -283,11 +440,11 @@ export default function QuestionnaireManagement() {
 
 interface DataTableProps {
   data: any[];
-  tab: string;
-  renderActions: (row: any, tab: string) => React.ReactNode;
+  getStatusBadge: (status: string) => React.ReactElement;
+  renderActions: (row: any) => React.ReactNode;
 }
 
-function DataTable({ data, tab, renderActions }: DataTableProps) {
+function DataTable({ data, getStatusBadge, renderActions }: DataTableProps) {
   return (
     <div className="border border-border rounded-lg">
       <Table>
@@ -312,8 +469,8 @@ function DataTable({ data, tab, renderActions }: DataTableProps) {
               <TableCell>{row.industry}</TableCell>
               <TableCell>{row.version}</TableCell>
               <TableCell>{row.questions}</TableCell>
-              <TableCell>{row.status}</TableCell>
-              <TableCell>{renderActions(row, tab)}</TableCell>
+              <TableCell>{getStatusBadge(row.status)}</TableCell>
+              <TableCell>{renderActions(row)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

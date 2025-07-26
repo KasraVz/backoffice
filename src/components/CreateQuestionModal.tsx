@@ -34,23 +34,87 @@ const behavioralCodes = [
   "Ability to delegate responsibility to others"
 ];
 
-const categories = [
-  "Problem-Solution Fit & Market Validation",
-  "Business Model & Revenue Strategy",
-  "Product Development & Technology",
-  "Team Building & Leadership",
-  "Sales, Marketing & Customer Acquisition",
-  "Financial Management & Fundraising",
-  "Legal & IP",
-  "Operations & Execution",
-  "Strategy & Vision",
-  "Personal & Entrepreneurial Skills"
-];
+const indexCodes = ["FPA", "EEA"];
 
-const subCategories: Record<string, string[]> = {
-  "Problem-Solution Fit & Market Validation": ["Customer Segments", "Value Proposition", "Market Size & Trends", "Competitive Landscape"],
-  "Business Model & Revenue Strategy": ["Revenue Streams", "Pricing Model", "Go-to-Market Strategy", "Customer Lifetime Value (LTV)"],
-  "Product Development & Technology": ["Product Roadmap", "Technology Stack", "Development Process", "Minimum Viable Product (MVP)"]
+const categoriesData = {
+  "FPA": {
+    "General": [
+      "Problem-Solution Fit & Market Validation",
+      "Business Model & Revenue Strategy", 
+      "Product Development & Technology",
+      "Team Building & Leadership",
+      "Sales, Marketing & Customer Acquisition",
+      "Financial Management & Fundraising",
+      "Legal & IP",
+      "Operations & Execution",
+      "Strategy & Vision",
+      "Personal & Entrepreneurial Skills"
+    ],
+    "Industry-Specific": [
+      "Industry Trends & Future of Work",
+      "Ecosystem & Market Specifics",
+      "Product & Technology Vision", 
+      "Business Model & Go-to-Market Strategy",
+      "Founder & Team Vision"
+    ]
+  },
+  "EEA": {
+    "General": [
+      "Quantity and Quality of Startups",
+      "Availability of Funding and Investment",
+      "Support Systems and Infrastructure", 
+      "Networking and Community",
+      "Government and Policy",
+      "Culture and Mindset",
+      "Recurring problems"
+    ],
+    "Industry-Specific": [
+      "Quantity and Quality of Startups",
+      "Availability of Funding and Investment",
+      "Talent and Human Capital",
+      "Support Systems and Infrastructure",
+      "Networking and Community", 
+      "Government and Policy",
+      "Culture and Mindset",
+      "Startup Domains",
+      "Environmental Awareness"
+    ]
+  }
+};
+
+const subCategoriesData = {
+  // FPA General sub-categories
+  "Problem-Solution Fit & Market Validation": ["Market Research", "Customer Discovery", "MVP Development"],
+  "Business Model & Revenue Strategy": ["Revenue Models", "Pricing Strategy", "Market Entry"],
+  "Product Development & Technology": ["Technology Stack", "Development Process", "Innovation"],
+  "Team Building & Leadership": ["Team Formation", "Leadership Skills", "Culture Building"],
+  "Sales, Marketing & Customer Acquisition": ["Sales Strategy", "Marketing Channels", "Customer Retention"],
+  "Financial Management & Fundraising": ["Financial Planning", "Investment Strategy", "Cash Flow Management"],
+  "Legal & IP": ["Intellectual Property", "Legal Structure", "Compliance"],
+  "Operations & Execution": ["Process Management", "Quality Control", "Scaling Operations"],
+  "Strategy & Vision": ["Strategic Planning", "Vision Development", "Goal Setting"],
+  "Personal & Entrepreneurial Skills": ["Entrepreneurial Mindset", "Personal Development", "Skill Building"],
+  
+  // FPA Industry-Specific sub-categories
+  "Industry Trends & Future of Work": ["Emerging Trends", "Future Predictions", "Market Evolution"],
+  "Ecosystem & Market Specifics": ["Market Analysis", "Competitive Landscape", "Industry Dynamics"],
+  "Product & Technology Vision": ["Technology Roadmap", "Product Innovation", "Technical Vision"],
+  "Business Model & Go-to-Market Strategy": ["Market Strategy", "Business Model Innovation", "Launch Strategy"],
+  "Founder & Team Vision": ["Founder Vision", "Team Alignment", "Leadership Vision"],
+  
+  // EEA General sub-categories  
+  "Quantity and Quality of Startups": ["Startup Metrics", "Quality Assessment", "Growth Indicators"],
+  "Availability of Funding and Investment": ["Funding Sources", "Investment Climate", "Capital Access"],
+  "Support Systems and Infrastructure": ["Incubators", "Accelerators", "Support Networks"],
+  "Networking and Community": ["Community Building", "Professional Networks", "Collaboration"],
+  "Government and Policy": ["Policy Framework", "Regulatory Environment", "Government Support"],
+  "Culture and Mindset": ["Entrepreneurial Culture", "Risk Tolerance", "Innovation Mindset"],
+  "Recurring problems": ["Common Challenges", "Systemic Issues", "Problem Patterns"],
+  
+  // EEA Industry-Specific sub-categories
+  "Talent and Human Capital": ["Skill Development", "Talent Acquisition", "Human Resources"],
+  "Startup Domains": ["Industry Sectors", "Domain Expertise", "Specialization Areas"],
+  "Environmental Awareness": ["Sustainability", "Environmental Impact", "Green Innovation"]
 };
 
 export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, editingQuestion }: CreateQuestionModalProps) {
@@ -62,9 +126,10 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
   const [questionData, setQuestionData] = useState({
     questionText: "",
     behavioralCode: "",
+    indexCode: "",
     category: "",
     subCategory: "",
-    scope: "general" as "general" | "industry-specific",
+    scope: "General" as "General" | "Industry-Specific",
     industry: "",
     answerType: "" as "single-choice" | "multiple-choice" | "ranking" | "matching",
     choices: [] as string[],
@@ -85,9 +150,10 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       setQuestionData({
         questionText: editingQuestion.questionText || editingQuestion.title || "",
         behavioralCode: editingQuestion.behavioralCode || "",
+        indexCode: editingQuestion.indexCode || "",
         category: editingQuestion.category || "",
         subCategory: editingQuestion.subCategory || "",
-        scope: editingQuestion.scope || "general",
+        scope: editingQuestion.scope || "General",
         industry: editingQuestion.industry || "",
         answerType: editingQuestion.answerType || editingQuestion.type || "" as any,
         choices: editingQuestion.choices || [],
@@ -132,9 +198,10 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     setQuestionData({
       questionText: "",
       behavioralCode: "",
+      indexCode: "",
       category: "",
       subCategory: "",
-      scope: "general",
+      scope: "General",
       industry: "",
       answerType: "" as any,
       choices: [],
@@ -171,6 +238,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       // Save all question data for editing
       questionText: questionData.questionText,
       behavioralCode: questionData.behavioralCode,
+      indexCode: questionData.indexCode,
       subCategory: questionData.subCategory,
       scope: questionData.scope,
       industry: questionData.industry,
@@ -366,23 +434,72 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Select a Category</Label>
+              <Label htmlFor="index-code">Select an Index Code</Label>
               <Select 
-                value={questionData.category} 
-                onValueChange={(value) => setQuestionData(prev => ({ ...prev, category: value, subCategory: "" }))}
+                value={questionData.indexCode} 
+                onValueChange={(value) => setQuestionData(prev => ({ 
+                  ...prev, 
+                  indexCode: value, 
+                  category: "", 
+                  subCategory: "",
+                  scope: "General" 
+                }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose a category" />
+                  <SelectValue placeholder="Choose an index code" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                  {indexCodes.map((code) => (
+                    <SelectItem key={code} value={code}>{code}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {questionData.category && subCategories[questionData.category] && (
+            {questionData.indexCode && (
+              <div className="space-y-4">
+                <Label>Scope</Label>
+                <RadioGroup 
+                  value={questionData.scope} 
+                  onValueChange={(value: "General" | "Industry-Specific") => setQuestionData(prev => ({ 
+                    ...prev, 
+                    scope: value,
+                    category: "",
+                    subCategory: ""
+                  }))}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="General" id="general" />
+                    <Label htmlFor="general">General</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Industry-Specific" id="industry-specific" />
+                    <Label htmlFor="industry-specific">Industry-Specific</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+
+            {questionData.indexCode && questionData.scope && (
+              <div className="space-y-2">
+                <Label htmlFor="category">Select a Category</Label>
+                <Select 
+                  value={questionData.category} 
+                  onValueChange={(value) => setQuestionData(prev => ({ ...prev, category: value, subCategory: "" }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoriesData[questionData.indexCode as keyof typeof categoriesData]?.[questionData.scope as keyof typeof categoriesData.FPA]?.map((category) => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {questionData.category && subCategoriesData[questionData.category] && (
               <div className="space-y-2">
                 <Label htmlFor="sub-category">Select a Sub-Category</Label>
                 <Select 
@@ -393,7 +510,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                     <SelectValue placeholder="Choose a sub-category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {subCategories[questionData.category].map((subCat) => (
+                    {subCategoriesData[questionData.category].map((subCat) => (
                       <SelectItem key={subCat} value={subCat}>{subCat}</SelectItem>
                     ))}
                   </SelectContent>
@@ -401,24 +518,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               </div>
             )}
 
-            <div className="space-y-4">
-              <Label>Scope</Label>
-              <RadioGroup 
-                value={questionData.scope} 
-                onValueChange={(value: "general" | "industry-specific") => setQuestionData(prev => ({ ...prev, scope: value }))}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="general" id="general" />
-                  <Label htmlFor="general">General</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="industry-specific" id="industry-specific" />
-                  <Label htmlFor="industry-specific">Industry-Specific</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {questionData.scope === "industry-specific" && (
+            {questionData.scope === "Industry-Specific" && (
               <div className="space-y-2">
                 <Label htmlFor="industry">Select an Industry</Label>
                 <Select 
@@ -763,9 +863,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                 <div className="space-y-3">
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">Scope</Label>
-                    <p className="text-sm">{questionData.scope === "general" ? "General" : "Industry-Specific"}</p>
+                    <p className="text-sm">{questionData.scope}</p>
                   </div>
-                  {questionData.scope === "industry-specific" && questionData.industry && (
+                  {questionData.scope === "Industry-Specific" && questionData.industry && (
                     <div>
                       <Label className="text-sm font-medium text-muted-foreground">Industry</Label>
                       <p className="text-sm">{questionData.industry}</p>

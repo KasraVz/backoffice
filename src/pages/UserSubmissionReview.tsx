@@ -129,7 +129,7 @@ export default function UserSubmissionReview() {
             <h1 className="text-2xl font-bold">User Submission Review</h1>
           </header>
           
-          <main className="flex-1 p-6 bg-background">
+          <main className="flex-1 p-6 bg-background mx-[28px]">
             {/* Search Form */}
             <Card className="bg-muted/50 mb-6">
               <CardContent className="p-6">

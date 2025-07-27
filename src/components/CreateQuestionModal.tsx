@@ -187,9 +187,8 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
 
   const steps = [
     { number: 1, title: "Details & Properties" },
-    { number: 2, title: "Define Answer Choices" }, 
-    { number: 3, title: "Correct Answers and Weights" },
-    { number: 4, title: "Preview & Confirm" }
+    { number: 2, title: "Define Answers & Scoring" }, 
+    { number: 3, title: "Preview & Confirm" }
   ];
 
   const resetForm = () => {
@@ -219,7 +218,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
   };
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -573,7 +572,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               <Label htmlFor="answer-type">Select an Answer Type</Label>
               <Select 
                 value={questionData.answerType} 
-                onValueChange={(value: any) => setQuestionData(prev => ({ ...prev, answerType: value, choices: [], columnA: [], columnB: [] }))}
+                onValueChange={(value: any) => setQuestionData(prev => ({ ...prev, answerType: value, choices: [], columnA: [], columnB: [], correctAnswers: [], rankings: {} }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Choose answer type" />
@@ -587,87 +586,270 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               </Select>
             </div>
 
-            {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice" || questionData.answerType === "ranking") && (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <Label>Answer Choices</Label>
-                  <Button variant="outline" size="sm" onClick={addChoice}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add Choice
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {questionData.choices.map((choice, index) => (
-                    <div key={index} className="flex gap-2">
-                      <Input
-                        placeholder={`Choice ${index + 1}`}
-                        value={choice}
-                        onChange={(e) => updateChoice(index, e.target.value)}
-                      />
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => removeChoice(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+            {/* Single Choice and Multiple Choice */}
+            {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && (
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium mb-4">Define Choices, Correctness, and Weights</h4>
+                  <div className="space-y-4">
+                    {questionData.choices.map((choice, index) => (
+                      <div key={index} className="space-y-3 border rounded-lg p-4">
+                        <div className="flex items-center gap-3">
+                          {questionData.answerType === "single-choice" ? (
+                            <input 
+                              type="radio" 
+                              name="correct-answer"
+                              checked={questionData.correctAnswers.includes(index)}
+                              onChange={() => setQuestionData(prev => ({ 
+                                ...prev, 
+                                correctAnswers: [index] 
+                              }))}
+                              disabled={!choice.trim()}
+                              className="w-4 h-4"
+                            />
+                          ) : (
+                            <Checkbox
+                              checked={questionData.correctAnswers.includes(index)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setQuestionData(prev => ({ 
+                                    ...prev, 
+                                    correctAnswers: [...prev.correctAnswers, index] 
+                                  }));
+                                } else {
+                                  setQuestionData(prev => ({ 
+                                    ...prev, 
+                                    correctAnswers: prev.correctAnswers.filter(i => i !== index) 
+                                  }));
+                                }
+                              }}
+                              disabled={!choice.trim()}
+                            />
+                          )}
+                          <Input
+                            placeholder={`Choice ${index + 1}`}
+                            value={choice}
+                            onChange={(e) => updateChoice(index, e.target.value)}
+                            className="flex-1"
+                          />
+                          <WeightPopover choiceId={`choice-${index}`} choiceText={choice} />
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => removeChoice(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={addChoice}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Choice
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
 
-            {questionData.answerType === "matching" && (
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <Label>Column A</Label>
-                  <div className="space-y-2">
-                    {questionData.columnA.map((item, index) => (
-                      <Input
-                        key={index}
-                        placeholder={`Item ${index + 1}`}
-                        value={item}
-                        onChange={(e) => {
-                          const newColumnA = [...questionData.columnA];
-                          newColumnA[index] = e.target.value;
-                          setQuestionData(prev => ({ ...prev, columnA: newColumnA }));
-                        }}
-                      />
+            {/* Ranking */}
+            {questionData.answerType === "ranking" && (
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium mb-4">Define Items and Correct Rank</h4>
+                  <div className="space-y-4">
+                    {questionData.choices.map((choice, index) => (
+                      <div key={index} className="space-y-3 border rounded-lg p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <Label htmlFor={`rank-${index}`}>Rank:</Label>
+                            <Input
+                              id={`rank-${index}`}
+                              type="number"
+                              min="1"
+                              className="w-20"
+                              placeholder="1"
+                              value={questionData.rankings[`choice-${index}`] || ""}
+                              onChange={(e) => setQuestionData(prev => ({
+                                ...prev,
+                                rankings: { ...prev.rankings, [`choice-${index}`]: Number(e.target.value) }
+                              }))}
+                              disabled={!choice.trim()}
+                            />
+                          </div>
+                          <Input
+                            placeholder={`Item ${index + 1}`}
+                            value={choice}
+                            onChange={(e) => updateChoice(index, e.target.value)}
+                            className="flex-1"
+                          />
+                          <WeightPopover choiceId={`choice-${index}`} choiceText={choice} />
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => removeChoice(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
                     ))}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setQuestionData(prev => ({ ...prev, columnA: [...prev.columnA, ""] }))}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
+                    <Button variant="outline" onClick={addChoice}>
+                      <Plus className="mr-2 h-4 w-4" />
                       Add Item
                     </Button>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <Label>Column B</Label>
-                  <div className="space-y-2">
-                    {questionData.columnB.map((item, index) => (
-                      <Input
-                        key={index}
-                        placeholder={`Item ${index + 1}`}
-                        value={item}
-                        onChange={(e) => {
-                          const newColumnB = [...questionData.columnB];
-                          newColumnB[index] = e.target.value;
-                          setQuestionData(prev => ({ ...prev, columnB: newColumnB }));
-                        }}
-                      />
-                    ))}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setQuestionData(prev => ({ ...prev, columnB: [...prev.columnB, ""] }))}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Item
-                    </Button>
+              </div>
+            )}
+
+            {/* Matching */}
+            {questionData.answerType === "matching" && (
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium mb-4">Define Items and Create Correct Pairs</h4>
+                  
+                  {/* Column Inputs */}
+                  <div className="grid grid-cols-2 gap-6 mb-6">
+                    <div className="space-y-4">
+                      <Label>Column A</Label>
+                      <div className="space-y-2">
+                        {questionData.columnA.map((item, index) => (
+                          <Input
+                            key={index}
+                            placeholder={`Item ${index + 1}`}
+                            value={item}
+                            onChange={(e) => {
+                              const newColumnA = [...questionData.columnA];
+                              newColumnA[index] = e.target.value;
+                              setQuestionData(prev => ({ ...prev, columnA: newColumnA }));
+                            }}
+                          />
+                        ))}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setQuestionData(prev => ({ ...prev, columnA: [...prev.columnA, ""] }))}
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add Item
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <Label>Column B</Label>
+                      <div className="space-y-2">
+                        {questionData.columnB.map((item, index) => (
+                          <Input
+                            key={index}
+                            placeholder={`Item ${index + 1}`}
+                            value={item}
+                            onChange={(e) => {
+                              const newColumnB = [...questionData.columnB];
+                              newColumnB[index] = e.target.value;
+                              setQuestionData(prev => ({ ...prev, columnB: newColumnB }));
+                            }}
+                          />
+                        ))}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setQuestionData(prev => ({ ...prev, columnB: [...prev.columnB, ""] }))}
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add Item
+                        </Button>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Pairing Interface */}
+                  {questionData.columnA.some(item => item.trim()) && questionData.columnB.some(item => item.trim()) && (
+                    <div className="space-y-4">
+                      <h5 className="font-medium">Click items to create pairs:</h5>
+                      <div className="grid grid-cols-3 gap-4 items-center">
+                        {/* Column A */}
+                        <div className="space-y-2">
+                          <Label className="font-medium">Column A</Label>
+                          {questionData.columnA.filter(item => item.trim()).map((item, index) => (
+                            <Button
+                              key={index}
+                              variant={selectedColumnAIndex === index ? "default" : "outline"}
+                              className={`w-full h-auto p-3 text-left justify-start ${
+                                usedItems.columnA.includes(index) 
+                                  ? "opacity-50 cursor-not-allowed bg-muted" 
+                                  : selectedColumnAIndex === index 
+                                    ? "border-2 border-primary" 
+                                    : ""
+                              }`}
+                              onClick={() => handleColumnASelection(index)}
+                              disabled={usedItems.columnA.includes(index)}
+                            >
+                              {item}
+                            </Button>
+                          ))}
+                        </div>
+
+                        {/* Create Pair Button */}
+                        <div className="flex justify-center">
+                          <Button
+                            variant="default"
+                            disabled={!canCreatePair}
+                            onClick={createPair}
+                            className="whitespace-nowrap"
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Create Pair
+                          </Button>
+                        </div>
+
+                        {/* Column B */}
+                        <div className="space-y-2">
+                          <Label className="font-medium">Column B</Label>
+                          {questionData.columnB.filter(item => item.trim()).map((item, index) => (
+                            <Button
+                              key={index}
+                              variant={selectedColumnBIndex === index ? "default" : "outline"}
+                              className={`w-full h-auto p-3 text-left justify-start ${
+                                usedItems.columnB.includes(index) 
+                                  ? "opacity-50 cursor-not-allowed bg-muted" 
+                                  : selectedColumnBIndex === index 
+                                    ? "border-2 border-primary" 
+                                    : ""
+                              }`}
+                              onClick={() => handleColumnBSelection(index)}
+                              disabled={usedItems.columnB.includes(index)}
+                            >
+                              {item}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Matched Pairs with Weights */}
+                      {questionData.matchedPairs.length > 0 && (
+                        <div className="space-y-3 mt-6">
+                          <h6 className="font-medium">Matched Pairs - Set Weights:</h6>
+                          {questionData.matchedPairs.map((pair, index) => (
+                            <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-background">
+                              <span className="font-medium">{pair.a} ↔ {pair.b}</span>
+                              <div className="flex items-center gap-2">
+                                <WeightPopover choiceId={`pair-${index}`} choiceText={`${pair.a} ↔ ${pair.b}`} />
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => removePair(index)}
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -675,195 +857,6 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
         );
 
       case 3:
-        return (
-          <div className="space-y-6">
-            <h3 className="text-lg font-medium">Set Scoring & Weights</h3>
-            
-            {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && questionData.choices.length > 0 && (
-              <>
-                <div className="mb-4">
-                  <h4 className="font-medium mb-2">Select the correct answer(s) and set weights.</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Use the checkbox/radio button to mark the correct answer(s). Use the 'Set Weights' button to assign specific scores for partial credit or penalties.
-                  </p>
-                </div>
-                <div className="space-y-4">
-                  {questionData.choices.map((choice, index) => (
-                    <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
-                      {questionData.answerType === "single-choice" ? (
-                        <div className="flex items-center space-x-2">
-                          <input 
-                            type="radio" 
-                            name="correct-answer"
-                            checked={questionData.correctAnswers.includes(index)}
-                            onChange={() => setQuestionData(prev => ({ 
-                              ...prev, 
-                              correctAnswers: [index] 
-                            }))}
-                          />
-                        </div>
-                      ) : (
-                        <Checkbox
-                          checked={questionData.correctAnswers.includes(index)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setQuestionData(prev => ({ 
-                                ...prev, 
-                                correctAnswers: [...prev.correctAnswers, index] 
-                              }));
-                            } else {
-                              setQuestionData(prev => ({ 
-                                ...prev, 
-                                correctAnswers: prev.correctAnswers.filter(i => i !== index) 
-                              }));
-                            }
-                          }}
-                        />
-                      )}
-                      <span className="flex-1">{choice}</span>
-                      <WeightPopover choiceId={`choice-${index}`} choiceText={choice} />
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && questionData.choices.length === 0 && (
-              <div className="p-6 border rounded-lg bg-muted/10 text-center">
-                <p className="text-muted-foreground">Please go back to Step 2 to add answer choices first.</p>
-              </div>
-            )}
-
-            {questionData.answerType === "ranking" && (
-              <div className="space-y-4">
-                {questionData.choices.map((choice, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
-                    <span className="flex-1">{choice}</span>
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`rank-${index}`}>Rank:</Label>
-                      <Input
-                        id={`rank-${index}`}
-                        type="number"
-                        className="w-20"
-                        placeholder="1"
-                        value={questionData.rankings[`choice-${index}`] || ""}
-                        onChange={(e) => setQuestionData(prev => ({
-                          ...prev,
-                          rankings: { ...prev.rankings, [`choice-${index}`]: Number(e.target.value) }
-                        }))}
-                      />
-                    </div>
-                    <WeightPopover choiceId={`choice-${index}`} choiceText={choice} />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {questionData.answerType === "matching" && questionData.columnA.length > 0 && questionData.columnB.length > 0 && (
-              <div className="space-y-6">
-                {/* Pairing Area */}
-                <div className="space-y-4">
-                  <h4 className="font-medium">Create Matching Pairs and Set Weights</h4>
-                  <div className="grid grid-cols-3 gap-4 items-center">
-                    {/* Column A */}
-                    <div className="space-y-2">
-                      <Label className="font-medium">Column A</Label>
-                      {questionData.columnA.map((item, index) => (
-                        <Button
-                          key={index}
-                          variant={selectedColumnAIndex === index ? "default" : "outline"}
-                          className={`w-full h-auto p-3 text-left justify-start ${
-                            usedItems.columnA.includes(index) 
-                              ? "opacity-50 cursor-not-allowed bg-muted" 
-                              : selectedColumnAIndex === index 
-                                ? "border-2 border-primary" 
-                                : ""
-                          }`}
-                          onClick={() => handleColumnASelection(index)}
-                          disabled={usedItems.columnA.includes(index)}
-                        >
-                          {item}
-                        </Button>
-                      ))}
-                    </div>
-
-                    {/* Create Pair Button */}
-                    <div className="flex justify-center">
-                      <Button
-                        variant="default"
-                        disabled={!canCreatePair}
-                        onClick={createPair}
-                        className="whitespace-nowrap"
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        Create Pair
-                      </Button>
-                    </div>
-
-                    {/* Column B */}
-                    <div className="space-y-2">
-                      <Label className="font-medium">Column B</Label>
-                      {questionData.columnB.map((item, index) => (
-                        <Button
-                          key={index}
-                          variant={selectedColumnBIndex === index ? "default" : "outline"}
-                          className={`w-full h-auto p-3 text-left justify-start ${
-                            usedItems.columnB.includes(index) 
-                              ? "opacity-50 cursor-not-allowed bg-muted" 
-                              : selectedColumnBIndex === index 
-                                ? "border-2 border-primary" 
-                                : ""
-                          }`}
-                          onClick={() => handleColumnBSelection(index)}
-                          disabled={usedItems.columnB.includes(index)}
-                        >
-                          {item}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Correctly Matched Pairs */}
-                <div className="space-y-4">
-                  <h4 className="font-medium">Correctly Matched Pairs</h4>
-                  {questionData.matchedPairs.length === 0 ? (
-                    <div className="p-6 border rounded-lg bg-muted/10 text-center">
-                      <p className="text-muted-foreground">No pairs created yet. Select items from both columns and click "Create Pair".</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {questionData.matchedPairs.map((pair, index) => (
-                        <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-background">
-                          <span className="font-medium">{pair.a} ↔ {pair.b}</span>
-                          <div className="flex items-center gap-2">
-                            <WeightPopover choiceId={`pair-${index}`} choiceText={`${pair.a} ↔ ${pair.b}`} />
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => removePair(index)}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {questionData.answerType === "matching" && (questionData.columnA.length === 0 || questionData.columnB.length === 0) && (
-              <div className="p-6 border rounded-lg bg-muted/10 text-center">
-                <p className="text-muted-foreground">Please go back to Step 2 to add items to both columns first.</p>
-              </div>
-            )}
-          </div>
-        );
-
-      case 4:
         return (
           <div className="space-y-6">
             {/* Section 1: Properties Summary */}
@@ -897,13 +890,17 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                       <p className="text-sm">{questionData.industry}</p>
                     </div>
                   )}
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Answer Type</Label>
+                    <p className="text-sm capitalize">{questionData.answerType.replace('-', ' ')}</p>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Section 2: End-User Preview */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Live Preview</h3>
+              <h3 className="text-lg font-medium">End-User Preview</h3>
               <div className="p-6 border rounded-lg bg-background">
                 <div className="space-y-6">
                   {/* Question Text */}
@@ -919,6 +916,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                           <div key={index} className="flex items-center space-x-3">
                             <input type="radio" name="preview-radio" disabled className="text-primary" />
                             <span className="text-sm">{choice}</span>
+                            {questionData.correctAnswers.includes(index) && (
+                              <Badge variant="default" className="ml-2">Correct Answer</Badge>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -930,6 +930,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                           <div key={index} className="flex items-center space-x-3">
                             <input type="checkbox" disabled className="text-primary" />
                             <span className="text-sm">{choice}</span>
+                            {questionData.correctAnswers.includes(index) && (
+                              <Badge variant="default" className="ml-2">Correct Answer</Badge>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -942,6 +945,11 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                           <div key={index} className="flex items-center space-x-3 p-2 border rounded bg-muted/20">
                             <span className="text-sm font-medium text-muted-foreground">{index + 1}.</span>
                             <span className="text-sm">{choice}</span>
+                            {questionData.rankings[`choice-${index}`] && (
+                              <Badge variant="outline" className="ml-auto">
+                                Correct Rank: {questionData.rankings[`choice-${index}`]}
+                              </Badge>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -968,6 +976,16 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                             ))}
                           </div>
                         </div>
+                        {questionData.matchedPairs.length > 0 && (
+                          <div className="space-y-2 mt-4">
+                            <Label className="text-sm font-medium">Correct Pairs:</Label>
+                            {questionData.matchedPairs.map((pair, index) => (
+                              <Badge key={index} variant="outline" className="mr-2">
+                                {pair.a} ↔ {pair.b}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -976,6 +994,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
             </div>
           </div>
         );
+
 
       default:
         return null;
@@ -1005,7 +1024,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               <span className={`ml-2 text-sm ${currentStep === step.number ? "font-medium" : "text-muted-foreground"}`}>
                 {step.title}
               </span>
-              {step.number < 4 && <div className="w-8 h-px bg-muted mx-4" />}
+              {step.number < 3 && <div className="w-8 h-px bg-muted mx-4" />}
             </div>
           ))}
         </div>
@@ -1026,7 +1045,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
           </div>
           
           <div className="flex gap-2">
-            {currentStep === 4 ? (
+            {currentStep === 3 ? (
               <>
                 <Button variant="outline" onClick={() => handleSave("draft")}>
                   Save as Draft

@@ -122,7 +122,7 @@ export default function CreateQuestion() {
   };
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -313,103 +313,293 @@ export default function CreateQuestion() {
       </div>
 
       {(answerType === "single-choice" || answerType === "multiple-choice") && (
-        <div className="space-y-4">
-          {choices.map((choice, index) => (
-            <Input
-              key={choice.id}
-              placeholder={`Choice ${index + 1}`}
-              value={choice.text}
-              onChange={(e) => {
-                const updatedChoices = choices.map(c =>
-                  c.id === choice.id ? { ...c, text: e.target.value } : c
-                );
-                setChoices(updatedChoices);
-              }}
-            />
-          ))}
-          <Button variant="outline" onClick={addChoice}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Choice
-          </Button>
+        <div className="space-y-6">
+          <div>
+            <h4 className="font-medium mb-4">Define Answer Choices & Select Correct Answers</h4>
+            <div className="space-y-4">
+              {choices.map((choice, index) => (
+                <div key={choice.id} className="space-y-3 border rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    {answerType === "single-choice" ? (
+                      <input
+                        type="radio"
+                        name="correct-single"
+                        value={choice.text}
+                        checked={correctSingle === choice.text}
+                        onChange={(e) => setCorrectSingle(e.target.value)}
+                        disabled={!choice.text}
+                      />
+                    ) : (
+                      <Checkbox
+                        checked={correctMultiple.includes(choice.text)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setCorrectMultiple([...correctMultiple, choice.text]);
+                          } else {
+                            setCorrectMultiple(correctMultiple.filter(c => c !== choice.text));
+                          }
+                        }}
+                        disabled={!choice.text}
+                      />
+                    )}
+                    <Input
+                      placeholder={`Choice ${index + 1}`}
+                      value={choice.text}
+                      onChange={(e) => {
+                        const updatedChoices = choices.map(c =>
+                          c.id === choice.id ? { ...c, text: e.target.value } : c
+                        );
+                        setChoices(updatedChoices);
+                      }}
+                      className="flex-1"
+                    />
+                    <div className="flex items-center space-x-2">
+                      <Label>Weight:</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        defaultValue="1"
+                        className="w-20"
+                        disabled={!choice.text}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const updatedChoices = choices.map(c =>
+                            c.id === choice.id ? { ...c, showAdvanced: !c.showAdvanced } : c
+                          );
+                          setChoices(updatedChoices);
+                        }}
+                        disabled={!choice.text}
+                      >
+                        Advanced
+                      </Button>
+                    </div>
+                  </div>
+                  {choice.showAdvanced && choice.text && (
+                    <div className="flex space-x-2 ml-6">
+                      <div>
+                        <Label>Expert Weight:</Label>
+                        <Input type="number" min="0" max="1" step="0.1" className="w-24" />
+                      </div>
+                      <div>
+                        <Label>Machine Weight:</Label>
+                        <Input type="number" min="0" max="1" step="0.1" className="w-24" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              <Button variant="outline" onClick={addChoice}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Choice
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
       {answerType === "ranking" && (
-        <div className="space-y-4">
-          {rankingItems.map((item, index) => (
-            <Input
-              key={item.id}
-              placeholder={`Item ${index + 1}`}
-              value={item.text}
-              onChange={(e) => {
-                const updatedItems = rankingItems.map(i =>
-                  i.id === item.id ? { ...i, text: e.target.value } : i
-                );
-                setRankingItems(updatedItems);
-              }}
-            />
-          ))}
-          <Button variant="outline" onClick={addRankingItem}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Item
-          </Button>
-        </div>
-      )}
-
-      {answerType === "matching" && (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="space-y-6">
           <div>
-            <h4 className="font-medium mb-3">Column A</h4>
-            <div className="space-y-2">
-              {columnA.map((item, index) => (
-                <Input
-                  key={item.id}
-                  placeholder={`Item ${index + 1}`}
-                  value={item.text}
-                  onChange={(e) => {
-                    const updatedColumnA = columnA.map(i =>
-                      i.id === item.id ? { ...i, text: e.target.value } : i
-                    );
-                    setColumnA(updatedColumnA);
-                  }}
-                />
+            <h4 className="font-medium mb-4">Define Ranking Items & Set Order</h4>
+            <div className="space-y-4">
+              {rankingItems.map((item, index) => (
+                <div key={item.id} className="space-y-3 border rounded-lg p-4">
+                  <div className="flex items-center space-x-4">
+                    <Input
+                      placeholder={`Item ${index + 1}`}
+                      value={item.text}
+                      onChange={(e) => {
+                        const updatedItems = rankingItems.map(i =>
+                          i.id === item.id ? { ...i, text: e.target.value } : i
+                        );
+                        setRankingItems(updatedItems);
+                      }}
+                      className="flex-1"
+                    />
+                    <div className="flex items-center space-x-2">
+                      <Label>Rank:</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        className="w-20"
+                        value={rankings[item.text] || ""}
+                        onChange={(e) => setRankings({
+                          ...rankings,
+                          [item.text]: parseInt(e.target.value) || 0
+                        })}
+                        disabled={!item.text}
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const updatedItems = rankingItems.map(i =>
+                          i.id === item.id ? { ...i, showAdvanced: !i.showAdvanced } : i
+                        );
+                        setRankingItems(updatedItems);
+                      }}
+                      disabled={!item.text}
+                    >
+                      Advanced
+                    </Button>
+                  </div>
+                  {item.showAdvanced && item.text && (
+                    <div className="flex space-x-2 ml-6">
+                      <div>
+                        <Label>Expert Weight:</Label>
+                        <Input type="number" min="0" max="1" step="0.1" className="w-24" />
+                      </div>
+                      <div>
+                        <Label>Machine Weight:</Label>
+                        <Input type="number" min="0" max="1" step="0.1" className="w-24" />
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
-              <Button variant="outline" onClick={addColumnAItem}>
+              <Button variant="outline" onClick={addRankingItem}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Item
               </Button>
             </div>
           </div>
+        </div>
+      )}
 
+      {answerType === "matching" && (
+        <div className="space-y-6">
           <div>
-            {columnB.length === 0 ? (
-              <Button variant="outline" onClick={addColumn}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Column
-              </Button>
-            ) : (
-              <>
-                <h4 className="font-medium mb-3">Column B</h4>
+            <h4 className="font-medium mb-4">Define Matching Items & Create Pairs</h4>
+            <div className="grid grid-cols-2 gap-6 mb-6">
+              <div>
+                <h5 className="font-medium mb-3">Column A</h5>
                 <div className="space-y-2">
-                  {columnB.map((item, index) => (
+                  {columnA.map((item, index) => (
                     <Input
                       key={item.id}
                       placeholder={`Item ${index + 1}`}
                       value={item.text}
                       onChange={(e) => {
-                        const updatedColumnB = columnB.map(i =>
+                        const updatedColumnA = columnA.map(i =>
                           i.id === item.id ? { ...i, text: e.target.value } : i
                         );
-                        setColumnB(updatedColumnB);
+                        setColumnA(updatedColumnA);
                       }}
                     />
                   ))}
-                  <Button variant="outline" onClick={addColumnBItem}>
+                  <Button variant="outline" onClick={addColumnAItem}>
                     <Plus className="mr-2 h-4 w-4" />
                     Add Item
                   </Button>
                 </div>
-              </>
+              </div>
+
+              <div>
+                {columnB.length === 0 ? (
+                  <Button variant="outline" onClick={addColumn}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Column
+                  </Button>
+                ) : (
+                  <>
+                    <h5 className="font-medium mb-3">Column B</h5>
+                    <div className="space-y-2">
+                      {columnB.map((item, index) => (
+                        <Input
+                          key={item.id}
+                          placeholder={`Item ${index + 1}`}
+                          value={item.text}
+                          onChange={(e) => {
+                            const updatedColumnB = columnB.map(i =>
+                              i.id === item.id ? { ...i, text: e.target.value } : i
+                            );
+                            setColumnB(updatedColumnB);
+                          }}
+                        />
+                      ))}
+                      <Button variant="outline" onClick={addColumnBItem}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Item
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {columnA.some(i => i.text) && columnB.some(i => i.text) && (
+              <div>
+                <h5 className="font-medium mb-4">Click items to create pairs:</h5>
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <h6 className="font-medium mb-2">Column A</h6>
+                    {columnA.filter(i => i.text).map((item) => (
+                      <Button
+                        key={item.id}
+                        variant="outline"
+                        className={`mb-2 mr-2 ${
+                          selectedMatch.columnA === item.text ? 'border-blue-500' : ''
+                        } ${getMatchingColor(item.text)} ${
+                          isMatched(item.text) ? 'opacity-75' : ''
+                        }`}
+                        onClick={() => handleMatching('columnA', item.text)}
+                        disabled={isMatched(item.text)}
+                      >
+                        {item.text}
+                      </Button>
+                    ))}
+                  </div>
+                  <div>
+                    <h6 className="font-medium mb-2">Column B</h6>
+                    {columnB.filter(i => i.text).map((item) => (
+                      <Button
+                        key={item.id}
+                        variant="outline"
+                        className={`mb-2 mr-2 ${getMatchingColor(item.text)} ${
+                          isMatched(item.text) ? 'opacity-75' : ''
+                        }`}
+                        onClick={() => handleMatching('columnB', item.text)}
+                        disabled={isMatched(item.text)}
+                      >
+                        {item.text}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                {matchPairs.length > 0 && (
+                  <div className="mt-6">
+                    <h6 className="font-medium mb-3">Matched Pairs - Set Weights:</h6>
+                    {matchPairs.map((pair) => (
+                      <div key={pair.id} className="border rounded-lg p-4 mb-3">
+                        <div className="flex items-center justify-between">
+                          <span>{pair.columnA} ↔ {pair.columnB}</span>
+                          <div className="flex items-center space-x-2">
+                            <Label>Weight:</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="1"
+                              step="0.1"
+                              defaultValue="1"
+                              className="w-20"
+                            />
+                            <Button variant="outline" size="sm">
+                              Advanced
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -418,231 +608,6 @@ export default function CreateQuestion() {
   );
 
   const renderStep3 = () => (
-    <div className="space-y-6">
-      {answerType === "single-choice" && (
-        <div className="space-y-4">
-          <h4 className="font-medium">Select the correct answer and set weights:</h4>
-          {choices.filter(c => c.text).map((choice) => (
-            <div key={choice.id} className="space-y-3 border rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  name="correct-single"
-                  value={choice.text}
-                  checked={correctSingle === choice.text}
-                  onChange={(e) => setCorrectSingle(e.target.value)}
-                />
-                <span className="flex-1">{choice.text}</span>
-                <div className="flex items-center space-x-2">
-                  <Label>Weight:</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    defaultValue="1"
-                    className="w-20"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const updatedChoices = choices.map(c =>
-                        c.id === choice.id ? { ...c, showAdvanced: !c.showAdvanced } : c
-                      );
-                      setChoices(updatedChoices);
-                    }}
-                  >
-                    Advanced Weights
-                  </Button>
-                </div>
-              </div>
-              {choice.showAdvanced && (
-                <div className="flex space-x-2 ml-6">
-                  <div>
-                    <Label>Expert Weight:</Label>
-                    <Input type="number" min="0" max="1" step="0.1" className="w-24" />
-                  </div>
-                  <div>
-                    <Label>Machine Weight:</Label>
-                    <Input type="number" min="0" max="1" step="0.1" className="w-24" />
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {answerType === "multiple-choice" && (
-        <div className="space-y-4">
-          <h4 className="font-medium">Select the correct answers and set weights:</h4>
-          {choices.filter(c => c.text).map((choice) => (
-            <div key={choice.id} className="space-y-3 border rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <Checkbox
-                  checked={correctMultiple.includes(choice.text)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setCorrectMultiple([...correctMultiple, choice.text]);
-                    } else {
-                      setCorrectMultiple(correctMultiple.filter(c => c !== choice.text));
-                    }
-                  }}
-                />
-                <span className="flex-1">{choice.text}</span>
-                <div className="flex items-center space-x-2">
-                  <Label>Weight:</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    defaultValue="1"
-                    className="w-20"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const updatedChoices = choices.map(c =>
-                        c.id === choice.id ? { ...c, showAdvanced: !c.showAdvanced } : c
-                      );
-                      setChoices(updatedChoices);
-                    }}
-                  >
-                    Advanced Weights
-                  </Button>
-                </div>
-              </div>
-              {choice.showAdvanced && (
-                <div className="flex space-x-2 ml-6">
-                  <div>
-                    <Label>Expert Weight:</Label>
-                    <Input type="number" min="0" max="1" step="0.1" className="w-24" />
-                  </div>
-                  <div>
-                    <Label>Machine Weight:</Label>
-                    <Input type="number" min="0" max="1" step="0.1" className="w-24" />
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {answerType === "ranking" && (
-        <div className="space-y-4">
-          <h4 className="font-medium">Set the correct ranking order and weights:</h4>
-          {rankingItems.filter(i => i.text).map((item) => (
-            <div key={item.id} className="space-y-3 border rounded-lg p-4">
-              <div className="flex items-center space-x-4">
-                <Label className="w-40">{item.text}</Label>
-                <div className="flex items-center space-x-2">
-                  <Label>Rank:</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    className="w-20"
-                    value={rankings[item.text] || ""}
-                    onChange={(e) => setRankings({
-                      ...rankings,
-                      [item.text]: parseInt(e.target.value) || 0
-                    })}
-                  />
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const updatedItems = rankingItems.map(i =>
-                      i.id === item.id ? { ...i, showAdvanced: !i.showAdvanced } : i
-                    );
-                    setRankingItems(updatedItems);
-                  }}
-                >
-                  Advanced Weights
-                </Button>
-              </div>
-              {item.showAdvanced && (
-                <div className="flex space-x-2 ml-6">
-                  <div>
-                    <Label>Expert Weight:</Label>
-                    <Input type="number" min="0" max="1" step="0.1" className="w-24" />
-                  </div>
-                  <div>
-                    <Label>Machine Weight:</Label>
-                    <Input type="number" min="0" max="1" step="0.1" className="w-24" />
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {answerType === "matching" && (
-        <div className="space-y-4">
-          <h4 className="font-medium">Click items to create pairs:</h4>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <h5 className="font-medium mb-2">Column A</h5>
-              {columnA.filter(i => i.text).map((item) => (
-                <Button
-                  key={item.id}
-                  variant="outline"
-                  className={`mb-2 mr-2 ${
-                    selectedMatch.columnA === item.text ? 'border-blue-500' : ''
-                  } ${getMatchingColor(item.text)} ${
-                    isMatched(item.text) ? 'opacity-75' : ''
-                  }`}
-                  onClick={() => handleMatching('columnA', item.text)}
-                  disabled={isMatched(item.text)}
-                >
-                  {item.text}
-                </Button>
-              ))}
-            </div>
-            <div>
-              <h5 className="font-medium mb-2">Column B</h5>
-              {columnB.filter(i => i.text).map((item) => (
-                <Button
-                  key={item.id}
-                  variant="outline"
-                  className={`mb-2 mr-2 ${getMatchingColor(item.text)} ${
-                    isMatched(item.text) ? 'opacity-75' : ''
-                  }`}
-                  onClick={() => handleMatching('columnB', item.text)}
-                  disabled={isMatched(item.text)}
-                >
-                  {item.text}
-                </Button>
-              ))}
-            </div>
-          </div>
-          
-          {matchPairs.length > 0 && (
-            <div className="mt-6">
-              <h5 className="font-medium mb-3">Matched Pairs - Set Weights:</h5>
-              {matchPairs.map((pair) => (
-                <div key={pair.id} className="border rounded-lg p-4 mb-3">
-                  <div className="flex items-center justify-between">
-                    <span>{pair.columnA} ↔ {pair.columnB}</span>
-                    <Button variant="outline" size="sm">
-                      Edit Weights
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderStep4 = () => (
     <div className="space-y-6">
       <div className="bg-muted/50 p-6 rounded-lg">
         <h4 className="font-medium mb-4">Question Preview</h4>
@@ -680,6 +645,39 @@ export default function CreateQuestion() {
                       {String.fromCharCode(65 + index)}
                     </span>
                     <span>{choice.text}</span>
+                    {((answerType === "single-choice" && correctSingle === choice.text) || 
+                      (answerType === "multiple-choice" && correctMultiple.includes(choice.text))) && (
+                      <span className="text-green-600 font-medium">✓ Correct</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {answerType === "ranking" && rankingItems.some(i => i.text) && (
+            <div>
+              <Label className="text-sm text-muted-foreground">Ranking Items</Label>
+              <div className="space-y-2 mt-2">
+                {rankingItems.filter(i => i.text).map((item) => (
+                  <div key={item.id} className="flex items-center space-x-2">
+                    <span className="text-sm">{item.text}</span>
+                    {rankings[item.text] && (
+                      <span className="text-blue-600 font-medium">Rank: {rankings[item.text]}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {answerType === "matching" && matchPairs.length > 0 && (
+            <div>
+              <Label className="text-sm text-muted-foreground">Matching Pairs</Label>
+              <div className="space-y-2 mt-2">
+                {matchPairs.map((pair) => (
+                  <div key={pair.id} className="text-sm">
+                    {pair.columnA} ↔ {pair.columnB}
                   </div>
                 ))}
               </div>
@@ -689,6 +687,7 @@ export default function CreateQuestion() {
       </div>
     </div>
   );
+
 
   return (
     <SidebarProvider>
@@ -705,7 +704,7 @@ export default function CreateQuestion() {
 
             {/* Stepper */}
             <div className="flex items-center space-x-4 mb-8">
-              {[1, 2, 3, 4].map((step) => (
+              {[1, 2, 3].map((step) => (
                 <div key={step} className="flex items-center">
                   <Button
                     variant={currentStep === step ? "default" : "outline"}
@@ -717,11 +716,10 @@ export default function CreateQuestion() {
                   </Button>
                   <span className={`ml-2 text-sm ${currentStep === step ? 'font-medium' : 'text-muted-foreground'}`}>
                     {step === 1 && "Details & Properties"}
-                    {step === 2 && "Define Answer Choices"}
-                    {step === 3 && "Set Scoring & Weights"}
-                    {step === 4 && "Preview & Confirm"}
+                    {step === 2 && "Answer Choices & Scoring"}
+                    {step === 3 && "Preview & Confirm"}
                   </span>
-                  {step < 4 && <ChevronRight className="mx-4 h-4 w-4 text-muted-foreground" />}
+                  {step < 3 && <ChevronRight className="mx-4 h-4 w-4 text-muted-foreground" />}
                 </div>
               ))}
             </div>
@@ -731,7 +729,6 @@ export default function CreateQuestion() {
               {currentStep === 1 && renderStep1()}
               {currentStep === 2 && renderStep2()}
               {currentStep === 3 && renderStep3()}
-              {currentStep === 4 && renderStep4()}
             </div>
 
             {/* Navigation */}
@@ -745,14 +742,14 @@ export default function CreateQuestion() {
                 )}
               </div>
               <div className="space-x-2">
-                {currentStep === 4 ? (
+                {currentStep === 3 ? (
                   <>
                     <Button variant="outline">Save as Draft</Button>
                     <Button onClick={handleSubmit}>Confirm & Save Question</Button>
                   </>
                 ) : (
                   <Button onClick={handleNext}>
-                    Next: {currentStep === 1 ? "Answer Choices" : currentStep === 2 ? "Scoring" : "Preview"}
+                    Next: {currentStep === 1 ? "Answer Choices & Scoring" : "Preview"}
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 )}

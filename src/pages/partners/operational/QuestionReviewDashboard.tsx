@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
@@ -6,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { BarChart3, Eye, MessageSquare, Users, ClipboardCheck } from "lucide-react";
+import { BarChart3, Eye, MessageSquare, Users, ClipboardCheck, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AssignReviewSetModal } from "@/components/AssignReviewSetModal";
+import { toast } from "@/components/ui/use-toast";
 
 const mockKPIs = {
   pendingReview: 14,
@@ -56,6 +59,7 @@ const mockFeedbackData = [
 
 const QuestionReviewDashboard = () => {
   const navigate = useNavigate();
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -66,14 +70,27 @@ const QuestionReviewDashboard = () => {
     }
   };
 
+  const handleAssignmentComplete = () => {
+    toast({
+      title: "Review Set Assigned",
+      description: "The review set has been successfully assigned to the faculty member."
+    });
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 flex items-center border-b bg-background px-6">
-            <SidebarTrigger className="mr-4" />
-            <h1 className="text-lg font-semibold">Question Review Dashboard</h1>
+          <header className="h-14 flex items-center justify-between border-b bg-background px-6">
+            <div className="flex items-center">
+              <SidebarTrigger className="mr-4" />
+              <h1 className="text-lg font-semibold">Question Review Dashboard</h1>
+            </div>
+            <Button onClick={() => setIsAssignModalOpen(true)} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Assign New Review Set
+            </Button>
           </header>
           <main className="flex-1 p-8 bg-gray-50">
             <div className="max-w-7xl">
@@ -231,6 +248,11 @@ const QuestionReviewDashboard = () => {
           </main>
         </div>
       </div>
+      <AssignReviewSetModal
+        open={isAssignModalOpen}
+        onOpenChange={setIsAssignModalOpen}
+        onAssignmentComplete={handleAssignmentComplete}
+      />
     </SidebarProvider>
   );
 };

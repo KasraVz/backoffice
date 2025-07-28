@@ -19,6 +19,7 @@ import QuestionReviewDashboard from "./pages/partners/operational/QuestionReview
 import PromptCriteriaLibrary from "./pages/partners/operational/PromptCriteriaLibrary";
 import FacultyDashboard from "./pages/faculty/FacultyDashboard";
 import QuestionReview from "./pages/faculty/QuestionReview";
+import ReviewSetDetails from "./pages/partners/operational/ReviewSetDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/partners/operational/directory" element={<OperationalPartnerDirectory />} />
           <Route path="/partners/operational/expertise" element={<FacultyExpertiseProfiles />} />
           <Route path="/partners/operational/review-dashboard" element={<QuestionReviewDashboard />} />
+          <Route path="/partners/operational/review-set/:setId" element={<ReviewSetDetails />} />
           <Route path="/partners/operational/prompt-criteria" element={<PromptCriteriaLibrary />} />
           
           {/* Faculty Portal Routes */}

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { BarChart3, Eye, MessageSquare, Users, ClipboardCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const mockKPIs = {
   pendingReview: 14,
@@ -54,6 +55,8 @@ const mockFeedbackData = [
 ];
 
 const QuestionReviewDashboard = () => {
+  const navigate = useNavigate();
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Completed": return "default";
@@ -72,7 +75,7 @@ const QuestionReviewDashboard = () => {
             <SidebarTrigger className="mr-4" />
             <h1 className="text-lg font-semibold">Question Review Dashboard</h1>
           </header>
-          <main className="flex-1 p-6 bg-background">
+          <main className="flex-1 p-8 bg-gray-50">
             <div className="max-w-7xl">
               <h2 className="text-2xl font-bold mb-6">Question Review Dashboard</h2>
 
@@ -156,7 +159,12 @@ const QuestionReviewDashboard = () => {
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <Button variant="outline" size="sm" className="gap-1">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="gap-1"
+                                  onClick={() => navigate(`/partners/operational/review-set/${set.id}`)}
+                                >
                                   <Eye className="h-3 w-3" />
                                   View Details
                                 </Button>

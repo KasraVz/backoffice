@@ -39,7 +39,7 @@ const OperationalPartnerDirectory = () => {
             <SidebarTrigger className="mr-4" />
             <h1 className="text-lg font-semibold">Operational Partner Directory</h1>
           </header>
-          <main className="flex-1 p-6 bg-background">
+          <main className="flex-1 p-8 bg-gray-50">
             <div className="max-w-6xl">
               <div className="flex justify-between items-center mb-6">
                 <div>

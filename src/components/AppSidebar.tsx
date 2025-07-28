@@ -48,7 +48,6 @@ const mainMenuItems = [{
   icon: Handshake,
   children: [{
     title: "Functional Partners",
-    url: "/partners/functional",
     children: [{
       title: "Partner Directory",
       url: "/partners/functional/directory"
@@ -61,7 +60,6 @@ const mainMenuItems = [{
     }]
   }, {
     title: "Operational Partners",
-    url: "/partners/operational",
     children: [{
       title: "Partner Directory",
       url: "/partners/operational/directory"

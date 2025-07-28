@@ -76,65 +76,73 @@ const PromptCriteriaLibrary = () => {
             <h1 className="text-lg font-semibold">Prompt Criteria Library</h1>
           </header>
           <main className="flex-1 p-8 bg-gray-50">
-            <div className="max-w-6xl">
-              <div className="flex justify-between items-center mb-6">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
                 <div>
                   <h2 className="text-2xl font-bold">Prompt Criteria Library</h2>
                   <p className="text-muted-foreground">
                     Manage review prompts and their association rules
                   </p>
                 </div>
-                <Button onClick={handleNew} className="gap-2">
+                <Button onClick={handleNew} className="gap-2 w-fit">
                   <Plus className="h-4 w-4" />
                   Add New Criterion
                 </Button>
               </div>
 
-              <div className="border rounded-lg">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Prompt Text</TableHead>
-                      <TableHead>Associated Tags</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {mockCriteria.map((criterion) => (
-                      <TableRow key={criterion.id}>
-                        <TableCell className="font-medium">#{criterion.id}</TableCell>
-                        <TableCell className="max-w-md">
-                          <p className="truncate">{criterion.promptText}</p>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {criterion.tags.map((tag, index) => (
-                              <Badge key={index} variant="secondary">{tag}</Badge>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="gap-1"
-                              onClick={() => handleEdit(criterion)}
-                            >
-                              <Edit className="h-3 w-3" />
-                              Edit
-                            </Button>
-                            <Button variant="outline" size="sm" className="gap-1 text-destructive">
-                              <Trash2 className="h-3 w-3" />
-                              Delete
-                            </Button>
-                          </div>
-                        </TableCell>
+              <div className="bg-white border rounded-lg overflow-hidden">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-16">ID</TableHead>
+                        <TableHead className="min-w-[300px]">Prompt Text</TableHead>
+                        <TableHead className="min-w-[200px]">Associated Tags</TableHead>
+                        <TableHead className="w-40">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {mockCriteria.map((criterion) => (
+                        <TableRow key={criterion.id}>
+                          <TableCell className="font-medium">#{criterion.id}</TableCell>
+                          <TableCell className="max-w-md">
+                            <p className="break-words">{criterion.promptText}</p>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {criterion.tags.map((tag, index) => (
+                                <Badge key={index} variant="secondary" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="gap-1 w-full sm:w-auto"
+                                onClick={() => handleEdit(criterion)}
+                              >
+                                <Edit className="h-3 w-3" />
+                                Edit
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="gap-1 text-destructive w-full sm:w-auto"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                                Delete
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
 
               {/* Add/Edit Modal */}
@@ -158,7 +166,7 @@ const PromptCriteriaLibrary = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="indexCode">Index Code</Label>
                         <Select value={formData.indexCode} onValueChange={(value) => setFormData({...formData, indexCode: value})}>

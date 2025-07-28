@@ -11,78 +11,76 @@ import { BarChart3, Eye, MessageSquare, Users, ClipboardCheck, Plus } from "luci
 import { useNavigate } from "react-router-dom";
 import { AssignReviewSetModal } from "@/components/AssignReviewSetModal";
 import { toast } from "@/components/ui/use-toast";
-
 const mockKPIs = {
   pendingReview: 14,
   activeReviewers: 28,
   totalFeedback: 1204
 };
-
-const mockReviewSets = [
-  {
-    id: "101",
-    assignedTo: "Dr. Sarah Johnson",
-    description: "FPA - General - Finance - Pre-seed",
-    status: "Pending",
-    progress: { completed: 0, total: 25 }
-  },
-  {
-    id: "102", 
-    assignedTo: "Prof. Michael Chen",
-    description: "EEA - HR Tech - Series A",
-    status: "In Progress",
-    progress: { completed: 15, total: 25 }
-  },
-  {
-    id: "103",
-    assignedTo: "Dr. Emily Rodriguez",
-    description: "TDA - HealthTech - Seed",
-    status: "Completed",
-    progress: { completed: 20, total: 20 }
+const mockReviewSets = [{
+  id: "101",
+  assignedTo: "Dr. Sarah Johnson",
+  description: "FPA - General - Finance - Pre-seed",
+  status: "Pending",
+  progress: {
+    completed: 0,
+    total: 25
   }
-];
-
-const mockFeedbackData = [
-  {
-    question: "What is your burn rate strategy?",
-    reviewer: "Dr. Sarah Johnson",
-    comment: "Consider adding more specific timeframe options",
-    date: "2024-01-15"
-  },
-  {
-    question: "How do you plan to scale your team?",
-    reviewer: "Prof. Michael Chen", 
-    comment: "This question needs clearer context for different stages",
-    date: "2024-01-14"
+}, {
+  id: "102",
+  assignedTo: "Prof. Michael Chen",
+  description: "EEA - HR Tech - Series A",
+  status: "In Progress",
+  progress: {
+    completed: 15,
+    total: 25
   }
-];
-
+}, {
+  id: "103",
+  assignedTo: "Dr. Emily Rodriguez",
+  description: "TDA - HealthTech - Seed",
+  status: "Completed",
+  progress: {
+    completed: 20,
+    total: 20
+  }
+}];
+const mockFeedbackData = [{
+  question: "What is your burn rate strategy?",
+  reviewer: "Dr. Sarah Johnson",
+  comment: "Consider adding more specific timeframe options",
+  date: "2024-01-15"
+}, {
+  question: "How do you plan to scale your team?",
+  reviewer: "Prof. Michael Chen",
+  comment: "This question needs clearer context for different stages",
+  date: "2024-01-14"
+}];
 const QuestionReviewDashboard = () => {
   const navigate = useNavigate();
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
-  
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Completed": return "default";
-      case "In Progress": return "secondary";
-      case "Pending": return "outline";
-      default: return "outline";
+      case "Completed":
+        return "default";
+      case "In Progress":
+        return "secondary";
+      case "Pending":
+        return "outline";
+      default:
+        return "outline";
     }
   };
-
   const handleAssignmentComplete = () => {
     toast({
       title: "Review Set Assigned",
       description: "The review set has been successfully assigned to the faculty member."
     });
   };
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 flex items-center justify-between border-b bg-background px-6">
+          <header className="h-14 flex items-center justify-between border-b bg-background px-6 mx-[28px]">
             <div className="flex items-center">
               <SidebarTrigger className="mr-4" />
               <h1 className="text-lg font-semibold">Question Review Dashboard</h1>
@@ -92,7 +90,7 @@ const QuestionReviewDashboard = () => {
               Assign New Review Set
             </Button>
           </header>
-          <main className="flex-1 p-8 bg-gray-50">
+          <main className="flex-1 p-8 bg-gray-50 mx-[28px]">
             <div className="max-w-7xl">
               <h2 className="text-2xl font-bold mb-6">Question Review Dashboard</h2>
 
@@ -154,8 +152,7 @@ const QuestionReviewDashboard = () => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {mockReviewSets.map((set) => (
-                            <TableRow key={set.id}>
+                          {mockReviewSets.map(set => <TableRow key={set.id}>
                               <TableCell className="font-medium">#{set.id}</TableCell>
                               <TableCell>{set.assignedTo}</TableCell>
                               <TableCell>{set.description}</TableCell>
@@ -169,25 +166,16 @@ const QuestionReviewDashboard = () => {
                                   <div className="text-sm">
                                     {set.progress.completed}/{set.progress.total} Questions Reviewed
                                   </div>
-                                  <Progress 
-                                    value={(set.progress.completed / set.progress.total) * 100} 
-                                    className="w-24"
-                                  />
+                                  <Progress value={set.progress.completed / set.progress.total * 100} className="w-24" />
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  className="gap-1"
-                                  onClick={() => navigate(`/partners/operational/review-set/${set.id}`)}
-                                >
+                                <Button variant="outline" size="sm" className="gap-1" onClick={() => navigate(`/partners/operational/review-set/${set.id}`)}>
                                   <Eye className="h-3 w-3" />
                                   View Details
                                 </Button>
                               </TableCell>
-                            </TableRow>
-                          ))}
+                            </TableRow>)}
                         </TableBody>
                       </Table>
                     </CardContent>
@@ -225,8 +213,7 @@ const QuestionReviewDashboard = () => {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {mockFeedbackData.map((feedback, index) => (
-                              <TableRow key={index}>
+                            {mockFeedbackData.map((feedback, index) => <TableRow key={index}>
                                 <TableCell className="max-w-xs">
                                   <p className="truncate">{feedback.question}</p>
                                 </TableCell>
@@ -235,8 +222,7 @@ const QuestionReviewDashboard = () => {
                                   <p className="truncate">{feedback.comment}</p>
                                 </TableCell>
                                 <TableCell>{feedback.date}</TableCell>
-                              </TableRow>
-                            ))}
+                              </TableRow>)}
                           </TableBody>
                         </Table>
                       </CardContent>
@@ -248,13 +234,7 @@ const QuestionReviewDashboard = () => {
           </main>
         </div>
       </div>
-      <AssignReviewSetModal
-        open={isAssignModalOpen}
-        onOpenChange={setIsAssignModalOpen}
-        onAssignmentComplete={handleAssignmentComplete}
-      />
-    </SidebarProvider>
-  );
+      <AssignReviewSetModal open={isAssignModalOpen} onOpenChange={setIsAssignModalOpen} onAssignmentComplete={handleAssignmentComplete} />
+    </SidebarProvider>;
 };
-
 export default QuestionReviewDashboard;

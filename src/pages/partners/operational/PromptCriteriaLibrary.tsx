@@ -9,28 +9,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-const mockCriteria = [
-  {
-    id: 1,
-    promptText: "Based on your expertise in Financial Management for Seed-stage startups, please review the following questions for clarity, relevance, and accuracy.",
-    tags: ["FPA", "Seed", "Financial Management"],
-    indexCode: "FPA",
-    stage: "Seed",
-    category: "Financial Management",
-    industry: "General"
-  },
-  {
-    id: 2,
-    promptText: "As an expert in HR Tech for Series A companies, evaluate these questions for technical accuracy and practical applicability.",
-    tags: ["EEA", "Series A", "HR Tech"],
-    indexCode: "EEA",
-    stage: "Series A",
-    category: "Human Resources",
-    industry: "HR Tech"
-  }
-];
-
+const mockCriteria = [{
+  id: 1,
+  promptText: "Based on your expertise in Financial Management for Seed-stage startups, please review the following questions for clarity, relevance, and accuracy.",
+  tags: ["FPA", "Seed", "Financial Management"],
+  indexCode: "FPA",
+  stage: "Seed",
+  category: "Financial Management",
+  industry: "General"
+}, {
+  id: 2,
+  promptText: "As an expert in HR Tech for Series A companies, evaluate these questions for technical accuracy and practical applicability.",
+  tags: ["EEA", "Series A", "HR Tech"],
+  indexCode: "EEA",
+  stage: "Series A",
+  category: "Human Resources",
+  industry: "HR Tech"
+}];
 const PromptCriteriaLibrary = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCriterion, setEditingCriterion] = useState<any>(null);
@@ -41,7 +36,6 @@ const PromptCriteriaLibrary = () => {
     category: "",
     industry: ""
   });
-
   const handleEdit = (criterion: any) => {
     setEditingCriterion(criterion);
     setFormData({
@@ -53,7 +47,6 @@ const PromptCriteriaLibrary = () => {
     });
     setIsModalOpen(true);
   };
-
   const handleNew = () => {
     setEditingCriterion(null);
     setFormData({
@@ -65,17 +58,15 @@ const PromptCriteriaLibrary = () => {
     });
     setIsModalOpen(true);
   };
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 flex items-center border-b bg-background px-6">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[27px]">
             <SidebarTrigger className="mr-4" />
             <h1 className="text-lg font-semibold">Prompt Criteria Library</h1>
           </header>
-          <main className="flex-1 p-8 bg-gray-50">
+          <main className="flex-1 p-8 bg-gray-50 mx-[28px]">
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
                 <div>
@@ -102,44 +93,31 @@ const PromptCriteriaLibrary = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockCriteria.map((criterion) => (
-                        <TableRow key={criterion.id}>
+                      {mockCriteria.map(criterion => <TableRow key={criterion.id}>
                           <TableCell className="font-medium">#{criterion.id}</TableCell>
                           <TableCell className="max-w-md">
                             <p className="break-words">{criterion.promptText}</p>
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
-                              {criterion.tags.map((tag, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
+                              {criterion.tags.map((tag, index) => <Badge key={index} variant="secondary" className="text-xs">
                                   {tag}
-                                </Badge>
-                              ))}
+                                </Badge>)}
                             </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-col sm:flex-row gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="gap-1 w-full sm:w-auto"
-                                onClick={() => handleEdit(criterion)}
-                              >
+                              <Button variant="outline" size="sm" className="gap-1 w-full sm:w-auto" onClick={() => handleEdit(criterion)}>
                                 <Edit className="h-3 w-3" />
                                 Edit
                               </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="gap-1 text-destructive w-full sm:w-auto"
-                              >
+                              <Button variant="outline" size="sm" className="gap-1 text-destructive w-full sm:w-auto">
                                 <Trash2 className="h-3 w-3" />
                                 Delete
                               </Button>
                             </div>
                           </TableCell>
-                        </TableRow>
-                      ))}
+                        </TableRow>)}
                     </TableBody>
                   </Table>
                 </div>
@@ -157,19 +135,19 @@ const PromptCriteriaLibrary = () => {
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="promptText">Prompt Text</Label>
-                      <Textarea
-                        id="promptText"
-                        placeholder="Enter the prompt text that will be shown to reviewers..."
-                        value={formData.promptText}
-                        onChange={(e) => setFormData({...formData, promptText: e.target.value})}
-                        rows={4}
-                      />
+                      <Textarea id="promptText" placeholder="Enter the prompt text that will be shown to reviewers..." value={formData.promptText} onChange={e => setFormData({
+                      ...formData,
+                      promptText: e.target.value
+                    })} rows={4} />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="indexCode">Index Code</Label>
-                        <Select value={formData.indexCode} onValueChange={(value) => setFormData({...formData, indexCode: value})}>
+                        <Select value={formData.indexCode} onValueChange={value => setFormData({
+                        ...formData,
+                        indexCode: value
+                      })}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select index code" />
                           </SelectTrigger>
@@ -183,7 +161,10 @@ const PromptCriteriaLibrary = () => {
 
                       <div>
                         <Label htmlFor="stage">Stage</Label>
-                        <Select value={formData.stage} onValueChange={(value) => setFormData({...formData, stage: value})}>
+                        <Select value={formData.stage} onValueChange={value => setFormData({
+                        ...formData,
+                        stage: value
+                      })}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select stage" />
                           </SelectTrigger>
@@ -197,7 +178,10 @@ const PromptCriteriaLibrary = () => {
 
                       <div>
                         <Label htmlFor="category">Category</Label>
-                        <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                        <Select value={formData.category} onValueChange={value => setFormData({
+                        ...formData,
+                        category: value
+                      })}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
@@ -211,7 +195,10 @@ const PromptCriteriaLibrary = () => {
 
                       <div>
                         <Label htmlFor="industry">Industry</Label>
-                        <Select value={formData.industry} onValueChange={(value) => setFormData({...formData, industry: value})}>
+                        <Select value={formData.industry} onValueChange={value => setFormData({
+                        ...formData,
+                        industry: value
+                      })}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select industry" />
                           </SelectTrigger>
@@ -240,8 +227,6 @@ const PromptCriteriaLibrary = () => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default PromptCriteriaLibrary;

@@ -586,6 +586,28 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="question-weight">Question Weight</Label>
+              <Input
+                id="question-weight"
+                type="number"
+                min="0"
+                step="0.1"
+                placeholder="Enter question weight (optional)"
+                value={questionData.weights.question?.weight || ''}
+                onChange={(e) => setQuestionData(prev => ({
+                  ...prev,
+                  weights: {
+                    ...prev.weights,
+                    question: {
+                      ...prev.weights.question,
+                      weight: e.target.value ? parseFloat(e.target.value) : undefined
+                    }
+                  }
+                }))}
+              />
+            </div>
+
             {/* Single Choice and Multiple Choice */}
             {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && (
               <div className="space-y-6">

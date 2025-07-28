@@ -587,7 +587,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="question-weight">Question Weight</Label>
+              <Label htmlFor="question-weight">Score Weight</Label>
               <Input
                 id="question-weight"
                 type="number"

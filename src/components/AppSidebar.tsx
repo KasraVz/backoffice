@@ -1,4 +1,4 @@
-import { Users, ChevronRight, ChevronDown, FileText, Handshake, ShoppingCart, CreditCard, FileBarChart, Ticket, MessageCircle, Zap, Award, UserCog, UserCheck, Shield, CheckCircle, Activity, MessageSquare, Database, BarChart3, Settings, Globe, DollarSign, Receipt, TrendingUp, AlertTriangle, Wrench, FileCheck, History, Edit, Coins, Trophy, Gavel, Lock, UserPlus, Eye } from "lucide-react";
+import { Users, ChevronRight, ChevronDown, FileText, Handshake, ShoppingCart, CreditCard, FileBarChart, Ticket, MessageCircle, Zap, Award, UserCog, UserCheck, Shield, CheckCircle, Activity, MessageSquare, Database, BarChart3, Settings, Globe, DollarSign, Receipt, TrendingUp, AlertTriangle, Wrench, FileCheck, History, Edit, Coins, Trophy, Gavel, Lock, UserPlus, Eye, GraduationCap, BookOpen, ClipboardList, Users2 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
@@ -47,14 +47,34 @@ const mainMenuItems = [{
   title: "Partners",
   icon: Handshake,
   children: [{
-    title: "Partner Directory",
-    url: "/partners/directory"
+    title: "Functional Partners",
+    url: "/partners/functional",
+    children: [{
+      title: "Partner Directory",
+      url: "/partners/functional/directory"
+    }, {
+      title: "Referral Dashboard",
+      url: "/partners/functional/referrals"
+    }, {
+      title: "Portal Settings",
+      url: "/partners/functional/settings"
+    }]
   }, {
-    title: "Referral Dashboard",
-    url: "/partners/referrals"
-  }, {
-    title: "Partner Portal Settings",
-    url: "/partners/settings"
+    title: "Operational Partners",
+    url: "/partners/operational",
+    children: [{
+      title: "Partner Directory",
+      url: "/partners/operational/directory"
+    }, {
+      title: "Faculty Expertise Profiles",
+      url: "/partners/operational/expertise"
+    }, {
+      title: "Question Review Dashboard",
+      url: "/partners/operational/review-dashboard"
+    }, {
+      title: "Prompt Criteria Library",
+      url: "/partners/operational/prompt-criteria"
+    }]
   }]
 }, {
   title: "Orders",
@@ -198,25 +218,27 @@ export function AppSidebar() {
   const [manuallyCollapsed, setManuallyCollapsed] = useState<string[]>([]);
   const collapsed = state === "collapsed";
   const isActive = (path: string) => currentPath === path;
-  const isParentActive = (children: any[]) => children.some(child => isActive(child.url));
+  
+  const isParentActive = (children: any[]) => {
+    return children.some(child => {
+      if (child.url) return isActive(child.url);
+      if (child.children) return isParentActive(child.children);
+      return false;
+    });
+  };
+  
   const toggleExpanded = (title: string) => {
-    const hasActiveChild = mainMenuItems.find(item => item.title === title)?.children?.some(child => isActive(child.url));
-    if (hasActiveChild) {
-      // If has active child, toggle the manually collapsed state
-      setManuallyCollapsed(prev => prev.includes(title) ? prev.filter(item => item !== title) : [...prev, title]);
-    } else {
-      // Normal expand/collapse behavior
-      setExpandedItems(prev => prev.includes(title) ? prev.filter(item => item !== title) : [...prev, title]);
-    }
+    setExpandedItems(prev => 
+      prev.includes(title) 
+        ? prev.filter(item => item !== title) 
+        : [...prev, title]
+    );
   };
 
-  // Auto-expand parent when child is active, unless manually collapsed
+  // Auto-expand parent when child is active
   const isExpanded = (title: string, children: any[]) => {
-    const hasActiveChild = children.some(child => isActive(child.url));
-    const isManuallyCollapsed = manuallyCollapsed.includes(title);
-    if (hasActiveChild && !isManuallyCollapsed) {
-      return true;
-    }
+    const hasActiveChild = isParentActive(children);
+    if (hasActiveChild) return true;
     return expandedItems.includes(title);
   };
   const getParentNavClasses = (active: boolean) => {
@@ -254,13 +276,51 @@ export function AppSidebar() {
 
                     {/* Render children */}
                     {hasChildren && itemExpanded && !collapsed && <div className="bg-gray-900 my-1">
-                        {item.children!.map(child => <SidebarMenuItem key={child.title}>
-                            <SidebarMenuButton asChild className={`w-full justify-start px-4 py-2.5 text-sm ${getChildNavClasses(isActive(child.url))} transition-all duration-200 my-0.5`}>
-                              <NavLink to={child.url} className="flex items-center w-full">
-                                <span className="truncate pl-7">{child.title}</span>
-                              </NavLink>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>)}
+                        {item.children!.map(child => {
+                          const hasGrandchildren = child.children && child.children.length > 0;
+                          const childExpanded = hasGrandchildren && isExpanded(child.title, child.children);
+                          const childActive = child.url ? isActive(child.url) : isParentActive(child.children || []);
+                          
+                          return <div key={child.title}>
+                            <SidebarMenuItem>
+                              {child.url ? (
+                                <SidebarMenuButton asChild className={`w-full justify-start px-4 py-2.5 text-sm ${getChildNavClasses(childActive)} transition-all duration-200 my-0.5`}>
+                                  <NavLink to={child.url} className="flex items-center w-full">
+                                    <span className="truncate pl-7">{child.title}</span>
+                                  </NavLink>
+                                </SidebarMenuButton>
+                              ) : (
+                                <SidebarMenuButton 
+                                  onClick={() => toggleExpanded(child.title)} 
+                                  className={`w-full justify-start px-4 py-2.5 text-sm ${getChildNavClasses(childActive)} transition-all duration-200 my-0.5`}
+                                >
+                                  <div className="flex items-center w-full cursor-pointer">
+                                    {hasGrandchildren && (childExpanded ? 
+                                      <ChevronDown className="mr-2 h-3 w-3 flex-shrink-0 transition-transform duration-200" /> : 
+                                      <ChevronRight className="mr-2 h-3 w-3 flex-shrink-0 transition-transform duration-200" />
+                                    )}
+                                    <span className="truncate pl-5">{child.title}</span>
+                                  </div>
+                                </SidebarMenuButton>
+                              )}
+                            </SidebarMenuItem>
+                            
+                            {/* Render grandchildren */}
+                            {hasGrandchildren && childExpanded && (
+                              <div className="bg-gray-950 ml-4">
+                                {child.children!.map((grandchild: any) => (
+                                  <SidebarMenuItem key={grandchild.title}>
+                                    <SidebarMenuButton asChild className={`w-full justify-start px-4 py-2 text-xs ${getChildNavClasses(isActive(grandchild.url))} transition-all duration-200 my-0.5`}>
+                                      <NavLink to={grandchild.url} className="flex items-center w-full">
+                                        <span className="truncate pl-8">{grandchild.title}</span>
+                                      </NavLink>
+                                    </SidebarMenuButton>
+                                  </SidebarMenuItem>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        })}
                       </div>}
                   </div>;
             })}

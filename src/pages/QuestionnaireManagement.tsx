@@ -14,8 +14,8 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 const mockQuestionnaires = {
   drafts: [{
-    id: 1,
-    name: "FPA General - Pre-seed v1.0",
+    questionnaireId: "FPA-GEN-PRE-1",
+    series: 1,
     indexCode: "FPA",
     stage: "Pre-seed",
     industry: "General",
@@ -25,8 +25,8 @@ const mockQuestionnaires = {
     lastModified: "2024-01-15",
     selectedQuestions: ["Which of the following best defines a 'problem worth solving'?", "Match each revenue model with the typical product or service.", "A core principle of Agile software development is..."]
   }, {
-    id: 2,
-    name: "EEA Fintech - Seed v1.2",
+    questionnaireId: "EEA-FIN-SEE-1",
+    series: 1,
     indexCode: "EEA",
     stage: "Seed",
     industry: "Fintech",
@@ -37,8 +37,8 @@ const mockQuestionnaires = {
     selectedQuestions: ["What is the most critical regulatory consideration for fintech startups?", "Which payment processing model offers the best scalability?"]
   }],
   active: [{
-    id: 3,
-    name: "FPA General - Series A v2.0",
+    questionnaireId: "FPA-GEN-SRA-2",
+    series: 2,
     indexCode: "FPA",
     stage: "Series A",
     industry: "General",
@@ -48,8 +48,8 @@ const mockQuestionnaires = {
     lastModified: "2024-01-10",
     selectedQuestions: []
   }, {
-    id: 4,
-    name: "EEA Healthcare - Seed v1.5",
+    questionnaireId: "EEA-HEA-SEE-1",
+    series: 1,
     indexCode: "EEA",
     stage: "Seed",
     industry: "Healthcare",
@@ -60,8 +60,8 @@ const mockQuestionnaires = {
     selectedQuestions: []
   }],
   archived: [{
-    id: 5,
-    name: "FPA SaaS - Series B v3.0",
+    questionnaireId: "FPA-SAA-SRB-3",
+    series: 3,
     indexCode: "FPA",
     stage: "Series B",
     industry: "SaaS",
@@ -71,8 +71,8 @@ const mockQuestionnaires = {
     lastModified: "2023-12-20",
     selectedQuestions: []
   }, {
-    id: 6,
-    name: "EEA General - Seed v2.0",
+    questionnaireId: "EEA-GEN-SEE-2",
+    series: 2,
     indexCode: "EEA",
     stage: "Seed",
     industry: "General",
@@ -107,7 +107,7 @@ export default function QuestionnaireManagement() {
       const updated = location.state.updatedQuestionnaire;
       setQuestionnaires(prev => ({
         ...prev,
-        drafts: prev.drafts.map(q => q.id === updated.id ? {
+        drafts: prev.drafts.map(q => q.questionnaireId === updated.questionnaireId ? {
           ...q,
           selectedQuestions: updated.selectedQuestions,
           questions: updated.questions,
@@ -118,12 +118,12 @@ export default function QuestionnaireManagement() {
       window.history.replaceState({}, document.title);
     } else if (location.state?.newQuestionnaire) {
       const newQ = location.state.newQuestionnaire;
-      const newId = Math.max(...questionnaires.drafts.map(q => q.id), ...questionnaires.active.map(q => q.id), ...questionnaires.archived.map(q => q.id)) + 1;
+      const newSeries = Math.max(...questionnaires.drafts.map(q => q.series), ...questionnaires.active.map(q => q.series), ...questionnaires.archived.map(q => q.series)) + 1;
       setQuestionnaires(prev => ({
         ...prev,
         drafts: [...prev.drafts, {
           ...newQ,
-          id: newId,
+          series: newSeries,
           status: "Draft"
         }]
       }));
@@ -166,7 +166,7 @@ export default function QuestionnaireManagement() {
   const handlePublish = (questionnaire: any) => {
     setQuestionnaires(prev => ({
       ...prev,
-      drafts: prev.drafts.map(q => q.id === questionnaire.id ? {
+      drafts: prev.drafts.map(q => q.questionnaireId === questionnaire.questionnaireId ? {
         ...q,
         status: "Active"
       } : q),
@@ -179,7 +179,7 @@ export default function QuestionnaireManagement() {
   const handleArchive = (questionnaire: any) => {
     setQuestionnaires(prev => ({
       ...prev,
-      active: prev.active.filter(q => q.id !== questionnaire.id),
+      active: prev.active.filter(q => q.questionnaireId !== questionnaire.questionnaireId),
       archived: [...prev.archived, {
         ...questionnaire,
         status: "Archived"
@@ -189,7 +189,7 @@ export default function QuestionnaireManagement() {
   const handleActivate = (questionnaire: any) => {
     setQuestionnaires(prev => ({
       ...prev,
-      archived: prev.archived.filter(q => q.id !== questionnaire.id),
+      archived: prev.archived.filter(q => q.questionnaireId !== questionnaire.questionnaireId),
       drafts: [...prev.drafts, {
         ...questionnaire,
         status: "Draft"
@@ -201,9 +201,9 @@ export default function QuestionnaireManagement() {
     if (selectedQuestionnaire) {
       setQuestionnaires(prev => ({
         ...prev,
-        drafts: prev.drafts.filter(q => q.id !== selectedQuestionnaire.id),
-        active: prev.active.filter(q => q.id !== selectedQuestionnaire.id),
-        archived: prev.archived.filter(q => q.id !== selectedQuestionnaire.id)
+        drafts: prev.drafts.filter(q => q.questionnaireId !== selectedQuestionnaire.questionnaireId),
+        active: prev.active.filter(q => q.questionnaireId !== selectedQuestionnaire.questionnaireId),
+        archived: prev.archived.filter(q => q.questionnaireId !== selectedQuestionnaire.questionnaireId)
       }));
     }
     setIsDeleteConfirmOpen(false);
@@ -431,7 +431,7 @@ export default function QuestionnaireManagement() {
         <DialogContent className="bg-background border border-border max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex justify-between items-center">
-              Preview: {selectedQuestionnaire?.name}
+              Preview: {selectedQuestionnaire?.questionnaireId}
               <Button variant="ghost" size="sm" onClick={() => setIsPreviewOpen(false)}>
                 <X className="h-4 w-4" />
               </Button>
@@ -483,7 +483,7 @@ export default function QuestionnaireManagement() {
           </DialogHeader>
           <div className="py-4">
             <p>Are you sure you want to permanently delete this {selectedQuestionnaire?.status?.toLowerCase()} questionnaire? This action cannot be undone.</p>
-            <p className="font-medium mt-2">{selectedQuestionnaire?.name}</p>
+            <p className="font-medium mt-2">{selectedQuestionnaire?.questionnaireId}</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDeleteConfirmOpen(false)}>
@@ -514,7 +514,8 @@ function DataTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
+            <TableHead>Questionnaire ID</TableHead>
+            <TableHead>Series</TableHead>
             <TableHead>Index Code</TableHead>
             <TableHead>Stage</TableHead>
             <TableHead>Industry</TableHead>
@@ -525,8 +526,9 @@ function DataTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map(row => <TableRow key={row.id}>
-              <TableCell className="font-medium">{row.name}</TableCell>
+          {data.map(row => <TableRow key={row.questionnaireId}>
+              <TableCell className="font-medium">{row.questionnaireId}</TableCell>
+              <TableCell>{row.series}</TableCell>
               <TableCell>{row.indexCode}</TableCell>
               <TableCell>{row.stage}</TableCell>
               <TableCell>{row.industry}</TableCell>

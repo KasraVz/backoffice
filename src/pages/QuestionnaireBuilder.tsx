@@ -7,45 +7,191 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { X, GripVertical } from "lucide-react";
 
-// Sample questions data
-const sampleGeneralQuestions = [
-  "Which of the following best defines a 'problem worth solving'?",
-  "Match each revenue model with the typical product or service.",
-  "A core principle of Agile software development is...",
-  "Which option represents the most balanced founding-team?",
-  "For a B2B SaaS startup, which is the most effective go-to-market strategy?",
-  "Which unit-economic metric is most critical for a SaaS startup?",
-  "Which legal-entity type is most common for startups?",
-  "Which framework is most commonly used for goal-setting?",
-  "What is the primary purpose of a startup's vision statement?",
-  "After multiple rejections from investors, which response is most productive?"
-];
+// Hierarchical questions data with categories and subcategories
+interface Question {
+  id: string;
+  text: string;
+  category: string;
+  subcategory: string;
+}
 
-const sampleIndustryQuestions = {
-  "HR Tech": [
-    "What is a unique characteristic of the Dutch labor market?",
-    "Match the Dutch employment-law concept with its primary implication.",
-    "Which emerging technological trend is most impactful for HR?",
-    "How can HR tech facilitate the shift toward 'skills-based organizations'?",
-    "Why is a well-designed UX especially critical for HR technology?",
-    "Which customer segment offers the most practical initial opportunity for market entry?",
-    "Match the pricing model with the HR-tech solution it is best suited for.",
-    "What is the most compelling evidence of strong problem-solution fit for an HR-tech idea?"
+const questionsData = {
+  general: [
+    // Problem-Solution Fit & Market Validation
+    {
+      id: "gen-1",
+      text: "Which of the following best defines a 'problem worth solving'?",
+      category: "Problem-Solution Fit & Market Validation",
+      subcategory: "Market Research"
+    },
+    {
+      id: "gen-2", 
+      text: "What is the primary purpose of a startup's vision statement?",
+      category: "Problem-Solution Fit & Market Validation",
+      subcategory: "Customer Discovery"
+    },
+    // Business Model & Revenue Strategy
+    {
+      id: "gen-3",
+      text: "Match each revenue model with the typical product or service.",
+      category: "Business Model & Revenue Strategy", 
+      subcategory: "Revenue Models"
+    },
+    {
+      id: "gen-4",
+      text: "For a B2B SaaS startup, which is the most effective go-to-market strategy?",
+      category: "Business Model & Revenue Strategy",
+      subcategory: "Market Entry"
+    },
+    // Product Development & Technology
+    {
+      id: "gen-5",
+      text: "A core principle of Agile software development is...",
+      category: "Product Development & Technology",
+      subcategory: "Development Process"
+    },
+    // Team Building & Leadership
+    {
+      id: "gen-6",
+      text: "Which option represents the most balanced founding-team?",
+      category: "Team Building & Leadership",
+      subcategory: "Team Formation"
+    },
+    {
+      id: "gen-7",
+      text: "After multiple rejections from investors, which response is most productive?",
+      category: "Team Building & Leadership",
+      subcategory: "Leadership Skills"
+    },
+    // Financial Management & Fundraising
+    {
+      id: "gen-8",
+      text: "Which unit-economic metric is most critical for a SaaS startup?",
+      category: "Financial Management & Fundraising",
+      subcategory: "Financial Planning"
+    },
+    // Legal & IP
+    {
+      id: "gen-9",
+      text: "Which legal-entity type is most common for startups?",
+      category: "Legal & IP",
+      subcategory: "Legal Structure"
+    },
+    // Strategy & Vision
+    {
+      id: "gen-10",
+      text: "Which framework is most commonly used for goal-setting?",
+      category: "Strategy & Vision",
+      subcategory: "Goal Setting"
+    }
   ],
-  "Fintech": [
-    "What is the most critical regulatory consideration for fintech startups?",
-    "Which payment processing model offers the best scalability?",
-    "How do KYC requirements impact fintech product development?",
-    "What is the primary challenge in achieving financial inclusion through technology?"
-  ],
-  "Healthtech": [
-    "What is the most important compliance requirement for healthcare technology?",
-    "Which data privacy regulation has the greatest impact on healthtech startups?",
-    "How do clinical validation requirements affect product development timelines?",
-    "What is the key to successful adoption of healthtech solutions by medical professionals?"
-  ]
+  industrySpecific: {
+    "HR Tech": [
+      {
+        id: "hr-1",
+        text: "What is a unique characteristic of the Dutch labor market?",
+        category: "Ecosystem & Market Specifics",
+        subcategory: "Market Analysis"
+      },
+      {
+        id: "hr-2", 
+        text: "Match the Dutch employment-law concept with its primary implication.",
+        category: "Ecosystem & Market Specifics",
+        subcategory: "Industry Dynamics"
+      },
+      {
+        id: "hr-3",
+        text: "Which emerging technological trend is most impactful for HR?",
+        category: "Industry Trends & Future of Work",
+        subcategory: "Emerging Trends"
+      },
+      {
+        id: "hr-4",
+        text: "How can HR tech facilitate the shift toward 'skills-based organizations'?",
+        category: "Product & Technology Vision",
+        subcategory: "Product Innovation"
+      },
+      {
+        id: "hr-5",
+        text: "Why is a well-designed UX especially critical for HR technology?",
+        category: "Product & Technology Vision", 
+        subcategory: "Technical Vision"
+      },
+      {
+        id: "hr-6",
+        text: "Which customer segment offers the most practical initial opportunity for market entry?",
+        category: "Business Model & Go-to-Market Strategy",
+        subcategory: "Market Strategy"
+      },
+      {
+        id: "hr-7",
+        text: "Match the pricing model with the HR-tech solution it is best suited for.",
+        category: "Business Model & Go-to-Market Strategy",
+        subcategory: "Business Model Innovation"
+      },
+      {
+        id: "hr-8",
+        text: "What is the most compelling evidence of strong problem-solution fit for an HR-tech idea?",
+        category: "Founder & Team Vision",
+        subcategory: "Founder Vision"
+      }
+    ],
+    "Fintech": [
+      {
+        id: "fin-1",
+        text: "What is the most critical regulatory consideration for fintech startups?",
+        category: "Ecosystem & Market Specifics",
+        subcategory: "Industry Dynamics"
+      },
+      {
+        id: "fin-2",
+        text: "Which payment processing model offers the best scalability?",
+        category: "Product & Technology Vision",
+        subcategory: "Technology Roadmap"
+      },
+      {
+        id: "fin-3",
+        text: "How do KYC requirements impact fintech product development?",
+        category: "Product & Technology Vision",
+        subcategory: "Product Innovation"
+      },
+      {
+        id: "fin-4",
+        text: "What is the primary challenge in achieving financial inclusion through technology?",
+        category: "Business Model & Go-to-Market Strategy",
+        subcategory: "Market Strategy"
+      }
+    ],
+    "Healthtech": [
+      {
+        id: "health-1",
+        text: "What is the most important compliance requirement for healthcare technology?",
+        category: "Ecosystem & Market Specifics",
+        subcategory: "Industry Dynamics"
+      },
+      {
+        id: "health-2",
+        text: "Which data privacy regulation has the greatest impact on healthtech startups?",
+        category: "Ecosystem & Market Specifics",
+        subcategory: "Market Analysis"
+      },
+      {
+        id: "health-3",
+        text: "How do clinical validation requirements affect product development timelines?",
+        category: "Product & Technology Vision",
+        subcategory: "Product Innovation"
+      },
+      {
+        id: "health-4",
+        text: "What is the key to successful adoption of healthtech solutions by medical professionals?",
+        category: "Business Model & Go-to-Market Strategy",
+        subcategory: "Launch Strategy"
+      }
+    ]
+  }
 };
 
 // Question limits by index code
@@ -59,7 +205,7 @@ export default function QuestionnaireBuilder() {
   const navigate = useNavigate();
   const questionnaireData = location.state;
   
-  const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
+  const [selectedQuestions, setSelectedQuestions] = useState<Question[]>([]);
   const [generalCount, setGeneralCount] = useState(0);
   const [industryCount, setIndustryCount] = useState(0);
 
@@ -71,20 +217,61 @@ export default function QuestionnaireBuilder() {
   
   // Get industry-specific questions
   const industryQuestions = currentQuestionnaire?.industry && currentQuestionnaire.industry !== "General" && currentQuestionnaire.industry !== "None (General)"
-    ? sampleIndustryQuestions[currentQuestionnaire.industry as keyof typeof sampleIndustryQuestions] || []
+    ? questionsData.industrySpecific[currentQuestionnaire.industry as keyof typeof questionsData.industrySpecific] || []
     : [];
+
+  // Helper functions to organize questions by hierarchy
+  const organizeQuestionsByCategory = (questions: Question[]) => {
+    const organized: { [category: string]: { [subcategory: string]: Question[] } } = {};
+    
+    questions.forEach(question => {
+      if (!organized[question.category]) {
+        organized[question.category] = {};
+      }
+      if (!organized[question.category][question.subcategory]) {
+        organized[question.category][question.subcategory] = [];
+      }
+      organized[question.category][question.subcategory].push(question);
+    });
+    
+    return organized;
+  };
+
+  const organizeSelectedQuestions = () => {
+    return organizeQuestionsByCategory(selectedQuestions);
+  };
 
   // Initialize questions for edit mode
   useEffect(() => {
     if (questionnaireData?.mode === 'edit' && questionnaireData?.questionnaire?.selectedQuestions) {
-      const questions = questionnaireData.questionnaire.selectedQuestions;
+      const questionTexts = questionnaireData.questionnaire.selectedQuestions;
+      const questions: Question[] = [];
+      
+      // Convert question texts back to Question objects
+      questionTexts.forEach((text: string) => {
+        // Find in general questions
+        const generalQuestion = questionsData.general.find(q => q.text === text);
+        if (generalQuestion) {
+          questions.push(generalQuestion);
+          return;
+        }
+        
+        // Find in industry questions
+        Object.values(questionsData.industrySpecific).forEach(industryQuestions => {
+          const industryQuestion = industryQuestions.find(q => q.text === text);
+          if (industryQuestion) {
+            questions.push(industryQuestion);
+          }
+        });
+      });
+      
       setSelectedQuestions(questions);
       
       // Count general and industry questions
       let generalCnt = 0;
       let industryCnt = 0;
-      questions.forEach((question: string) => {
-        if (sampleGeneralQuestions.includes(question)) {
+      questions.forEach((question: Question) => {
+        if (questionsData.general.some(q => q.id === question.id)) {
           generalCnt++;
         } else {
           industryCnt++;
@@ -95,7 +282,7 @@ export default function QuestionnaireBuilder() {
     }
   }, [questionnaireData]);
 
-  const addQuestion = (question: string, type: 'general' | 'industry') => {
+  const addQuestion = (question: Question, type: 'general' | 'industry') => {
     if (type === 'general' && generalCount >= limits.general) return;
     if (type === 'industry' && industryCount >= limits.industrySpecific) return;
     
@@ -107,8 +294,8 @@ export default function QuestionnaireBuilder() {
     }
   };
 
-  const removeQuestion = (index: number, question: string) => {
-    const isGeneral = sampleGeneralQuestions.includes(question);
+  const removeQuestion = (index: number, question: Question) => {
+    const isGeneral = questionsData.general.some(q => q.id === question.id);
     setSelectedQuestions(prev => prev.filter((_, i) => i !== index));
     if (isGeneral) {
       setGeneralCount(prev => Math.max(0, prev - 1));
@@ -128,11 +315,14 @@ export default function QuestionnaireBuilder() {
   };
 
   const handleSaveAndClose = () => {
+    // Convert Question objects back to text strings for storage
+    const questionTexts = selectedQuestions.map(q => q.text);
+    
     // Create updated questionnaire data with selected questions
     if (questionnaireData?.mode === 'edit') {
       const updatedQuestionnaire = {
         ...questionnaireData.questionnaire,
-        selectedQuestions: selectedQuestions,
+        selectedQuestions: questionTexts,
         questions: selectedQuestions.length, // Update question count
         lastModified: new Date().toISOString().split('T')[0]
       };
@@ -147,7 +337,7 @@ export default function QuestionnaireBuilder() {
       // New questionnaire
       const newQuestionnaire = {
         ...questionnaireData,
-        selectedQuestions: selectedQuestions,
+        selectedQuestions: questionTexts,
         questions: selectedQuestions.length,
         lastModified: new Date().toISOString().split('T')[0]
       };
@@ -222,28 +412,52 @@ export default function QuestionnaireBuilder() {
                     <h3 className="font-semibold mb-3 flex items-center justify-between">
                       General Questions
                       <span className="text-sm text-muted-foreground">
-                        {generalCount >= limits.general ? 'Limit reached' : `${sampleGeneralQuestions.length} available`}
+                        {generalCount >= limits.general ? 'Limit reached' : `${questionsData.general.length} available`}
                       </span>
                     </h3>
-                    <div className="space-y-2 overflow-y-auto max-h-64">
-                      {sampleGeneralQuestions.map((question, index) => (
-                        <div 
-                          key={index}
-                          className="flex items-center justify-between p-3 border border-border rounded-lg bg-background hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex-1">
-                            <p className="text-sm">{question}</p>
-                          </div>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => addQuestion(question, 'general')}
-                            disabled={generalCount >= limits.general || selectedQuestions.includes(question)}
-                          >
-                            Add →
-                          </Button>
-                        </div>
-                      ))}
+                    <div className="overflow-y-auto max-h-64">
+                      <Accordion type="multiple" className="w-full">
+                        {Object.entries(organizeQuestionsByCategory(questionsData.general)).map(([category, subcategories]) => (
+                          <AccordionItem key={category} value={category}>
+                            <AccordionTrigger className="text-sm font-medium">
+                              {category}
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <Accordion type="multiple" className="w-full pl-4">
+                                {Object.entries(subcategories).map(([subcategory, questions]) => (
+                                  <AccordionItem key={subcategory} value={subcategory}>
+                                    <AccordionTrigger className="text-xs">
+                                      {subcategory}
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                      <div className="space-y-2">
+                                        {questions.map((question) => (
+                                          <div 
+                                            key={question.id}
+                                            className="flex items-center justify-between p-3 border border-border rounded-lg bg-background hover:bg-muted/50 transition-colors"
+                                          >
+                                            <div className="flex-1">
+                                              <p className="text-sm">{question.text}</p>
+                                            </div>
+                                            <Button 
+                                              size="sm" 
+                                              variant="outline"
+                                              onClick={() => addQuestion(question, 'general')}
+                                              disabled={generalCount >= limits.general || selectedQuestions.some(q => q.id === question.id)}
+                                            >
+                                              Add →
+                                            </Button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                ))}
+                              </Accordion>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
                     </div>
                   </div>
 
@@ -258,25 +472,49 @@ export default function QuestionnaireBuilder() {
                            {industryCount >= limits.industrySpecific ? 'Limit reached' : `${industryQuestions.length} available`}
                          </span>
                        </h3>
-                      <div className="space-y-2 overflow-y-auto max-h-64">
-                        {industryQuestions.map((question, index) => (
-                          <div 
-                            key={index}
-                            className="flex items-center justify-between p-3 border border-border rounded-lg bg-background hover:bg-muted/50 transition-colors"
-                          >
-                            <div className="flex-1">
-                              <p className="text-sm">{question}</p>
-                            </div>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => addQuestion(question, 'industry')}
-                              disabled={industryCount >= limits.industrySpecific || selectedQuestions.includes(question)}
-                            >
-                              Add →
-                            </Button>
-                          </div>
-                        ))}
+                      <div className="overflow-y-auto max-h-64">
+                        <Accordion type="multiple" className="w-full">
+                          {Object.entries(organizeQuestionsByCategory(industryQuestions)).map(([category, subcategories]) => (
+                            <AccordionItem key={category} value={category}>
+                              <AccordionTrigger className="text-sm font-medium">
+                                {category}
+                              </AccordionTrigger>
+                              <AccordionContent>
+                                <Accordion type="multiple" className="w-full pl-4">
+                                  {Object.entries(subcategories).map(([subcategory, questions]) => (
+                                    <AccordionItem key={subcategory} value={subcategory}>
+                                      <AccordionTrigger className="text-xs">
+                                        {subcategory}
+                                      </AccordionTrigger>
+                                      <AccordionContent>
+                                        <div className="space-y-2">
+                                          {questions.map((question) => (
+                                            <div 
+                                              key={question.id}
+                                              className="flex items-center justify-between p-3 border border-border rounded-lg bg-background hover:bg-muted/50 transition-colors"
+                                            >
+                                              <div className="flex-1">
+                                                <p className="text-sm">{question.text}</p>
+                                              </div>
+                                              <Button 
+                                                size="sm" 
+                                                variant="outline"
+                                                onClick={() => addQuestion(question, 'industry')}
+                                                disabled={industryCount >= limits.industrySpecific || selectedQuestions.some(q => q.id === question.id)}
+                                              >
+                                                Add →
+                                              </Button>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </AccordionContent>
+                                    </AccordionItem>
+                                  ))}
+                                </Accordion>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
                       </div>
                     </div>
                   )}
@@ -317,54 +555,83 @@ export default function QuestionnaireBuilder() {
                       </div>
                     </div>
                   ) : (
-                    <DragDropContext onDragEnd={onDragEnd}>
-                      <Droppable droppableId="selected-questions">
-                        {(provided) => (
-                          <div 
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                            className="space-y-2 overflow-y-auto"
-                          >
-                            {selectedQuestions.map((question, index) => (
-                              <Draggable 
-                                key={`${question}-${index}`} 
-                                draggableId={`${question}-${index}`} 
-                                index={index}
-                              >
-                                {(provided, snapshot) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    className={`flex items-center gap-3 p-3 border border-border rounded-lg bg-background transition-colors ${
-                                      snapshot.isDragging ? 'shadow-lg' : 'hover:bg-muted/50'
-                                    }`}
-                                  >
-                                    <div 
-                                      {...provided.dragHandleProps}
-                                      className="text-muted-foreground cursor-grab active:cursor-grabbing"
-                                    >
-                                      <GripVertical className="h-4 w-4" />
-                                    </div>
-                                    <div className="flex-1">
-                                      <p className="text-sm">{question}</p>
-                                    </div>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      onClick={() => removeQuestion(index, question)}
-                                      className="text-muted-foreground hover:text-destructive"
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </Draggable>
-                            ))}
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    </DragDropContext>
+                    <div className="overflow-y-auto">
+                      <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="selected-questions">
+                          {(provided) => (
+                            <div 
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                              className="space-y-4"
+                            >
+                              <Accordion type="multiple" className="w-full" defaultValue={Object.keys(organizeSelectedQuestions())}>
+                                {Object.entries(organizeSelectedQuestions()).map(([category, subcategories]) => (
+                                  <AccordionItem key={category} value={category}>
+                                    <AccordionTrigger className="text-sm font-medium">
+                                      {category}
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                      <Accordion type="multiple" className="w-full pl-4" defaultValue={Object.keys(subcategories)}>
+                                        {Object.entries(subcategories).map(([subcategory, questions]) => (
+                                          <AccordionItem key={subcategory} value={subcategory}>
+                                            <AccordionTrigger className="text-xs">
+                                              {subcategory}
+                                            </AccordionTrigger>
+                                            <AccordionContent>
+                                              <div className="space-y-2">
+                                                {questions.map((question, questionIndex) => {
+                                                  const globalIndex = selectedQuestions.findIndex(q => q.id === question.id);
+                                                  return (
+                                                    <Draggable 
+                                                      key={question.id} 
+                                                      draggableId={question.id} 
+                                                      index={globalIndex}
+                                                    >
+                                                      {(provided, snapshot) => (
+                                                        <div
+                                                          ref={provided.innerRef}
+                                                          {...provided.draggableProps}
+                                                          className={`flex items-center gap-3 p-3 border border-border rounded-lg bg-background transition-colors ${
+                                                            snapshot.isDragging ? 'shadow-lg' : 'hover:bg-muted/50'
+                                                          }`}
+                                                        >
+                                                          <div 
+                                                            {...provided.dragHandleProps}
+                                                            className="text-muted-foreground cursor-grab active:cursor-grabbing"
+                                                          >
+                                                            <GripVertical className="h-4 w-4" />
+                                                          </div>
+                                                          <div className="flex-1">
+                                                            <p className="text-sm">{question.text}</p>
+                                                          </div>
+                                                          <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() => removeQuestion(globalIndex, question)}
+                                                            className="text-muted-foreground hover:text-destructive"
+                                                          >
+                                                            <X className="h-4 w-4" />
+                                                          </Button>
+                                                        </div>
+                                                      )}
+                                                    </Draggable>
+                                                  );
+                                                })}
+                                              </div>
+                                            </AccordionContent>
+                                          </AccordionItem>
+                                        ))}
+                                      </Accordion>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                ))}
+                              </Accordion>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      </DragDropContext>
+                    </div>
                   )}
                 </CardContent>
               </Card>

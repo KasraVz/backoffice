@@ -82,6 +82,9 @@ const questionTaxonomy = {
   }
 };
 
+// Export the taxonomy for use in other components
+export { questionTaxonomy };
+
 export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, editingQuestion }: CreateQuestionModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedColumnAIndex, setSelectedColumnAIndex] = useState<number | null>(null);

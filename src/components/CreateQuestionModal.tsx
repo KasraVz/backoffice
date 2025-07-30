@@ -36,85 +36,50 @@ const behavioralCodes = [
 
 const indexCodes = ["FPA", "EEA"];
 
-const categoriesData = {
-  "FPA": {
-    "General": [
-      "Problem-Solution Fit & Market Validation",
-      "Business Model & Revenue Strategy", 
-      "Product Development & Technology",
-      "Team Building & Leadership",
-      "Sales, Marketing & Customer Acquisition",
-      "Financial Management & Fundraising",
-      "Legal & IP",
-      "Operations & Execution",
-      "Strategy & Vision",
-      "Personal & Entrepreneurial Skills"
-    ],
-    "Industry-Specific": [
-      "Industry Trends & Future of Work",
-      "Ecosystem & Market Specifics",
-      "Product & Technology Vision", 
-      "Business Model & Go-to-Market Strategy",
-      "Founder & Team Vision"
-    ]
+const questionTaxonomy = {
+  FPA: {
+    General: {
+      "Problem-Solution Fit & Market Validation": ["Market Research", "Customer Discovery", "MVP Development"],
+      "Business Model & Revenue Strategy": ["Revenue Models", "Pricing Strategy", "Market Entry"],
+      "Product Development & Technology": ["Technology Stack", "Development Process", "Innovation"],
+      "Team Building & Leadership": ["Team Formation", "Leadership Skills", "Culture Building"],
+      "Sales, Marketing & Customer Acquisition": ["Sales Strategy", "Marketing Channels", "Customer Retention"],
+      "Financial Management & Fundraising": ["Financial Planning", "Investment Strategy", "Cash Flow Management"],
+      "Legal & IP": ["Intellectual Property", "Legal Structure", "Compliance"],
+      "Operations & Execution": ["Process Management", "Quality Control", "Scaling Operations"],
+      "Strategy & Vision": ["Strategic Planning", "Vision Development", "Goal Setting"],
+      "Personal & Entrepreneurial Skills": ["Entrepreneurial Mindset", "Personal Development", "Skill Building"]
+    },
+    "Industry-Specific": {
+      "Industry Trends & Future of Work": ["Emerging Trends", "Future Predictions", "Market Evolution"],
+      "Ecosystem & Market Specifics": ["Market Analysis", "Competitive Landscape", "Industry Dynamics"],
+      "Product & Technology Vision": ["Technology Roadmap", "Product Innovation", "Technical Vision"],
+      "Business Model & Go-to-Market Strategy": ["Market Strategy", "Business Model Innovation", "Launch Strategy"],
+      "Founder & Team Vision": ["Founder Vision", "Team Alignment", "Leadership Vision"]
+    }
   },
-  "EEA": {
-    "General": [
-      "Quantity and Quality of Startups",
-      "Availability of Funding and Investment",
-      "Support Systems and Infrastructure", 
-      "Networking and Community",
-      "Government and Policy",
-      "Culture and Mindset",
-      "Recurring problems"
-    ],
-    "Industry-Specific": [
-      "Quantity and Quality of Startups",
-      "Availability of Funding and Investment",
-      "Talent and Human Capital",
-      "Support Systems and Infrastructure",
-      "Networking and Community", 
-      "Government and Policy",
-      "Culture and Mindset",
-      "Startup Domains",
-      "Environmental Awareness"
-    ]
+  EEA: {
+    General: {
+      "Quantity and Quality of Startups": ["Startup Success Rate", "Innovation Level"],
+      "Availability of Funding and Investment": ["Angel Investors", "Venture Capital (VC) Firms", "Corporate Venture Capital", "Crowdfunding Platforms"],
+      "Support Systems and Infrastructure": ["Coworking Spaces and Innovation Hubs", "Professional Services", "Physical Infrastructure"],
+      "Networking and Community": ["Industry Clusters"],
+      "Government and Policy": ["Intellectual Property Protection", "Tax Policies", "Government Support Programs"],
+      "Culture and Mindset": ["Entrepreneurial Culture", "Risk Tolerance", "Openness to Innovation"],
+      "Recurring problems": ["Negative reputation", "Impactful external problem", "Made in reputation problem"]
+    },
+    "Industry-Specific": {
+      "Quantity and Quality of Startups": ["Density of Startups"],
+      "Availability of Funding and Investment": ["Government Grants and Funding"],
+      "Talent and Human Capital": ["Skilled Workforce", "Educational Institutions", "Entrepreneurial Experience", "Talent Attraction and Retention"],
+      "Support Systems and Infrastructure": ["Incubators and Accelerators", "Mentorship Networks"],
+      "Networking and Community": ["Startup Events and Meetups", "Informal Networks", "Community Culture"],
+      "Government and Policy": ["Startup-Friendly Regulations"],
+      "Culture and Mindset": ["Success Stories and Role Models"],
+      "Startup Domains": ["Domain-Specific Depth and Expertise", "Domain-Relevant Resources and Infrastructure", "Market Opportunity and Adoption within the Domain", "Domain-Focused Networking and Collaboration"],
+      "Environmental Awareness": ["Awareness of influential players", "Awareness of living costs", "Awareness of hiring costs", "Knowledge channel"]
+    }
   }
-};
-
-const subCategoriesData = {
-  // FPA General sub-categories
-  "Problem-Solution Fit & Market Validation": ["Market Research", "Customer Discovery", "MVP Development"],
-  "Business Model & Revenue Strategy": ["Revenue Models", "Pricing Strategy", "Market Entry"],
-  "Product Development & Technology": ["Technology Stack", "Development Process", "Innovation"],
-  "Team Building & Leadership": ["Team Formation", "Leadership Skills", "Culture Building"],
-  "Sales, Marketing & Customer Acquisition": ["Sales Strategy", "Marketing Channels", "Customer Retention"],
-  "Financial Management & Fundraising": ["Financial Planning", "Investment Strategy", "Cash Flow Management"],
-  "Legal & IP": ["Intellectual Property", "Legal Structure", "Compliance"],
-  "Operations & Execution": ["Process Management", "Quality Control", "Scaling Operations"],
-  "Strategy & Vision": ["Strategic Planning", "Vision Development", "Goal Setting"],
-  "Personal & Entrepreneurial Skills": ["Entrepreneurial Mindset", "Personal Development", "Skill Building"],
-  
-  // FPA Industry-Specific sub-categories
-  "Industry Trends & Future of Work": ["Emerging Trends", "Future Predictions", "Market Evolution"],
-  "Ecosystem & Market Specifics": ["Market Analysis", "Competitive Landscape", "Industry Dynamics"],
-  "Product & Technology Vision": ["Technology Roadmap", "Product Innovation", "Technical Vision"],
-  "Business Model & Go-to-Market Strategy": ["Market Strategy", "Business Model Innovation", "Launch Strategy"],
-  "Founder & Team Vision": ["Founder Vision", "Team Alignment", "Leadership Vision"],
-  
-  // EEA General sub-categories  
-  "Quantity and Quality of Startups": ["Startup Metrics", "Quality Assessment", "Growth Indicators"],
-  "Availability of Funding and Investment": ["Funding Sources", "Investment Climate", "Capital Access"],
-  "Support Systems and Infrastructure": ["Incubators", "Accelerators", "Support Networks"],
-  "Networking and Community": ["Community Building", "Professional Networks", "Collaboration"],
-  "Government and Policy": ["Policy Framework", "Regulatory Environment", "Government Support"],
-  "Culture and Mindset": ["Entrepreneurial Culture", "Risk Tolerance", "Innovation Mindset"],
-  "Recurring problems": ["Common Challenges", "Systemic Issues", "Problem Patterns"],
-  
-  // EEA Industry-Specific sub-categories
-  "Talent and Human Capital": ["Skill Development", "Talent Acquisition", "Human Resources"],
-  "Startup Domains": ["Industry Sectors", "Domain Expertise", "Specialization Areas"],
-  "Environmental Awareness": ["Sustainability", "Environmental Impact", "Green Innovation"]
 };
 
 export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, editingQuestion }: CreateQuestionModalProps) {
@@ -590,7 +555,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                     <SelectValue placeholder="Choose a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoriesData[questionData.indexCode as keyof typeof categoriesData]?.[questionData.scope as keyof typeof categoriesData.FPA]?.map((category) => (
+                    {Object.keys(questionTaxonomy[questionData.indexCode as keyof typeof questionTaxonomy]?.[questionData.scope] || {}).map((category) => (
                       <SelectItem key={category} value={category}>{category}</SelectItem>
                     ))}
                   </SelectContent>
@@ -598,7 +563,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               </div>
             )}
 
-            {questionData.category && subCategoriesData[questionData.category] && (
+            {questionData.category && questionTaxonomy[questionData.indexCode as keyof typeof questionTaxonomy]?.[questionData.scope]?.[questionData.category] && (
               <div className="space-y-2">
                 <Label htmlFor="sub-category">Select a Sub-Category</Label>
                 <Select 
@@ -609,7 +574,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                     <SelectValue placeholder="Choose a sub-category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {subCategoriesData[questionData.category].map((subCat) => (
+                    {questionTaxonomy[questionData.indexCode as keyof typeof questionTaxonomy]?.[questionData.scope]?.[questionData.category]?.map((subCat) => (
                       <SelectItem key={subCat} value={subCat}>{subCat}</SelectItem>
                     ))}
                   </SelectContent>

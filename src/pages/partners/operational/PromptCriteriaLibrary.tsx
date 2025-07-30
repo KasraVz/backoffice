@@ -19,10 +19,10 @@ const mockCriteria = [{
   industry: "General"
 }, {
   id: 2,
-  promptText: "As an expert in HR Tech for Series A companies, evaluate these questions for technical accuracy and practical applicability.",
-  tags: ["EEA", "Series A", "HR Tech"],
+  promptText: "As an expert in HR Tech for Early Stage companies, evaluate these questions for technical accuracy and practical applicability.",
+  tags: ["EEA", "Early Stage", "HR Tech"],
   indexCode: "EEA",
-  stage: "Series A",
+  stage: "Early Stage",
   category: "Human Resources",
   industry: "HR Tech"
 }];
@@ -171,7 +171,8 @@ const PromptCriteriaLibrary = () => {
                           <SelectContent>
                             <SelectItem value="Pre-seed">Pre-seed</SelectItem>
                             <SelectItem value="Seed">Seed</SelectItem>
-                            <SelectItem value="Series A">Series A</SelectItem>
+                            <SelectItem value="Early Stage">Early Stage</SelectItem>
+                            <SelectItem value="Growth Stage">Growth Stage</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

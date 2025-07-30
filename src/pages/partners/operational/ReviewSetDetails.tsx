@@ -49,7 +49,7 @@ const mockReviewSets = {
   "102": {
     id: "102", 
     assignedTo: "Prof. Michael Chen",
-    description: "EEA - HR Tech - Series A",
+    description: "EEA - HR Tech - Early Stage",
     status: "In Progress"
   },
   "103": {

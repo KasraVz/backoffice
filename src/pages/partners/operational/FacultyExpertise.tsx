@@ -25,7 +25,7 @@ const mockFacultyMembers = [{
 }];
 const mockExpertiseData = {
   indexCodes: ["FPA", "EEA", "TDA"],
-  stages: ["Pre-seed", "Seed", "Series A"],
+  stages: ["Pre-seed", "Seed", "Early Stage", "Growth Stage"],
   industries: ["Finance", "HR Tech", "Healthtech", "EdTech"],
   categories: ["Financial Management & Fundraising", "Marketing & Sales", "Operations"]
 };
@@ -34,7 +34,7 @@ const FacultyExpertiseProfiles = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expertise, setExpertise] = useState({
     indexCodes: ["FPA", "EEA"],
-    stages: ["Seed", "Series A"],
+    stages: ["Seed", "Early Stage"],
     industries: ["Finance", "HR Tech"],
     categories: ["Financial Management & Fundraising"]
   });

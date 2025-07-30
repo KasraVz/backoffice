@@ -13,10 +13,10 @@ const mockQuestionSets = [
   },
   {
     id: "102",
-    title: "EEA: Human Resources - Series A",
+    title: "EEA: Human Resources - Early Stage",
     questionCount: 18,
     status: "In Progress",
-    description: "Evaluate HR-related questions for Series A stage companies."
+    description: "Evaluate HR-related questions for Early Stage companies."
   },
   {
     id: "103",

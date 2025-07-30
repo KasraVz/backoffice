@@ -488,14 +488,10 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                   <SelectValue placeholder="Choose a stage" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ideation">Ideation</SelectItem>
                   <SelectItem value="Pre-seed">Pre-seed</SelectItem>
                   <SelectItem value="Seed">Seed</SelectItem>
-                  <SelectItem value="Series A">Series A</SelectItem>
-                  <SelectItem value="growth stage (Series B & C)">Growth Stage (Series B & C)</SelectItem>
-                  <SelectItem value="expansion">Expansion</SelectItem>
-                  <SelectItem value="maturity">Maturity</SelectItem>
-                  <SelectItem value="exit/evolution">Exit/Evolution</SelectItem>
+                  <SelectItem value="Early Stage">Early Stage</SelectItem>
+                  <SelectItem value="Growth Stage">Growth Stage</SelectItem>
                 </SelectContent>
               </Select>
             </div>

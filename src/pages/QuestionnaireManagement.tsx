@@ -12,6 +12,25 @@ import { Plus, ArrowLeft, Pen, Eye, Trash2, Send, Copy, Archive, RotateCcw, Rock
 import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+const idAbbreviations = {
+  stages: {
+    "Pre-seed": "PRE",
+    "Seed": "SEE",
+    "Early Stage": "EAR",
+    "Growth Stage": "GRO"
+  },
+  industries: {
+    "General": "GEN",
+    "HR Tech": "HRT",
+    "Fintech": "FIN",
+    "Healthtech": "HTH",
+    "SaaS": "SAA",
+    "E-commerce": "ECO",
+    "EdTech": "EDU",
+    "CleanTech": "CTH"
+  }
+};
+
 const mockQuestionnaires = {
   drafts: [{
     questionnaireId: "FPA-GEN-PRE-1",
@@ -37,10 +56,10 @@ const mockQuestionnaires = {
     selectedQuestions: ["What is the most critical regulatory consideration for fintech startups?", "Which payment processing model offers the best scalability?"]
   }],
   active: [{
-    questionnaireId: "FPA-GEN-SRA-2",
+    questionnaireId: "FPA-GEN-EAR-2",
     series: 2,
     indexCode: "FPA",
-    stage: "Series A",
+    stage: "Early Stage",
     industry: "General",
     version: "2.0",
     status: "Active",
@@ -60,10 +79,10 @@ const mockQuestionnaires = {
     selectedQuestions: []
   }],
   archived: [{
-    questionnaireId: "FPA-SAA-SRB-3",
+    questionnaireId: "FPA-SAA-GRO-3",
     series: 3,
     indexCode: "FPA",
-    stage: "Series B",
+    stage: "Growth Stage",
     industry: "SaaS",
     version: "3.0",
     status: "Archived",
@@ -131,15 +150,40 @@ export default function QuestionnaireManagement() {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+  const generateQuestionnaireId = () => {
+    const industry = newQuestionnaire.industry === "None (General)" ? "General" : newQuestionnaire.industry;
+    const industryAbbr = idAbbreviations.industries[industry] || "GEN";
+    const stageAbbr = idAbbreviations.stages[newQuestionnaire.stage] || "PRE";
+    
+    // Find highest existing series for this combination
+    const allQuestionnaires = [...questionnaires.drafts, ...questionnaires.active, ...questionnaires.archived];
+    const matchingQuestionnaires = allQuestionnaires.filter(q => 
+      q.indexCode === newQuestionnaire.indexCode &&
+      q.industry === industry &&
+      q.stage === newQuestionnaire.stage
+    );
+    
+    const nextSeries = matchingQuestionnaires.length > 0 
+      ? Math.max(...matchingQuestionnaires.map(q => q.series)) + 1 
+      : 1;
+    
+    return `${newQuestionnaire.indexCode}-${industryAbbr}-${stageAbbr}-${nextSeries}`;
+  };
+
   const handleCreateNew = () => {
     if (newQuestionnaire.name && newQuestionnaire.indexCode && newQuestionnaire.stage) {
+      const questionnaireId = generateQuestionnaireId();
+      const industry = newQuestionnaire.industry === "None (General)" ? "General" : newQuestionnaire.industry;
+      
       // Navigate to builder with the questionnaire data
       navigate(`/questionnaires/builder/new`, {
         state: {
-          name: newQuestionnaire.name,
+          questionnaireId: questionnaireId,
+          name: questionnaireId,
+          description: newQuestionnaire.name,
           indexCode: newQuestionnaire.indexCode,
           stage: newQuestionnaire.stage,
-          industry: newQuestionnaire.industry === "None (General)" ? "General" : newQuestionnaire.industry,
+          industry: industry,
           version: "1.0"
         }
       });
@@ -332,14 +376,10 @@ export default function QuestionnaireManagement() {
                           <SelectValue placeholder="Select Stage" />
                         </SelectTrigger>
                         <SelectContent className="bg-background border border-border z-50">
-                          <SelectItem value="ideation">Ideation</SelectItem>
                           <SelectItem value="Pre-seed">Pre-seed</SelectItem>
                           <SelectItem value="Seed">Seed</SelectItem>
-                          <SelectItem value="Series A">Series A</SelectItem>
-                          <SelectItem value="growth stage (Series B & C)">Growth Stage (Series B & C)</SelectItem>
-                          <SelectItem value="expansion">Expansion</SelectItem>
-                          <SelectItem value="maturity">Maturity</SelectItem>
-                          <SelectItem value="exit/evolution">Exit/Evolution</SelectItem>
+                          <SelectItem value="Early Stage">Early Stage</SelectItem>
+                          <SelectItem value="Growth Stage">Growth Stage</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -404,14 +444,10 @@ export default function QuestionnaireManagement() {
             </SelectTrigger>
             <SelectContent className="bg-background border border-border z-50">
               <SelectItem value="all">All Stages</SelectItem>
-              <SelectItem value="ideation">Ideation</SelectItem>
               <SelectItem value="Pre-seed">Pre-seed</SelectItem>
               <SelectItem value="Seed">Seed</SelectItem>
-              <SelectItem value="Series A">Series A</SelectItem>
-              <SelectItem value="growth stage (Series B & C)">Growth Stage (Series B & C)</SelectItem>
-              <SelectItem value="expansion">Expansion</SelectItem>
-              <SelectItem value="maturity">Maturity</SelectItem>
-              <SelectItem value="exit/evolution">Exit/Evolution</SelectItem>
+              <SelectItem value="Early Stage">Early Stage</SelectItem>
+              <SelectItem value="Growth Stage">Growth Stage</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -22,7 +22,7 @@ const mockFacultyMembers = [
 
 const filterOptions = {
   indexCode: ["FPA", "EEA", "TDA", "IPA"],
-  stage: ["Pre-seed", "Seed", "Series A", "Series B", "Growth"],
+  stage: ["Pre-seed", "Seed", "Early Stage", "Growth Stage"],
   category: [
     "Financial Management & Fundraising",
     "Business Strategy & Market Analysis",

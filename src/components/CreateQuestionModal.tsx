@@ -187,7 +187,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
 
   const steps = [
     { number: 1, title: "Details & Properties" },
-    { number: 2, title: "Define Answers & Scoring" }, 
+    { number: 2, title: "Define Choices & Scoring" }, 
     { number: 3, title: "Preview & Confirm" }
   ];
 
@@ -415,7 +415,48 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                 placeholder="Enter your question..."
                 value={questionData.questionText}
                 onChange={(e) => setQuestionData(prev => ({ ...prev, questionText: e.target.value }))}
-                className="min-h-24"
+                className="min-h-24 w-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="answer-type">Question Type</Label>
+              <Select 
+                value={questionData.answerType} 
+                onValueChange={(value: any) => setQuestionData(prev => ({ ...prev, answerType: value, choices: [], columnA: [], columnB: [], correctAnswers: [], rankings: {} }))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose question type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="single-choice">Single Choice</SelectItem>
+                  <SelectItem value="multiple-choice">Multiple Choice</SelectItem>
+                  <SelectItem value="ranking">Ranking</SelectItem>
+                  <SelectItem value="matching">Matching</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="question-weight">Score Weight</Label>
+              <Input
+                id="question-weight"
+                type="number"
+                min="0"
+                step="0.1"
+                placeholder="Enter question weight (optional)"
+                value={questionData.weights.question?.weight || ''}
+                onChange={(e) => setQuestionData(prev => ({
+                  ...prev,
+                  weights: {
+                    ...prev.weights,
+                    question: {
+                      ...prev.weights.question,
+                      weight: e.target.value ? parseFloat(e.target.value) : undefined
+                    }
+                  }
+                }))}
+                className="w-full"
               />
             </div>
 
@@ -425,7 +466,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                 value={questionData.behavioralCode} 
                 onValueChange={(value) => setQuestionData(prev => ({ ...prev, behavioralCode: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose a behavioral code" />
                 </SelectTrigger>
                 <SelectContent>
@@ -442,7 +483,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                 value={questionData.stage} 
                 onValueChange={(value) => setQuestionData(prev => ({ ...prev, stage: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose a stage" />
                 </SelectTrigger>
                 <SelectContent>
@@ -470,7 +511,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                   scope: "General" 
                 }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose an index code" />
                 </SelectTrigger>
                 <SelectContent>
@@ -512,7 +553,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                   value={questionData.category} 
                   onValueChange={(value) => setQuestionData(prev => ({ ...prev, category: value, subCategory: "" }))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Choose a category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -531,7 +572,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                   value={questionData.subCategory} 
                   onValueChange={(value) => setQuestionData(prev => ({ ...prev, subCategory: value }))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Choose a sub-category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -568,45 +609,6 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       case 2:
         return (
           <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="answer-type">Select an Answer Type</Label>
-              <Select 
-                value={questionData.answerType} 
-                onValueChange={(value: any) => setQuestionData(prev => ({ ...prev, answerType: value, choices: [], columnA: [], columnB: [], correctAnswers: [], rankings: {} }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose answer type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="single-choice">Single Choice</SelectItem>
-                  <SelectItem value="multiple-choice">Multiple Choice</SelectItem>
-                  <SelectItem value="ranking">Ranking</SelectItem>
-                  <SelectItem value="matching">Matching</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="question-weight">Score Weight</Label>
-              <Input
-                id="question-weight"
-                type="number"
-                min="0"
-                step="0.1"
-                placeholder="Enter question weight (optional)"
-                value={questionData.weights.question?.weight || ''}
-                onChange={(e) => setQuestionData(prev => ({
-                  ...prev,
-                  weights: {
-                    ...prev.weights,
-                    question: {
-                      ...prev.weights.question,
-                      weight: e.target.value ? parseFloat(e.target.value) : undefined
-                    }
-                  }
-                }))}
-              />
-            </div>
 
             {/* Single Choice and Multiple Choice */}
             {(questionData.answerType === "single-choice" || questionData.answerType === "multiple-choice") && (

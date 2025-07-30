@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
-import { Plus, ArrowLeft, Pen, Eye, Trash2, Send, Copy, Archive, RotateCcw, Rocket, ArrowUp, X } from "lucide-react";
+import { Plus, ArrowLeft, Pen, Eye, Trash2, Send, Copy, Archive, RotateCcw, Rocket, ArrowUp, X, Check } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { useToast } from "@/hooks/use-toast";
 const idAbbreviations = {
   stages: {
     "Pre-seed": "PRE",
@@ -114,11 +115,11 @@ export default function QuestionnaireManagement() {
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<any>(null);
   const [questionnaires, setQuestionnaires] = useState(mockQuestionnaires);
   const [newQuestionnaire, setNewQuestionnaire] = useState({
-    name: "",
     indexCode: "",
     stage: "",
     industry: ""
   });
+  const { toast } = useToast();
 
   // Handle questionnaire data returned from QuestionnaireBuilder
   useEffect(() => {
@@ -171,7 +172,7 @@ export default function QuestionnaireManagement() {
   };
 
   const handleCreateNew = () => {
-    if (newQuestionnaire.name && newQuestionnaire.indexCode && newQuestionnaire.stage) {
+    if (newQuestionnaire.indexCode && newQuestionnaire.stage) {
       const questionnaireId = generateQuestionnaireId();
       const industry = newQuestionnaire.industry === "None (General)" ? "General" : newQuestionnaire.industry;
       
@@ -180,7 +181,6 @@ export default function QuestionnaireManagement() {
         state: {
           questionnaireId: questionnaireId,
           name: questionnaireId,
-          description: newQuestionnaire.name,
           indexCode: newQuestionnaire.indexCode,
           stage: newQuestionnaire.stage,
           industry: industry,
@@ -191,14 +191,13 @@ export default function QuestionnaireManagement() {
       // Reset and close modal
       setIsModalOpen(false);
       setNewQuestionnaire({
-        name: "",
         indexCode: "",
         stage: "",
         industry: ""
       });
     }
   };
-  const isFormValid = newQuestionnaire.name && newQuestionnaire.indexCode && newQuestionnaire.stage && newQuestionnaire.industry;
+  const isFormValid = newQuestionnaire.indexCode && newQuestionnaire.stage && newQuestionnaire.industry;
   const handlePreview = (questionnaire: any) => {
     setSelectedQuestionnaire(questionnaire);
     setIsPreviewOpen(true);
@@ -210,10 +209,7 @@ export default function QuestionnaireManagement() {
   const handlePublish = (questionnaire: any) => {
     setQuestionnaires(prev => ({
       ...prev,
-      drafts: prev.drafts.map(q => q.questionnaireId === questionnaire.questionnaireId ? {
-        ...q,
-        status: "Active"
-      } : q),
+      drafts: prev.drafts.filter(q => q.questionnaireId !== questionnaire.questionnaireId),
       active: [...prev.active, {
         ...questionnaire,
         status: "Active"
@@ -253,15 +249,64 @@ export default function QuestionnaireManagement() {
     setIsDeleteConfirmOpen(false);
     setSelectedQuestionnaire(null);
   };
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copied!",
+        description: "Questionnaire ID copied to clipboard",
+        duration: 2000,
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Please try again",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleEdit = (questionnaire: any) => {
+    if (questionnaire.status === "Active") {
+      // Create new draft version for active questionnaire
+      const currentVersion = parseFloat(questionnaire.version);
+      const newVersion = (currentVersion + 1.0).toFixed(1);
+      
+      const newDraft = {
+        ...questionnaire,
+        version: newVersion,
+        status: "Draft",
+        lastModified: new Date().toISOString().split('T')[0]
+      };
+      
+      setQuestionnaires(prev => ({
+        ...prev,
+        drafts: [...prev.drafts, newDraft]
+      }));
+      
+      // Navigate to builder with new draft
+      navigate(`/questionnaires/builder`, {
+        state: {
+          questionnaire: newDraft,
+          mode: 'edit'
+        }
+      });
+    } else {
+      // For drafts, just open in builder
+      navigate(`/questionnaires/builder`, {
+        state: {
+          questionnaire: questionnaire,
+          mode: 'edit'
+        }
+      });
+    }
+  };
+
   const renderActionButtons = (row: any) => {
     if (row.status === "Draft") {
       return <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate(`/questionnaires/builder`, {
-          state: {
-            questionnaire: row,
-            mode: 'edit'
-          }
-        })} title="Edit Builder">
+          <Button variant="outline" size="sm" onClick={() => handleEdit(row)} title="Edit Builder">
             <Pen className="h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" onClick={() => handlePreview(row)} title="Preview">
@@ -276,11 +321,11 @@ export default function QuestionnaireManagement() {
         </div>;
     } else if (row.status === "Active") {
       return <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => handleEdit(row)} title="Edit (Create New Version)">
+            <Pen className="h-4 w-4" />
+          </Button>
           <Button variant="outline" size="sm" onClick={() => handlePreview(row)} title="View">
             <Eye className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" title="Duplicate">
-            <Copy className="h-4 w-4" />
           </Button>
           <Button variant="secondary" size="sm" onClick={() => handleArchive(row)} title="Archive">
             <Archive className="h-4 w-4" />
@@ -342,13 +387,6 @@ export default function QuestionnaireManagement() {
                     <DialogTitle>Create New Questionnaire</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="questionnaire-name">Questionnaire Name</Label>
-                      <Input id="questionnaire-name" value={newQuestionnaire.name} onChange={e => setNewQuestionnaire({
-                      ...newQuestionnaire,
-                      name: e.target.value
-                    })} placeholder="e.g., FPA General - Pre-Seed v1.0" />
-                    </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="index-code">Select Index Code</Label>
@@ -546,6 +584,26 @@ function DataTable({
   getStatusBadge,
   renderActions
 }: DataTableProps) {
+  const { toast } = useToast();
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copied!",
+        description: "Questionnaire ID copied to clipboard",
+        duration: 2000,
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Please try again",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  };
+
   return <div className="border border-border rounded-lg">
       <Table>
         <TableHeader>
@@ -563,7 +621,20 @@ function DataTable({
         </TableHeader>
         <TableBody>
           {data.map(row => <TableRow key={row.questionnaireId}>
-              <TableCell className="font-medium">{row.questionnaireId}</TableCell>
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-2">
+                  <span>{row.questionnaireId}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => copyToClipboard(row.questionnaireId)}
+                    className="h-6 w-6 p-0 hover:bg-muted"
+                    title="Copy ID"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
+              </TableCell>
               <TableCell>{row.series}</TableCell>
               <TableCell>{row.indexCode}</TableCell>
               <TableCell>{row.stage}</TableCell>

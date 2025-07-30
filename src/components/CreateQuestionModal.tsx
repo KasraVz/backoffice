@@ -136,6 +136,8 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     choices: [] as string[],
     columnA: [] as string[],
     columnB: [] as string[],
+    columnAHeader: "Column A",
+    columnBHeader: "Column B",
     weights: {} as Record<string, { weight?: number; expertWeight?: number; machineWeight?: number }>,
     rankings: {} as Record<string, number>,
     matchedPairs: [] as Array<{ a: string; b: string; aIndex: number; bIndex: number }>,
@@ -161,6 +163,8 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
         choices: editingQuestion.choices || [],
         columnA: editingQuestion.columnA || [],
         columnB: editingQuestion.columnB || [],
+        columnAHeader: editingQuestion.columnAHeader || "Column A",
+        columnBHeader: editingQuestion.columnBHeader || "Column B",
         weights: editingQuestion.weights || {},
         rankings: editingQuestion.rankings || {},
         matchedPairs: editingQuestion.matchedPairs || [],
@@ -209,6 +213,8 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       choices: [],
       columnA: [],
       columnB: [],
+      columnAHeader: "Column A",
+      columnBHeader: "Column B",
       weights: {},
       rankings: {},
       matchedPairs: [],
@@ -217,7 +223,34 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     });
   };
 
+  const isStep1Valid = () => {
+    const requiredFields = [
+      questionData.questionText.trim(),
+      questionData.answerType,
+      questionData.behavioralCode,
+      questionData.stage,
+      questionData.indexCode,
+      questionData.scope
+    ];
+
+    // If scope is "Industry-Specific", industry is also required
+    if (questionData.scope === "Industry-Specific") {
+      requiredFields.push(questionData.industry);
+    }
+
+    return requiredFields.every(field => field);
+  };
+
   const handleNext = () => {
+    if (currentStep === 1 && !isStep1Valid()) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields before proceeding to the next step.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
@@ -733,10 +766,32 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                 <div>
                   <h4 className="font-medium mb-4">Define Items and Create Correct Pairs</h4>
                   
+                  {/* Column Headers */}
+                  <div className="grid grid-cols-2 gap-6 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="column-a-header">Column A Header</Label>
+                      <Input
+                        id="column-a-header"
+                        placeholder="Enter column A header"
+                        value={questionData.columnAHeader}
+                        onChange={(e) => setQuestionData(prev => ({ ...prev, columnAHeader: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="column-b-header">Column B Header</Label>
+                      <Input
+                        id="column-b-header"
+                        placeholder="Enter column B header"
+                        value={questionData.columnBHeader}
+                        onChange={(e) => setQuestionData(prev => ({ ...prev, columnBHeader: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
                   {/* Column Inputs */}
                   <div className="grid grid-cols-2 gap-6 mb-6">
                     <div className="space-y-4">
-                      <Label>Column A</Label>
+                      <Label>{questionData.columnAHeader}</Label>
                       <div className="space-y-2">
                         {questionData.columnA.map((item, index) => (
                           <Input
@@ -761,7 +816,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <Label>Column B</Label>
+                      <Label>{questionData.columnBHeader}</Label>
                       <div className="space-y-2">
                         {questionData.columnB.map((item, index) => (
                           <Input
@@ -794,7 +849,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                       <div className="grid grid-cols-3 gap-4 items-center">
                         {/* Column A */}
                         <div className="space-y-2">
-                          <Label className="font-medium">Column A</Label>
+                          <Label className="font-medium">{questionData.columnAHeader}</Label>
                           {questionData.columnA.filter(item => item.trim()).map((item, index) => (
                             <Button
                               key={index}
@@ -829,7 +884,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
 
                         {/* Column B */}
                         <div className="space-y-2">
-                          <Label className="font-medium">Column B</Label>
+                          <Label className="font-medium">{questionData.columnBHeader}</Label>
                           {questionData.columnB.filter(item => item.trim()).map((item, index) => (
                             <Button
                               key={index}
@@ -984,7 +1039,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                         <Label className="text-sm font-medium">Match items from Column A with Column B:</Label>
                         <div className="grid grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <Label className="text-sm font-medium">Column A</Label>
+                            <Label className="text-sm font-medium">{questionData.columnAHeader}</Label>
                             {questionData.columnA.map((item, index) => (
                               <div key={index} className="p-2 border rounded bg-muted/20">
                                 <span className="text-sm">{item}</span>
@@ -992,7 +1047,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                             ))}
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-sm font-medium">Column B</Label>
+                            <Label className="text-sm font-medium">{questionData.columnBHeader}</Label>
                             {questionData.columnB.map((item, index) => (
                               <div key={index} className="p-2 border rounded bg-muted/20">
                                 <span className="text-sm">{item}</span>
@@ -1079,7 +1134,10 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                 </Button>
               </>
             ) : (
-              <Button onClick={handleNext}>
+              <Button 
+                onClick={handleNext}
+                disabled={currentStep === 1 && !isStep1Valid()}
+              >
                 Next →
               </Button>
             )}

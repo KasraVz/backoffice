@@ -58,6 +58,7 @@ const mockFeedbackData = [{
 const QuestionReviewDashboard = () => {
   const navigate = useNavigate();
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [reviewSets, setReviewSets] = useState(mockReviewSets);
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Completed":
@@ -70,10 +71,33 @@ const QuestionReviewDashboard = () => {
         return "outline";
     }
   };
-  const handleAssignmentComplete = () => {
+  const handleAssignmentComplete = (assignmentData: {
+    assigneeName: string;
+    questionnaireId: string;
+    description: string;
+    questionCount: number;
+  }) => {
+    // Generate a new unique ID
+    const newId = (Math.max(...reviewSets.map(set => parseInt(set.id))) + 1).toString();
+    
+    // Create new review set object
+    const newReviewSet = {
+      id: newId,
+      assignedTo: assignmentData.assigneeName,
+      description: assignmentData.description,
+      status: "Pending" as const,
+      progress: {
+        completed: 0,
+        total: assignmentData.questionCount
+      }
+    };
+    
+    // Add to beginning of array
+    setReviewSets(prev => [newReviewSet, ...prev]);
+    
     toast({
       title: "Review Set Assigned",
-      description: "The review set has been successfully assigned to the faculty member."
+      description: `Successfully assigned ${assignmentData.questionCount} questions from ${assignmentData.questionnaireId} to ${assignmentData.assigneeName}.`
     });
   };
   return <SidebarProvider>
@@ -152,7 +176,7 @@ const QuestionReviewDashboard = () => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {mockReviewSets.map(set => <TableRow key={set.id}>
+                          {reviewSets.map(set => <TableRow key={set.id}>
                               <TableCell className="font-medium">#{set.id}</TableCell>
                               <TableCell>{set.assignedTo}</TableCell>
                               <TableCell>{set.description}</TableCell>

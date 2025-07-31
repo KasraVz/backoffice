@@ -11,7 +11,12 @@ import { CategorySelectionModal } from "./CategorySelectionModal";
 interface AssignReviewSetModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAssignmentComplete: () => void;
+  onAssignmentComplete: (assignmentData: {
+    assigneeName: string;
+    questionnaireId: string;
+    description: string;
+    questionCount: number;
+  }) => void;
 }
 
 // Import faculty data from the FacultyExpertise component
@@ -56,8 +61,18 @@ export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete 
   };
 
   const handleAssign = () => {
-    // In real app, this would make API call to create the assignment
-    onAssignmentComplete();
+    // Generate description from selected categories
+    const description = `${questionnaireId} - ${selectedCategories.join(", ")}`;
+    const assigneeName = getSelectedReviewerName();
+    
+    // Pass assignment data to parent component
+    onAssignmentComplete({
+      assigneeName,
+      questionnaireId,
+      description,
+      questionCount: totalQuestions
+    });
+    
     onOpenChange(false);
     
     // Reset form

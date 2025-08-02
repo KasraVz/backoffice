@@ -1,7 +1,9 @@
-import { Users, ChevronRight, ChevronDown, FileText, Handshake, ShoppingCart, CreditCard, FileBarChart, Ticket, MessageCircle, Zap, Award, UserCog, UserCheck, Shield, CheckCircle, Activity, MessageSquare, Database, BarChart3, Settings, Globe, DollarSign, Receipt, TrendingUp, AlertTriangle, Wrench, FileCheck, History, Edit, Coins, Trophy, Gavel, Lock, UserPlus, Eye, GraduationCap, BookOpen, ClipboardList, Users2 } from "lucide-react";
+import { Users, ChevronRight, ChevronDown, FileText, Handshake, ShoppingCart, CreditCard, FileBarChart, Ticket, MessageCircle, Zap, Award, UserCog, UserCheck, Shield, CheckCircle, Activity, MessageSquare, Database, BarChart3, Settings, Globe, DollarSign, Receipt, TrendingUp, AlertTriangle, Wrench, FileCheck, History, Edit, Coins, Trophy, Gavel, Lock, UserPlus, Eye, GraduationCap, BookOpen, ClipboardList, Users2, LogOut } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 const mainMenuItems = [{
   title: "Users",
   icon: Users,
@@ -215,6 +217,7 @@ export function AppSidebar() {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [manuallyCollapsed, setManuallyCollapsed] = useState<string[]>([]);
   const collapsed = state === "collapsed";
+  const { signOut } = useAuth();
   const isActive = (path: string) => currentPath === path;
   
   const isParentActive = (children: any[]) => {
@@ -325,6 +328,18 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        
+        {/* Sign Out Section */}
+        <div className="mt-auto p-4 border-t border-gray-700">
+          <Button
+            onClick={signOut}
+            variant="ghost"
+            className="w-full justify-start text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            <LogOut className="mr-3 h-4 w-4" />
+            {!collapsed && <span>Sign Out</span>}
+          </Button>
+        </div>
       </SidebarContent>
     </Sidebar>;
 }

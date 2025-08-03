@@ -24,6 +24,7 @@ import QuestionReview from "./pages/faculty/QuestionReview";
 import ReviewSetDetails from "./pages/partners/operational/ReviewSetDetails";
 import AdminDirectory from "./pages/manage-admins/AdminDirectory";
 import RoleManagement from "./pages/manage-admins/RoleManagement";
+import InviteAdminPage from "./pages/manage-admins/InviteAdminPage";
 import Login from "./pages/Login";
 import SetPassword from "./pages/SetPassword";
 import NotFound from "./pages/NotFound";
@@ -57,6 +58,7 @@ const App = () => (
             {/* Admin Management Routes */}
             <Route path="/manage-admins/directory" element={<ProtectedRoute><AdminDirectory /></ProtectedRoute>} />
             <Route path="/manage-admins/roles" element={<ProtectedRoute><RoleManagement /></ProtectedRoute>} />
+            <Route path="/manage-admins/invite" element={<ProtectedRoute><InviteAdminPage /></ProtectedRoute>} />
             
             {/* Operational Partners Routes */}
             <Route path="/partners/operational/directory" element={<ProtectedRoute><OperationalPartnerDirectory /></ProtectedRoute>} />

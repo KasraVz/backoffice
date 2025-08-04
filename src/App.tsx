@@ -25,6 +25,7 @@ import ReviewSetDetails from "./pages/partners/operational/ReviewSetDetails";
 import AdminDirectory from "./pages/manage-admins/AdminDirectory";
 import RoleManagement from "./pages/manage-admins/RoleManagement";
 import InviteAdminPage from "./pages/manage-admins/InviteAdminPage";
+import AuditLogPage from "./pages/manage-admins/AuditLogPage";
 import Login from "./pages/Login";
 import SetPassword from "./pages/SetPassword";
 import NewPasswordPage from "./pages/setup/NewPasswordPage";
@@ -67,6 +68,7 @@ const App = () => (
             <Route path="/manage-admins/directory" element={<ProtectedRoute><AdminDirectory /></ProtectedRoute>} />
             <Route path="/manage-admins/roles" element={<ProtectedRoute><RoleManagement /></ProtectedRoute>} />
             <Route path="/manage-admins/invite" element={<ProtectedRoute><InviteAdminPage /></ProtectedRoute>} />
+            <Route path="/manage-admins/audit-log" element={<ProtectedRoute><AuditLogPage /></ProtectedRoute>} />
             
             {/* Operational Partners Routes */}
             <Route path="/partners/operational/directory" element={<ProtectedRoute><OperationalPartnerDirectory /></ProtectedRoute>} />

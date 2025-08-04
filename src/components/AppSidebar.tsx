@@ -205,7 +205,7 @@ const mainMenuItems = [{
     url: "/manage-admins/invite"
   }, {
     title: "Security & Audit Log",
-    url: "/manage-admins/security"
+    url: "/manage-admins/audit-log"
   }]
 }];
 export function AppSidebar() {

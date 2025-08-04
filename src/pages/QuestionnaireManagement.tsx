@@ -34,7 +34,7 @@ const idAbbreviations = {
 
 const mockQuestionnaires = {
   drafts: [{
-    questionnaireId: "FPA-GEN-PRE-1",
+    name: "FPA-GEN-PRE-1",
     series: 1,
     indexCode: "FPA",
     stage: "Pre-seed",
@@ -45,7 +45,7 @@ const mockQuestionnaires = {
     lastModified: "2024-01-15",
     selectedQuestions: ["Which of the following best defines a 'problem worth solving'?", "Match each revenue model with the typical product or service.", "A core principle of Agile software development is..."]
   }, {
-    questionnaireId: "EEA-FIN-SEE-1",
+    name: "EEA-FIN-SEE-1",
     series: 1,
     indexCode: "EEA",
     stage: "Seed",
@@ -57,7 +57,7 @@ const mockQuestionnaires = {
     selectedQuestions: ["What is the most critical regulatory consideration for fintech startups?", "Which payment processing model offers the best scalability?"]
   }],
   active: [{
-    questionnaireId: "FPA-GEN-EAR-2",
+    name: "FPA-GEN-EAR-2",
     series: 2,
     indexCode: "FPA",
     stage: "Early Stage",
@@ -68,7 +68,7 @@ const mockQuestionnaires = {
     lastModified: "2024-01-10",
     selectedQuestions: []
   }, {
-    questionnaireId: "EEA-HEA-SEE-1",
+    name: "EEA-HEA-SEE-1",
     series: 1,
     indexCode: "EEA",
     stage: "Seed",
@@ -80,7 +80,7 @@ const mockQuestionnaires = {
     selectedQuestions: []
   }],
   archived: [{
-    questionnaireId: "FPA-SAA-GRO-3",
+    name: "FPA-SAA-GRO-3",
     series: 3,
     indexCode: "FPA",
     stage: "Growth Stage",
@@ -91,7 +91,7 @@ const mockQuestionnaires = {
     lastModified: "2023-12-20",
     selectedQuestions: []
   }, {
-    questionnaireId: "EEA-GEN-SEE-2",
+    name: "EEA-GEN-SEE-2",
     series: 2,
     indexCode: "EEA",
     stage: "Seed",
@@ -127,7 +127,7 @@ export default function QuestionnaireManagement() {
       const updated = location.state.updatedQuestionnaire;
       setQuestionnaires(prev => ({
         ...prev,
-        drafts: prev.drafts.map(q => q.questionnaireId === updated.questionnaireId ? {
+        drafts: prev.drafts.map(q => q.name === updated.name ? {
           ...q,
           selectedQuestions: updated.selectedQuestions,
           questions: updated.questions,
@@ -209,7 +209,7 @@ export default function QuestionnaireManagement() {
   const handlePublish = (questionnaire: any) => {
     setQuestionnaires(prev => ({
       ...prev,
-      drafts: prev.drafts.filter(q => q.questionnaireId !== questionnaire.questionnaireId),
+      drafts: prev.drafts.filter(q => q.name !== questionnaire.name),
       active: [...prev.active, {
         ...questionnaire,
         status: "Active"
@@ -219,7 +219,7 @@ export default function QuestionnaireManagement() {
   const handleArchive = (questionnaire: any) => {
     setQuestionnaires(prev => ({
       ...prev,
-      active: prev.active.filter(q => q.questionnaireId !== questionnaire.questionnaireId),
+      active: prev.active.filter(q => q.name !== questionnaire.name),
       archived: [...prev.archived, {
         ...questionnaire,
         status: "Archived"
@@ -229,7 +229,7 @@ export default function QuestionnaireManagement() {
   const handleActivate = (questionnaire: any) => {
     setQuestionnaires(prev => ({
       ...prev,
-      archived: prev.archived.filter(q => q.questionnaireId !== questionnaire.questionnaireId),
+      archived: prev.archived.filter(q => q.name !== questionnaire.name),
       drafts: [...prev.drafts, {
         ...questionnaire,
         status: "Draft"
@@ -241,9 +241,9 @@ export default function QuestionnaireManagement() {
     if (selectedQuestionnaire) {
       setQuestionnaires(prev => ({
         ...prev,
-        drafts: prev.drafts.filter(q => q.questionnaireId !== selectedQuestionnaire.questionnaireId),
-        active: prev.active.filter(q => q.questionnaireId !== selectedQuestionnaire.questionnaireId),
-        archived: prev.archived.filter(q => q.questionnaireId !== selectedQuestionnaire.questionnaireId)
+        drafts: prev.drafts.filter(q => q.name !== selectedQuestionnaire.name),
+        active: prev.active.filter(q => q.name !== selectedQuestionnaire.name),
+        archived: prev.archived.filter(q => q.name !== selectedQuestionnaire.name)
       }));
     }
     setIsDeleteConfirmOpen(false);
@@ -254,7 +254,7 @@ export default function QuestionnaireManagement() {
       await navigator.clipboard.writeText(text);
       toast({
         title: "Copied!",
-        description: "Questionnaire ID copied to clipboard",
+        description: "Name copied to clipboard",
         duration: 2000,
       });
     } catch (err) {
@@ -505,7 +505,7 @@ export default function QuestionnaireManagement() {
         <DialogContent className="bg-background border border-border max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex justify-between items-center">
-              Preview: {selectedQuestionnaire?.questionnaireId}
+              Preview: {selectedQuestionnaire?.name}
               <Button variant="ghost" size="sm" onClick={() => setIsPreviewOpen(false)}>
                 <X className="h-4 w-4" />
               </Button>
@@ -557,7 +557,7 @@ export default function QuestionnaireManagement() {
           </DialogHeader>
           <div className="py-4">
             <p>Are you sure you want to permanently delete this {selectedQuestionnaire?.status?.toLowerCase()} questionnaire? This action cannot be undone.</p>
-            <p className="font-medium mt-2">{selectedQuestionnaire?.questionnaireId}</p>
+            <p className="font-medium mt-2">{selectedQuestionnaire?.name}</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDeleteConfirmOpen(false)}>
@@ -591,7 +591,7 @@ function DataTable({
       await navigator.clipboard.writeText(text);
       toast({
         title: "Copied!",
-        description: "Questionnaire ID copied to clipboard",
+        description: "Name copied to clipboard",
         duration: 2000,
       });
     } catch (err) {
@@ -608,7 +608,7 @@ function DataTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Questionnaire ID</TableHead>
+            <TableHead>Name</TableHead>
             <TableHead>Series</TableHead>
             <TableHead>Index Code</TableHead>
             <TableHead>Stage</TableHead>
@@ -620,16 +620,16 @@ function DataTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map(row => <TableRow key={row.questionnaireId}>
+          {data.map(row => <TableRow key={row.name}>
               <TableCell className="font-medium">
                 <div className="flex items-center gap-2">
-                  <span>{row.questionnaireId}</span>
+                  <span>{row.name}</span>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    onClick={() => copyToClipboard(row.questionnaireId)}
+                    onClick={() => copyToClipboard(row.name)}
                     className="h-6 w-6 p-0 hover:bg-muted"
-                    title="Copy ID"
+                    title="Copy Name"
                   >
                     <Copy className="h-3 w-3" />
                   </Button>

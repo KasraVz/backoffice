@@ -13,7 +13,7 @@ interface AssignReviewSetModalProps {
   onOpenChange: (open: boolean) => void;
   onAssignmentComplete: (assignmentData: {
     assigneeName: string;
-    questionnaireId: string;
+    questionnaireName: string;
     description: string;
     questionCount: number;
   }) => void;
@@ -40,14 +40,14 @@ const mockQuestionnaires = [
 
 
 export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete }: AssignReviewSetModalProps) => {
-  const [questionnaireId, setQuestionnaireId] = useState("");
+  const [questionnaireName, setQuestionnaireName] = useState("");
   const [selectedReviewer, setSelectedReviewer] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
-  // Validate questionnaire ID
-  const isValidQuestionnaireId = mockQuestionnaires.includes(questionnaireId);
+  // Validate questionnaire name
+  const isValidQuestionnaireName = mockQuestionnaires.includes(questionnaireName);
 
   const handleCategoriesSelected = (categories: string[], questions: number) => {
     setSelectedCategories(categories);
@@ -55,20 +55,20 @@ export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete 
   };
 
   const handleOpenCategoryModal = () => {
-    if (isValidQuestionnaireId) {
+    if (isValidQuestionnaireName) {
       setIsCategoryModalOpen(true);
     }
   };
 
   const handleAssign = () => {
     // Generate description from selected categories
-    const description = `${questionnaireId} - ${selectedCategories.join(", ")}`;
+    const description = `${questionnaireName} - ${selectedCategories.join(", ")}`;
     const assigneeName = getSelectedReviewerName();
     
     // Pass assignment data to parent component
     onAssignmentComplete({
       assigneeName,
-      questionnaireId,
+      questionnaireName,
       description,
       questionCount: totalQuestions
     });
@@ -76,7 +76,7 @@ export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete 
     onOpenChange(false);
     
     // Reset form
-    setQuestionnaireId("");
+    setQuestionnaireName("");
     setSelectedReviewer("");
     setSelectedCategories([]);
     setTotalQuestions(0);
@@ -87,7 +87,7 @@ export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete 
     return reviewer?.name || "";
   };
 
-  const canAssign = selectedReviewer && isValidQuestionnaireId && selectedCategories.length > 0;
+  const canAssign = selectedReviewer && isValidQuestionnaireName && selectedCategories.length > 0;
 
   return (
     <>
@@ -98,18 +98,18 @@ export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete 
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* Questionnaire ID Input */}
+            {/* Questionnaire Name Input */}
             <div className="space-y-2">
-              <Label htmlFor="questionnaire-id">Questionnaire ID</Label>
+              <Label htmlFor="questionnaire-name">Questionnaire Name</Label>
               <div className="relative">
                 <Input
-                  id="questionnaire-id"
-                  placeholder="Enter Questionnaire ID (e.g., FPA-GEN-PRE-1)"
-                  value={questionnaireId}
-                  onChange={(e) => setQuestionnaireId(e.target.value)}
+                  id="questionnaire-name"
+                  placeholder="Enter Questionnaire Name (e.g., FPA-GEN-PRE-1)"
+                  value={questionnaireName}
+                  onChange={(e) => setQuestionnaireName(e.target.value)}
                   className="pr-10"
                 />
-                {isValidQuestionnaireId && (
+                {isValidQuestionnaireName && (
                   <Check className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-600" />
                 )}
               </div>
@@ -121,7 +121,7 @@ export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete 
               <Button
                 variant="outline"
                 onClick={handleOpenCategoryModal}
-                disabled={!isValidQuestionnaireId}
+                disabled={!isValidQuestionnaireName}
                 className="w-full justify-start"
               >
                 Select Categories
@@ -193,7 +193,7 @@ export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete 
       <CategorySelectionModal
         open={isCategoryModalOpen}
         onOpenChange={setIsCategoryModalOpen}
-        questionnaireId={questionnaireId}
+        questionnaireName={questionnaireName}
         onCategoriesSelected={handleCategoriesSelected}
       />
     </>

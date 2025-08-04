@@ -7,11 +7,11 @@ import { Label } from "@/components/ui/label";
 interface CategorySelectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  questionnaireId: string;
+  questionnaireName: string;
   onCategoriesSelected: (categories: string[], totalQuestions: number) => void;
 }
 
-// Mock categories data - in real app this would be fetched based on questionnaireId
+// Mock categories data - in real app this would be fetched based on questionnaireName
 const mockCategories = {
   general: [
     "Financial Management & Fundraising",
@@ -32,7 +32,7 @@ const mockCategories = {
 export const CategorySelectionModal = ({ 
   open, 
   onOpenChange, 
-  questionnaireId, 
+  questionnaireName, 
   onCategoriesSelected 
 }: CategorySelectionModalProps) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -63,7 +63,7 @@ export const CategorySelectionModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Select Categories for {questionnaireId}</DialogTitle>
+          <DialogTitle>Select Categories for {questionnaireName}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">

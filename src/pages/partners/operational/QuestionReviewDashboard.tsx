@@ -73,7 +73,7 @@ const QuestionReviewDashboard = () => {
   };
   const handleAssignmentComplete = (assignmentData: {
     assigneeName: string;
-    questionnaireId: string;
+    questionnaireName: string;
     description: string;
     questionCount: number;
   }) => {
@@ -97,7 +97,7 @@ const QuestionReviewDashboard = () => {
     
     toast({
       title: "Review Set Assigned",
-      description: `Successfully assigned ${assignmentData.questionCount} questions from ${assignmentData.questionnaireId} to ${assignmentData.assigneeName}.`
+      description: `Successfully assigned ${assignmentData.questionCount} questions from ${assignmentData.questionnaireName} to ${assignmentData.assigneeName}.`
     });
   };
   return <SidebarProvider>

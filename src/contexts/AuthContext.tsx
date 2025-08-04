@@ -10,6 +10,7 @@ interface User {
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
+  isSettingUp: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
   sendPasswordSetupLink: (email: string) => void;
@@ -32,26 +33,45 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [isSettingUp, setIsSettingUp] = useState(false);
 
   const signIn = async (email: string, password: string): Promise<void> => {
     // Mock authentication with delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Mock user data
+    const SUPER_ADMIN_EMAIL = 'superadmin@example.com';
+    const TEMP_PASSWORD = 'SUPER_ADMIN_TEMP_PASSWORD';
+    
+    // Check for Super Admin first-time login
+    if (email === SUPER_ADMIN_EMAIL && password === TEMP_PASSWORD) {
+      setIsSettingUp(true);
+      setIsAuthenticated(true);
+      setUser({
+        id: 'super-admin',
+        email,
+        name: 'Super Admin',
+        role: 'super_admin'
+      });
+      return;
+    }
+    
+    // Mock user data for normal users or completed Super Admin
     const mockUser: User = {
-      id: '1',
+      id: email === SUPER_ADMIN_EMAIL ? 'super-admin' : '1',
       email,
-      name: 'Admin User',
-      role: 'admin'
+      name: email === SUPER_ADMIN_EMAIL ? 'Super Admin' : 'Admin User',
+      role: email === SUPER_ADMIN_EMAIL ? 'super_admin' : 'admin'
     };
     
     setUser(mockUser);
     setIsAuthenticated(true);
+    setIsSettingUp(false);
   };
 
   const signOut = () => {
     setUser(null);
     setIsAuthenticated(false);
+    setIsSettingUp(false);
   };
 
   const sendPasswordSetupLink = (email: string) => {
@@ -61,6 +81,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value = {
     isAuthenticated,
     user,
+    isSettingUp,
     signIn,
     signOut,
     sendPasswordSetupLink

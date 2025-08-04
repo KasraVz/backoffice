@@ -20,6 +20,24 @@ const Login = () => {
     setIsLoading(true);
 
     try {
+      const SUPER_ADMIN_EMAIL = 'superadmin@example.com';
+      const TEMP_PASSWORD = 'SUPER_ADMIN_TEMP_PASSWORD';
+      
+      // Check if Super Admin is using temporary password (first-time setup)
+      if (email === SUPER_ADMIN_EMAIL && password === TEMP_PASSWORD) {
+        await signIn(email, password);
+        navigate('/setup/new-password');
+        return;
+      }
+      
+      // Check if Super Admin needs 2FA verification
+      if (email === SUPER_ADMIN_EMAIL && password !== TEMP_PASSWORD) {
+        // Redirect to 2FA page instead of completing sign-in
+        navigate('/login/2fa');
+        return;
+      }
+      
+      // Normal sign-in for other users
       await signIn(email, password);
       navigate('/');
     } catch (error) {

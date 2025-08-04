@@ -27,6 +27,9 @@ import RoleManagement from "./pages/manage-admins/RoleManagement";
 import InviteAdminPage from "./pages/manage-admins/InviteAdminPage";
 import Login from "./pages/Login";
 import SetPassword from "./pages/SetPassword";
+import NewPasswordPage from "./pages/setup/NewPasswordPage";
+import TwoFactorAuthPage from "./pages/setup/TwoFactorAuthPage";
+import LoginTwoFactorPage from "./pages/LoginTwoFactorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,7 +44,12 @@ const App = () => (
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
+            <Route path="/login/2fa" element={<LoginTwoFactorPage />} />
             <Route path="/set-password/:token" element={<SetPassword />} />
+            
+            {/* Setup Routes - Protected but accessible during setup */}
+            <Route path="/setup/new-password" element={<ProtectedRoute><NewPasswordPage /></ProtectedRoute>} />
+            <Route path="/setup/2fa" element={<ProtectedRoute><TwoFactorAuthPage /></ProtectedRoute>} />
             
             {/* Protected Routes */}
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />

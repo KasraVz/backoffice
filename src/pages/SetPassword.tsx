@@ -11,7 +11,7 @@ const SetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, activateUser } = useAuth();
   const navigate = useNavigate();
   const { token } = useParams();
   const { toast } = useToast();
@@ -43,8 +43,14 @@ const SetPassword = () => {
       // Simulate password setting
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Extract email from token (mock - in real app would decode the token)
+      const mockEmail = 'user@example.com'; // In real app, extract from token
+      
+      // Activate the user before signing in
+      activateUser(mockEmail);
+      
       // Auto sign in with mock email
-      await signIn('user@example.com', newPassword);
+      await signIn(mockEmail, newPassword);
       
       toast({
         title: "Success",

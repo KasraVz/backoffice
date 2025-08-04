@@ -7,13 +7,24 @@ interface User {
   role: string;
 }
 
+interface Partner {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   isSettingUp: boolean;
+  partners: Partner[];
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
   sendPasswordSetupLink: (email: string) => void;
+  addPartner: (partner: Omit<Partner, 'id' | 'status'>) => void;
+  activateUser: (email: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,10 +41,35 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+const initialPartners: Partner[] = [
+  {
+    id: 1,
+    name: "Dr. Sarah Johnson",
+    email: "sarah.johnson@university.edu",
+    role: "Faculty Member",
+    status: "Active"
+  },
+  {
+    id: 2,
+    name: "Prof. Michael Chen",
+    email: "m.chen@business.edu",
+    role: "Judge",
+    status: "Active"
+  },
+  {
+    id: 3,
+    name: "Dr. Emily Rodriguez",
+    email: "emily.r@institute.org",
+    role: "Ambassador",
+    status: "Inactive"
+  }
+];
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isSettingUp, setIsSettingUp] = useState(false);
+  const [partners, setPartners] = useState<Partner[]>(initialPartners);
 
   const signIn = async (email: string, password: string): Promise<void> => {
     // Mock authentication with delay
@@ -78,13 +114,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     console.log("Password setup link sent to:", email);
   };
 
+  const addPartner = (partner: Omit<Partner, 'id' | 'status'>) => {
+    const newPartner: Partner = {
+      ...partner,
+      id: Math.max(...partners.map(p => p.id)) + 1,
+      status: "Inactive"
+    };
+    setPartners(prev => [...prev, newPartner]);
+    // Automatically send password setup link
+    sendPasswordSetupLink(partner.email);
+  };
+
+  const activateUser = (email: string) => {
+    setPartners(prev => 
+      prev.map(partner => 
+        partner.email === email 
+          ? { ...partner, status: "Active" }
+          : partner
+      )
+    );
+    console.log("User activated:", email);
+  };
+
   const value = {
     isAuthenticated,
     user,
     isSettingUp,
+    partners,
     signIn,
     signOut,
-    sendPasswordSetupLink
+    sendPasswordSetupLink,
+    addPartner,
+    activateUser
   };
 
   return (

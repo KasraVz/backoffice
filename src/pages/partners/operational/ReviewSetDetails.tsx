@@ -101,7 +101,7 @@ const ReviewSetDetails = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 flex items-center border-b bg-background px-6">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[27px]">
             <SidebarTrigger className="mr-4" />
             <Button 
               variant="outline" 
@@ -114,7 +114,7 @@ const ReviewSetDetails = () => {
             </Button>
             <h1 className="text-lg font-semibold">Review Details</h1>
           </header>
-          <main className="flex-1 p-8 bg-gray-50">
+          <main className="flex-1 p-8 bg-gray-50 mx-[27px]">
             <div className="max-w-4xl">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-2">

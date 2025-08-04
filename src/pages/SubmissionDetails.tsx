@@ -96,7 +96,7 @@ export default function SubmissionDetails() {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 flex items-center border-b bg-background px-6">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[27px]">
             <SidebarTrigger className="mr-4" />
             
             {/* Breadcrumb Navigation */}
@@ -120,7 +120,7 @@ export default function SubmissionDetails() {
             </div>
           </header>
           
-          <main className="flex-1 p-6 bg-background">
+          <main className="flex-1 p-6 bg-background mx-[27px]">
             {/* Page Title */}
             <h1 className="text-2xl font-bold mb-6">
               Submission Details: {submission.userName} - {submission.questionnaireName}

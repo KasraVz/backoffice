@@ -39,13 +39,14 @@ const InviteAdminPage = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <main className="flex-1">
-          <header className="h-12 flex items-center border-b bg-background px-4">
-            <SidebarTrigger />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[27px]">
+            <SidebarTrigger className="mr-4" />
+            <h1 className="text-lg font-semibold">Invite New Admin</h1>
           </header>
-          <div className="container mx-auto p-6">
+          <main className="flex-1 p-6 bg-background mx-[27px]">
             <div className="max-w-2xl mx-auto">
-              <h1 className="text-3xl font-bold mb-2">Invite New Admin</h1>
+              <h2 className="text-2xl font-bold mb-2">Invite New Admin</h2>
               <p className="text-muted-foreground mb-8">
                 Send an invitation to a new user to set up their back-office account.
               </p>
@@ -111,8 +112,8 @@ const InviteAdminPage = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </SidebarProvider>
   );

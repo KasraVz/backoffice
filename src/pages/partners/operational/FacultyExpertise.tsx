@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Search, Save } from "lucide-react";
 import { useState } from "react";
+import { questionTaxonomy } from "@/components/CreateQuestionModal";
 const mockFacultyMembers = [{
   id: 1,
   name: "Dr. Sarah Johnson",
@@ -23,27 +24,92 @@ const mockFacultyMembers = [{
   name: "Dr. James Wilson",
   active: false
 }];
-const mockExpertiseData = {
-  indexCodes: ["FPA", "EEA", "TDA"],
-  stages: ["Pre-seed", "Seed", "Early Stage", "Growth Stage"],
-  industries: ["Finance", "HR Tech", "Healthtech", "EdTech"],
-  categories: ["Financial Management & Fundraising", "Marketing & Sales", "Operations"]
+// Generate dynamic expertise options from questionTaxonomy
+const getExpertiseOptions = () => {
+  const indexCodes = ["FPA", "EEA"];
+  const stages = ["Pre-seed", "Seed", "Early Stage", "Growth Stage"];
+  const industries = Object.keys(questionTaxonomy.FPA["Industry-Specific"]).concat(
+    Object.keys(questionTaxonomy.EEA["Industry-Specific"])
+  );
+  const categories = Object.keys(questionTaxonomy.FPA.General).concat(
+    Object.keys(questionTaxonomy.EEA.General)
+  );
+  
+  return {
+    indexCodes: [...new Set(indexCodes)],
+    stages: [...new Set(stages)],
+    industries: [...new Set(industries)],
+    categories: [...new Set(categories)]
+  };
 };
+
+const mockExpertiseData = getExpertiseOptions();
+
+// Individual faculty expertise profiles
+interface FacultyExpertise {
+  indexCodes: string[];
+  stages: string[];
+  industries: string[];
+  categories: string[];
+}
+
+type FacultyExpertiseProfiles = Record<number, FacultyExpertise>;
 const FacultyExpertiseProfiles = () => {
   const [selectedMember, setSelectedMember] = useState(mockFacultyMembers[0]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [expertise, setExpertise] = useState({
-    indexCodes: ["FPA", "EEA"],
-    stages: ["Seed", "Early Stage"],
-    industries: ["Finance", "HR Tech"],
-    categories: ["Financial Management & Fundraising"]
+  
+  // Individual expertise profiles for each faculty member
+  const [facultyProfiles, setFacultyProfiles] = useState<FacultyExpertiseProfiles>({
+    1: {
+      indexCodes: ["FPA", "EEA"],
+      stages: ["Seed", "Early Stage"],
+      industries: ["Finance", "HR Tech"],
+      categories: ["Financial Management & Fundraising"]
+    },
+    2: {
+      indexCodes: ["FPA"],
+      stages: ["Pre-seed", "Seed"],
+      industries: ["Finance"],
+      categories: ["Business Model & Revenue Strategy"]
+    },
+    3: {
+      indexCodes: ["EEA"],
+      stages: ["Early Stage", "Growth Stage"],
+      industries: ["Healthtech"],
+      categories: ["Product Development & Technology"]
+    },
+    4: {
+      indexCodes: ["FPA", "EEA"],
+      stages: ["Seed"],
+      industries: ["EdTech"],
+      categories: ["Marketing & Sales"]
+    }
   });
+  
+  // Get current member's expertise
+  const currentExpertise = facultyProfiles[selectedMember.id] || {
+    indexCodes: [],
+    stages: [],
+    industries: [],
+    categories: []
+  };
   const filteredMembers = mockFacultyMembers.filter(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  const toggleExpertise = (category: keyof typeof expertise, item: string) => {
-    setExpertise(prev => ({
+  
+  const toggleExpertise = (category: keyof FacultyExpertise, item: string) => {
+    setFacultyProfiles(prev => ({
       ...prev,
-      [category]: prev[category].includes(item) ? prev[category].filter(i => i !== item) : [...prev[category], item]
+      [selectedMember.id]: {
+        ...prev[selectedMember.id],
+        [category]: prev[selectedMember.id]?.[category].includes(item) 
+          ? prev[selectedMember.id][category].filter(i => i !== item)
+          : [...(prev[selectedMember.id]?.[category] || []), item]
+      }
     }));
+  };
+  
+  const handleSaveProfile = () => {
+    console.log(`Saved profile for ${selectedMember.name}:`, currentExpertise);
+    // Here you would typically save to a database
   };
   return <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -78,7 +144,7 @@ const FacultyExpertiseProfiles = () => {
                   <h3 className="text-xl font-semibold">
                     Expertise Profile for {selectedMember.name}
                   </h3>
-                  <Button className="gap-2">
+                  <Button className="gap-2" onClick={handleSaveProfile}>
                     <Save className="h-4 w-4" />
                     Save Profile
                   </Button>
@@ -89,7 +155,7 @@ const FacultyExpertiseProfiles = () => {
                   <div>
                     <Label className="text-base font-medium mb-3 block">Index Code Expertise</Label>
                     <div className="flex flex-wrap gap-2">
-                      {mockExpertiseData.indexCodes.map(code => <Badge key={code} variant={expertise.indexCodes.includes(code) ? "default" : "outline"} className="cursor-pointer" onClick={() => toggleExpertise("indexCodes", code)}>
+                      {mockExpertiseData.indexCodes.map(code => <Badge key={code} variant={currentExpertise.indexCodes.includes(code) ? "default" : "outline"} className="cursor-pointer" onClick={() => toggleExpertise("indexCodes", code)}>
                           {code}
                         </Badge>)}
                     </div>
@@ -99,7 +165,7 @@ const FacultyExpertiseProfiles = () => {
                   <div>
                     <Label className="text-base font-medium mb-3 block">Stage Expertise</Label>
                     <div className="flex flex-wrap gap-2">
-                      {mockExpertiseData.stages.map(stage => <Badge key={stage} variant={expertise.stages.includes(stage) ? "default" : "outline"} className="cursor-pointer" onClick={() => toggleExpertise("stages", stage)}>
+                      {mockExpertiseData.stages.map(stage => <Badge key={stage} variant={currentExpertise.stages.includes(stage) ? "default" : "outline"} className="cursor-pointer" onClick={() => toggleExpertise("stages", stage)}>
                           {stage}
                         </Badge>)}
                     </div>
@@ -109,7 +175,7 @@ const FacultyExpertiseProfiles = () => {
                   <div>
                     <Label className="text-base font-medium mb-3 block">Industry Expertise</Label>
                     <div className="flex flex-wrap gap-2">
-                      {mockExpertiseData.industries.map(industry => <Badge key={industry} variant={expertise.industries.includes(industry) ? "default" : "outline"} className="cursor-pointer" onClick={() => toggleExpertise("industries", industry)}>
+                      {mockExpertiseData.industries.map(industry => <Badge key={industry} variant={currentExpertise.industries.includes(industry) ? "default" : "outline"} className="cursor-pointer" onClick={() => toggleExpertise("industries", industry)}>
                           {industry}
                         </Badge>)}
                     </div>
@@ -119,7 +185,7 @@ const FacultyExpertiseProfiles = () => {
                   <div>
                     <Label className="text-base font-medium mb-3 block">Category Expertise</Label>
                     <div className="flex flex-wrap gap-2">
-                      {mockExpertiseData.categories.map(category => <Badge key={category} variant={expertise.categories.includes(category) ? "default" : "outline"} className="cursor-pointer" onClick={() => toggleExpertise("categories", category)}>
+                      {mockExpertiseData.categories.map(category => <Badge key={category} variant={currentExpertise.categories.includes(category) ? "default" : "outline"} className="cursor-pointer" onClick={() => toggleExpertise("categories", category)}>
                           {category}
                         </Badge>)}
                     </div>

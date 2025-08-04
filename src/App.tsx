@@ -7,6 +7,12 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Users from "./pages/Users";
+import UserDirectory from "./pages/users/UserDirectory";
+import PrimaryProfiles from "./pages/users/PrimaryProfiles";
+import UserRolesPermissions from "./pages/users/UserRolesPermissions";
+import IdentityVerificationQueue from "./pages/users/IdentityVerificationQueue";
+import UserActivityLogs from "./pages/users/UserActivityLogs";
+import FeedbackSubmissions from "./pages/users/FeedbackSubmissions";
 import Questionnaires from "./pages/Questionnaires";
 import QuestionnaireManagement from "./pages/QuestionnaireManagement";
 import QuestionnaireBuilder from "./pages/QuestionnaireBuilder";
@@ -55,6 +61,15 @@ const App = () => (
             {/* Protected Routes */}
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+            
+            {/* User Management Routes */}
+            <Route path="/users/directory" element={<ProtectedRoute><UserDirectory /></ProtectedRoute>} />
+            <Route path="/users/profiles/:userId" element={<ProtectedRoute><PrimaryProfiles /></ProtectedRoute>} />
+            <Route path="/users/roles" element={<ProtectedRoute><UserRolesPermissions /></ProtectedRoute>} />
+            <Route path="/users/verification" element={<ProtectedRoute><IdentityVerificationQueue /></ProtectedRoute>} />
+            <Route path="/users/activity" element={<ProtectedRoute><UserActivityLogs /></ProtectedRoute>} />
+            <Route path="/users/feedback" element={<ProtectedRoute><FeedbackSubmissions /></ProtectedRoute>} />
+            
             <Route path="/questionnaires" element={<ProtectedRoute><Questionnaires /></ProtectedRoute>} />
             <Route path="/questionnaires/management" element={<ProtectedRoute><QuestionnaireManagement /></ProtectedRoute>} />
             <Route path="/questionnaires/assessment-bank" element={<ProtectedRoute><AssessmentBank /></ProtectedRoute>} />

@@ -15,7 +15,7 @@ const InviteAdminPage = () => {
   const { sendPasswordSetupLink } = useAuth();
   const { toast } = useToast();
 
-  const mockRoles = ['Admin', 'Super Admin'];
+  const mockRoles = ['Admin', 'Super Admin', 'Content Manager'];
 
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isFormValid = isEmailValid && role !== "";

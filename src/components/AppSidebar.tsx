@@ -201,9 +201,6 @@ const mainMenuItems = [{
     title: "Role Management",
     url: "/manage-admins/roles"
   }, {
-    title: "Invite & Onboard",
-    url: "/manage-admins/invite"
-  }, {
     title: "Security & Audit Log",
     url: "/manage-admins/audit-log"
   }]

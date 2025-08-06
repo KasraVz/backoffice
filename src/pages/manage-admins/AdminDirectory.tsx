@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,14 +20,42 @@ const mockAdmins = [
 ];
 
 const AdminDirectory = () => {
+  const [admins, setAdmins] = useState(mockAdmins);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [newAdminRole, setNewAdminRole] = useState("");
   const { sendPasswordSetupLink } = useAuth();
   const { toast } = useToast();
+
+  const adminRoles = ["Admin", "Content Manager"];
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newAdminEmail);
+  const isFormValid = isEmailValid && newAdminRole !== "";
 
   const handleSendPasswordLink = (email: string, name: string) => {
     sendPasswordSetupLink(email);
     toast({
       title: "Password Link Sent",
       description: `Password setup/reset link has been sent to ${name} at ${email}`,
+    });
+  };
+
+  const handleAddAdmin = () => {
+    const newAdmin = {
+      id: Date.now().toString(),
+      name: newAdminEmail.split('@')[0], // Use email prefix as temporary name
+      email: newAdminEmail,
+      role: newAdminRole,
+      status: "Active"
+    };
+
+    setAdmins(prev => [...prev, newAdmin]);
+    setNewAdminEmail("");
+    setNewAdminRole("");
+    setShowAddDialog(false);
+    
+    toast({
+      title: "Admin Added",
+      description: `${newAdminEmail} has been added as ${newAdminRole}`,
     });
   };
 
@@ -43,7 +75,51 @@ const AdminDirectory = () => {
                   <h2 className="text-2xl font-bold">Admin Directory</h2>
                   <p className="text-muted-foreground">Manage administrator accounts and permissions</p>
                 </div>
-                <Button>Add New Admin</Button>
+                <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+                  <DialogTrigger asChild>
+                    <Button>Add New Admin</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Admin</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email Address *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={newAdminEmail}
+                          onChange={(e) => setNewAdminEmail(e.target.value)}
+                          placeholder="admin@example.com"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="role">Role *</Label>
+                        <Select value={newAdminRole} onValueChange={setNewAdminRole} required>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {adminRoles.map((role) => (
+                              <SelectItem key={role} value={role}>
+                                {role}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button 
+                        onClick={handleAddAdmin}
+                        disabled={!isFormValid}
+                        className="w-full"
+                      >
+                        Done
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               <div className="border rounded-lg">
@@ -58,7 +134,7 @@ const AdminDirectory = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockAdmins.map((admin) => (
+                    {admins.map((admin) => (
                       <TableRow key={admin.id}>
                         <TableCell className="font-medium">{admin.name}</TableCell>
                         <TableCell>{admin.email}</TableCell>

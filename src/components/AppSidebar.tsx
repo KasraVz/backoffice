@@ -57,9 +57,6 @@ const mainMenuItems = [{
       title: "Partner Directory",
       url: "/partners/operational/directory"
     }, {
-      title: "Faculty Expertise Profiles",
-      url: "/partners/operational/expertise"
-    }, {
       title: "Question Review Dashboard",
       url: "/partners/operational/review-dashboard"
     }, {

@@ -3,11 +3,33 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { MoreHorizontal } from "lucide-react";
+import { useState } from "react";
+// Mock expertise data for faculty
+const getExpertiseOptions = () => ({
+  indexCodes: ["IND", "TEC", "FIN", "MKT", "OPS", "STR"],
+  stages: ["Pre-Seed", "Seed", "Series A", "Series B", "Growth"],
+  industries: ["Technology", "Healthcare", "Finance", "Education", "E-commerce", "Manufacturing"],
+  categories: ["Strategy", "Operations", "Marketing", "Finance", "Technology", "Human Resources"]
+});
+
 const OperationalPartnerDirectory = () => {
   const { admins, updateAdminStatus } = useAuth();
   const { toast } = useToast();
+  const [editExpertiseModal, setEditExpertiseModal] = useState(false);
+  const [selectedFaculty, setSelectedFaculty] = useState<any>(null);
+  const [expertiseForm, setExpertiseForm] = useState({
+    indexCodes: [] as string[],
+    stages: [] as string[],
+    industries: [] as string[],
+    categories: [] as string[]
+  });
 
   // Filter to show only partners (Faculty Member, Judge, Ambassador)
   const partners = admins.filter(admin => {
@@ -23,6 +45,43 @@ const OperationalPartnerDirectory = () => {
       description: `Partner status has been ${newStatus.toLowerCase()}.`,
     });
   };
+
+  const handleEditExpertise = (faculty: any) => {
+    setSelectedFaculty(faculty);
+    // Load existing expertise (mock data for now)
+    setExpertiseForm({
+      indexCodes: ["IND", "TEC"],
+      stages: ["Seed", "Series A"],
+      industries: ["Technology", "Finance"],
+      categories: ["Strategy", "Operations"]
+    });
+    setEditExpertiseModal(true);
+  };
+
+  const handleSaveExpertise = () => {
+    toast({
+      title: "Expertise Updated",
+      description: `Expertise profile for ${selectedFaculty?.name} has been updated.`,
+    });
+    setEditExpertiseModal(false);
+    setSelectedFaculty(null);
+  };
+
+  const handleExpertiseChange = (field: keyof typeof expertiseForm, value: string) => {
+    setExpertiseForm(prev => ({
+      ...prev,
+      [field]: prev[field].includes(value) 
+        ? prev[field].filter(item => item !== value)
+        : [...prev[field], value]
+    }));
+  };
+
+  const isFacultyMember = (partner: any) => {
+    const roles = Array.isArray(partner.roles) ? partner.roles : [partner.role];
+    return roles.includes("Faculty Member");
+  };
+
+  const expertiseOptions = getExpertiseOptions();
 
   return <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -66,14 +125,27 @@ const OperationalPartnerDirectory = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className={partner.status === "Active" ? "text-destructive" : ""}
-                            onClick={() => handleToggleStatus(partner.id, partner.status)}
-                          >
-                            {partner.status === "Active" ? "Deactivate" : "Activate"}
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => handleToggleStatus(partner.id, partner.status)}
+                              >
+                                {partner.status === "Active" ? "Deactivate" : "Activate"}
+                              </DropdownMenuItem>
+                              {isFacultyMember(partner) && (
+                                <DropdownMenuItem
+                                  onClick={() => handleEditExpertise(partner)}
+                                >
+                                  Edit Expertise
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -84,6 +156,96 @@ const OperationalPartnerDirectory = () => {
           </main>
         </div>
       </div>
+
+      {/* Edit Expertise Modal */}
+      <Dialog open={editExpertiseModal} onOpenChange={setEditExpertiseModal}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>
+              Editing Expertise for {selectedFaculty?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-2 gap-6 py-4">
+            {/* Index Code Expertise */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Index Code Expertise</Label>
+              <div className="flex flex-wrap gap-2">
+                {expertiseOptions.indexCodes.map(code => (
+                  <Button
+                    key={code}
+                    variant={expertiseForm.indexCodes.includes(code) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleExpertiseChange('indexCodes', code)}
+                  >
+                    {code}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Stage Expertise */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Stage Expertise</Label>
+              <div className="flex flex-wrap gap-2">
+                {expertiseOptions.stages.map(stage => (
+                  <Button
+                    key={stage}
+                    variant={expertiseForm.stages.includes(stage) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleExpertiseChange('stages', stage)}
+                  >
+                    {stage}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Industry Expertise */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Industry Expertise</Label>
+              <div className="flex flex-wrap gap-2">
+                {expertiseOptions.industries.map(industry => (
+                  <Button
+                    key={industry}
+                    variant={expertiseForm.industries.includes(industry) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleExpertiseChange('industries', industry)}
+                  >
+                    {industry}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Category Expertise */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Category Expertise</Label>
+              <div className="flex flex-wrap gap-2">
+                {expertiseOptions.categories.map(category => (
+                  <Button
+                    key={category}
+                    variant={expertiseForm.categories.includes(category) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleExpertiseChange('categories', category)}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditExpertiseModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveExpertise}>
+              Save Profile
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>;
 };
 export default OperationalPartnerDirectory;

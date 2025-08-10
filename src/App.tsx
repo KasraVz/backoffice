@@ -20,7 +20,7 @@ import UserSubmissionReview from "./pages/UserSubmissionReview";
 import SubmissionDetails from "./pages/SubmissionDetails";
 import PerformanceAnalytics from "./pages/PerformanceAnalytics";
 import OperationalPartnerDirectory from "./pages/partners/operational/PartnerDirectory";
-import FacultyExpertiseProfiles from "./pages/partners/operational/FacultyExpertise";
+
 import QuestionReviewDashboard from "./pages/partners/operational/QuestionReviewDashboard";
 import PromptCriteriaLibrary from "./pages/partners/operational/PromptCriteriaLibrary";
 import FacultyDashboard from "./pages/faculty/FacultyDashboard";
@@ -80,7 +80,7 @@ const App = () => (
             
             {/* Operational Partners Routes */}
             <Route path="/partners/operational/directory" element={<ProtectedRoute><OperationalPartnerDirectory /></ProtectedRoute>} />
-            <Route path="/partners/operational/expertise" element={<ProtectedRoute><FacultyExpertiseProfiles /></ProtectedRoute>} />
+            
             <Route path="/partners/operational/review-dashboard" element={<ProtectedRoute><QuestionReviewDashboard /></ProtectedRoute>} />
             <Route path="/partners/operational/review-set/:setId" element={<ProtectedRoute><ReviewSetDetails /></ProtectedRoute>} />
             <Route path="/partners/operational/prompt-criteria" element={<ProtectedRoute><PromptCriteriaLibrary /></ProtectedRoute>} />

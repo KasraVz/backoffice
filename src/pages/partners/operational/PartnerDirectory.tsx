@@ -11,13 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
-// Mock expertise data for faculty
-const getExpertiseOptions = () => ({
-  indexCodes: ["IND", "TEC", "FIN", "MKT", "OPS", "STR"],
-  stages: ["Pre-Seed", "Seed", "Series A", "Series B", "Growth"],
-  industries: ["Technology", "Healthcare", "Finance", "Education", "E-commerce", "Manufacturing"],
-  categories: ["Strategy", "Operations", "Marketing", "Finance", "Technology", "Human Resources"]
-});
+import { questionTaxonomy } from "@/components/CreateQuestionModal";
 
 const OperationalPartnerDirectory = () => {
   const { admins, updateAdminStatus } = useAuth();
@@ -26,7 +20,6 @@ const OperationalPartnerDirectory = () => {
   const [selectedFaculty, setSelectedFaculty] = useState<any>(null);
   const [expertiseForm, setExpertiseForm] = useState({
     indexCodes: [] as string[],
-    stages: [] as string[],
     industries: [] as string[],
     categories: [] as string[]
   });
@@ -50,10 +43,9 @@ const OperationalPartnerDirectory = () => {
     setSelectedFaculty(faculty);
     // Load existing expertise (mock data for now)
     setExpertiseForm({
-      indexCodes: ["IND", "TEC"],
-      stages: ["Seed", "Series A"],
-      industries: ["Technology", "Finance"],
-      categories: ["Strategy", "Operations"]
+      indexCodes: ["FPA"],
+      industries: ["Technology"],
+      categories: ["Business Model & Revenue Strategy"]
     });
     setEditExpertiseModal(true);
   };
@@ -81,7 +73,31 @@ const OperationalPartnerDirectory = () => {
     return roles.includes("Faculty Member");
   };
 
-  const expertiseOptions = getExpertiseOptions();
+  // Generate the correct expertise options from questionTaxonomy
+  const indexCodes = ["FPA", "EEA"];
+  const getAllIndustries = () => {
+    const industries = new Set<string>();
+    Object.values(questionTaxonomy).forEach(indexCode => {
+      if (indexCode["Industry-Specific"]) {
+        Object.keys(indexCode["Industry-Specific"]).forEach(industry => {
+          industries.add(industry);
+        });
+      }
+    });
+    return Array.from(industries);
+  };
+
+  const getAllCategories = () => {
+    const categories = new Set<string>();
+    Object.values(questionTaxonomy).forEach(indexCode => {
+      Object.values(indexCode).forEach(scope => {
+        Object.keys(scope).forEach(category => {
+          categories.add(category);
+        });
+      });
+    });
+    return Array.from(categories);
+  };
 
   return <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -171,7 +187,7 @@ const OperationalPartnerDirectory = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium">Index Code Expertise</Label>
               <div className="flex flex-wrap gap-2">
-                {expertiseOptions.indexCodes.map(code => (
+                {indexCodes.map(code => (
                   <Button
                     key={code}
                     variant={expertiseForm.indexCodes.includes(code) ? "default" : "outline"}
@@ -184,28 +200,11 @@ const OperationalPartnerDirectory = () => {
               </div>
             </div>
 
-            {/* Stage Expertise */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">Stage Expertise</Label>
-              <div className="flex flex-wrap gap-2">
-                {expertiseOptions.stages.map(stage => (
-                  <Button
-                    key={stage}
-                    variant={expertiseForm.stages.includes(stage) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleExpertiseChange('stages', stage)}
-                  >
-                    {stage}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
             {/* Industry Expertise */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">Industry Expertise</Label>
               <div className="flex flex-wrap gap-2">
-                {expertiseOptions.industries.map(industry => (
+                {getAllIndustries().map(industry => (
                   <Button
                     key={industry}
                     variant={expertiseForm.industries.includes(industry) ? "default" : "outline"}
@@ -222,7 +221,7 @@ const OperationalPartnerDirectory = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium">Category Expertise</Label>
               <div className="flex flex-wrap gap-2">
-                {expertiseOptions.categories.map(category => (
+                {getAllCategories().map(category => (
                   <Button
                     key={category}
                     variant={expertiseForm.categories.includes(category) ? "default" : "outline"}

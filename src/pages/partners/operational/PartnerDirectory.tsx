@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
@@ -175,65 +176,67 @@ const OperationalPartnerDirectory = () => {
 
       {/* Edit Expertise Modal */}
       <Dialog open={editExpertiseModal} onOpenChange={setEditExpertiseModal}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>
               Editing Expertise for {selectedFaculty?.name}
             </DialogTitle>
           </DialogHeader>
           
-          <div className="grid grid-cols-2 gap-6 py-4">
-            {/* Index Code Expertise */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">Index Code Expertise</Label>
-              <div className="flex flex-wrap gap-2">
-                {indexCodes.map(code => (
-                  <Button
-                    key={code}
-                    variant={expertiseForm.indexCodes.includes(code) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleExpertiseChange('indexCodes', code)}
-                  >
-                    {code}
-                  </Button>
-                ))}
+          <ScrollArea className="max-h-[60vh] pr-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+              {/* Index Code Expertise */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Index Code Expertise</Label>
+                <div className="flex flex-wrap gap-2">
+                  {indexCodes.map(code => (
+                    <Button
+                      key={code}
+                      variant={expertiseForm.indexCodes.includes(code) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleExpertiseChange('indexCodes', code)}
+                    >
+                      {code}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Industry Expertise */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">Industry Expertise</Label>
-              <div className="flex flex-wrap gap-2">
-                {getAllIndustries().map(industry => (
-                  <Button
-                    key={industry}
-                    variant={expertiseForm.industries.includes(industry) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleExpertiseChange('industries', industry)}
-                  >
-                    {industry}
-                  </Button>
-                ))}
+              {/* Industry Expertise */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Industry Expertise</Label>
+                <div className="flex flex-wrap gap-2">
+                  {getAllIndustries().map(industry => (
+                    <Button
+                      key={industry}
+                      variant={expertiseForm.industries.includes(industry) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleExpertiseChange('industries', industry)}
+                    >
+                      {industry}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Category Expertise */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">Category Expertise</Label>
-              <div className="flex flex-wrap gap-2">
-                {getAllCategories().map(category => (
-                  <Button
-                    key={category}
-                    variant={expertiseForm.categories.includes(category) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleExpertiseChange('categories', category)}
-                  >
-                    {category}
-                  </Button>
-                ))}
+              {/* Category Expertise */}
+              <div className="space-y-3 md:col-span-2">
+                <Label className="text-sm font-medium">Category Expertise</Label>
+                <div className="flex flex-wrap gap-2">
+                  {getAllCategories().map(category => (
+                    <Button
+                      key={category}
+                      variant={expertiseForm.categories.includes(category) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleExpertiseChange('categories', category)}
+                    >
+                      {category}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          </ScrollArea>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditExpertiseModal(false)}>

@@ -24,16 +24,23 @@ const mockAdmins = [
 ];
 
 const AdminDirectory = () => {
-  const [admins, setAdmins] = useState(mockAdmins);
+  const { admins, updateAdminStatus } = useAuth();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [adminsState, setAdminsState] = useState(admins);
+  const [newAdminName, setNewAdminName] = useState("");
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminRoles, setNewAdminRoles] = useState<string[]>([]);
   const { sendPasswordSetupLink } = useAuth();
   const { toast } = useToast();
 
+  // Sync local state with context
+  useEffect(() => {
+    setAdminsState(admins);
+  }, [admins]);
+
   const adminRoles = ["Admin", "Content Manager", "Faculty Member", "Ambassador", "Judge"];
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newAdminEmail);
-const isFormValid = isEmailValid && newAdminRoles.length > 0;
+  const isFormValid = newAdminName.trim() && isEmailValid && newAdminRoles.length > 0;
 
   // Role to permissions mapping for inheritance
   const rolePermissionsMap: Record<string, string[]> = {
@@ -160,7 +167,7 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
       return;
     }
 
-    setAdmins(prev => prev.map(a => a.id === editingAdmin.id ? updated : a));
+    setAdminsState(prev => prev.map(a => a.id === editingAdmin.id ? updated : a));
     setIsEditOpen(false);
     setEditingAdmin(null);
     toast({ title: "Admin Updated", description: `${editName} has been updated.` });
@@ -177,21 +184,22 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
   const handleAddAdmin = () => {
     const newAdmin = {
       id: Date.now().toString(),
-      name: newAdminEmail.split('@')[0], // Use email prefix as temporary name
+      name: newAdminName,
       email: newAdminEmail,
       role: newAdminRoles[0] || "",
       roles: newAdminRoles,
       status: "Active"
     };
 
-    setAdmins(prev => [...prev, newAdmin]);
+    setAdminsState(prev => [...prev, newAdmin]);
+    setNewAdminName("");
     setNewAdminEmail("");
     setNewAdminRoles([]);
     setShowAddDialog(false);
     
     toast({
       title: "Admin Added",
-      description: `${newAdminEmail} has been added as ${newAdminRoles.join(", ")}`,
+      description: `${newAdminName} has been added as ${newAdminRoles.join(", ")}`,
     });
   };
 
@@ -220,6 +228,16 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
                       <DialogTitle>Add New Admin</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name *</Label>
+                        <Input
+                          id="name"
+                          value={newAdminName}
+                          onChange={(e) => setNewAdminName(e.target.value)}
+                          placeholder="Full Name"
+                          required
+                        />
+                      </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address *</Label>
                         <Input
@@ -383,7 +401,7 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
                         <AlertDialogAction
                           onClick={() => {
                             if (!pendingUpdatedAdmin || !editingAdmin) return;
-                            setAdmins(prev => prev.map(a => a.id === editingAdmin.id ? pendingUpdatedAdmin : a));
+                            setAdminsState(prev => prev.map(a => a.id === editingAdmin.id ? pendingUpdatedAdmin : a));
                             sendPasswordSetupLink(editEmail);
                             setIsEmailConfirmOpen(false);
                             setIsEditOpen(false);
@@ -412,7 +430,7 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {admins.map((admin) => (
+                    {adminsState.map((admin) => (
                       <TableRow key={admin.id}>
                         <TableCell className="font-medium">{admin.name}</TableCell>
                         <TableCell>{admin.email}</TableCell>
@@ -454,9 +472,11 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() =>
-                                setAdmins(prev => prev.map(a => a.id === admin.id ? { ...a, status: a.status === "Active" ? "Inactive" : "Active" } : a))
-                              }
+                              onClick={() => {
+                                const newStatus = admin.status === "Active" ? "Inactive" : "Active";
+                                updateAdminStatus(admin.id, newStatus);
+                                setAdminsState(prev => prev.map(a => a.id === admin.id ? { ...a, status: newStatus } : a));
+                              }}
                             >
                               {admin.status === "Active" ? "Deactivate" : "Activate"}
                             </Button>

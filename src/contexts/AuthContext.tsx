@@ -7,24 +7,29 @@ interface User {
   role: string;
 }
 
-interface Partner {
-  id: number;
+interface Admin {
+  id: string;
   name: string;
   email: string;
   role: string;
+  roles?: string[];
   status: string;
+  permissionOverrides?: {
+    granted: string[];
+    revoked: string[];
+  };
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   pendingEmail: string | null;
-  partners: Partner[];
+  admins: Admin[];
   signIn: (email: string, password: string) => Promise<boolean>;
   verifyOtpAndSignIn: (otp: string) => Promise<void>;
   signOut: () => void;
   sendPasswordSetupLink: (email: string) => void;
-  addPartner: (partner: Omit<Partner, 'id' | 'status'>) => void;
+  updateAdminStatus: (adminId: string, status: string) => void;
   activateUser: (email: string) => void;
 }
 
@@ -42,26 +47,33 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-const initialPartners: Partner[] = [
+const initialAdmins: Admin[] = [
+  { id: "1", name: "John Smith", email: "john.smith@company.com", role: "Admin", status: "Active" },
+  { id: "2", name: "Sarah Johnson", email: "sarah.johnson@company.com", role: "Admin", status: "Active" },
+  { id: "3", name: "Mike Wilson", email: "mike.wilson@company.com", role: "Admin", status: "Inactive" },
+  { id: "4", name: "Emily Davis", email: "emily.davis@company.com", role: "Admin", status: "Active" },
   {
-    id: 1,
+    id: "5",
     name: "Dr. Sarah Johnson",
     email: "sarah.johnson@university.edu",
     role: "Faculty Member",
+    roles: ["Faculty Member"],
     status: "Active"
   },
   {
-    id: 2,
+    id: "6",
     name: "Prof. Michael Chen",
     email: "m.chen@business.edu",
     role: "Judge",
+    roles: ["Judge"],
     status: "Active"
   },
   {
-    id: 3,
+    id: "7",
     name: "Dr. Emily Rodriguez",
     email: "emily.r@institute.org",
     role: "Ambassador",
+    roles: ["Ambassador"],
     status: "Inactive"
   }
 ];
@@ -70,7 +82,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
-  const [partners, setPartners] = useState<Partner[]>(initialPartners);
+  const [admins, setAdmins] = useState<Admin[]>(initialAdmins);
 
   const signIn = async (email: string, password: string): Promise<boolean> => {
     // Mock password validation with delay
@@ -119,23 +131,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     console.log("Password setup link sent to:", email);
   };
 
-  const addPartner = (partner: Omit<Partner, 'id' | 'status'>) => {
-    const newPartner: Partner = {
-      ...partner,
-      id: Math.max(...partners.map(p => p.id)) + 1,
-      status: "Inactive"
-    };
-    setPartners(prev => [...prev, newPartner]);
-    // Automatically send password setup link
-    sendPasswordSetupLink(partner.email);
+  const updateAdminStatus = (adminId: string, status: string) => {
+    setAdmins(prev => 
+      prev.map(admin => 
+        admin.id === adminId 
+          ? { ...admin, status }
+          : admin
+      )
+    );
   };
 
   const activateUser = (email: string) => {
-    setPartners(prev => 
-      prev.map(partner => 
-        partner.email === email 
-          ? { ...partner, status: "Active" }
-          : partner
+    setAdmins(prev => 
+      prev.map(admin => 
+        admin.email === email 
+          ? { ...admin, status: "Active" }
+          : admin
       )
     );
     console.log("User activated:", email);
@@ -145,12 +156,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isAuthenticated,
     user,
     pendingEmail,
-    partners,
+    admins,
     signIn,
     verifyOtpAndSignIn,
     signOut,
     sendPasswordSetupLink,
-    addPartner,
+    updateAdminStatus,
     activateUser
   };
 

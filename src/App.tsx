@@ -8,8 +8,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Users from "./pages/Users";
 import UserDirectory from "./pages/users/UserDirectory";
-import PrimaryProfiles from "./pages/users/PrimaryProfiles";
-
 import IdentityVerificationQueue from "./pages/users/IdentityVerificationQueue";
 
 import FeedbackSubmissions from "./pages/users/FeedbackSubmissions";
@@ -60,7 +58,6 @@ const App = () => (
             
             {/* User Management Routes */}
             <Route path="/users/directory" element={<ProtectedRoute><UserDirectory /></ProtectedRoute>} />
-            <Route path="/users/profiles/:userId" element={<ProtectedRoute><PrimaryProfiles /></ProtectedRoute>} />
             
             <Route path="/users/verification" element={<ProtectedRoute><IdentityVerificationQueue /></ProtectedRoute>} />
             

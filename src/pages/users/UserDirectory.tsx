@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -60,14 +60,14 @@ const mockVerificationQueue = [
   },
 ];
 
-// Mock assessment history for users
+// Mock assessment history for users with standardized names
 const mockAssessmentHistory = {
   "1": [
-    { id: "A1", name: "Financial Planning Assessment", status: "Completed", score: "85%", date: "2024-03-01" },
-    { id: "A2", name: "Risk Management Evaluation", status: "Completed", score: "92%", date: "2024-02-15" },
+    { id: "A1", name: "FPA-GEN-PRE-1", status: "Completed", score: "85%", date: "2024-03-01" },
+    { id: "A2", name: "FPA-ADV-POST-3", status: "Completed", score: "92%", date: "2024-02-15" },
   ],
   "2": [
-    { id: "A3", name: "Investment Strategy Test", status: "In Progress", score: "N/A", date: "2024-03-05" },
+    { id: "A3", name: "FPA-INT-MID-2", status: "In Progress", score: "N/A", date: "2024-03-05" },
   ],
   // Add more as needed
 };
@@ -79,6 +79,18 @@ const UserDirectory = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [verificationQueue, setVerificationQueue] = useState(mockVerificationQueue);
   const [reviewNotes, setReviewNotes] = useState("");
+  
+  // Editable form fields for Identity Data
+  const [editForm, setEditForm] = useState({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    nationality: "",
+    countryOfResidence: "",
+    idDocumentType: "",
+    documentNumber: ""
+  });
+  const [hasChanges, setHasChanges] = useState(false);
 
   const filteredUsers = mockUsers.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -108,7 +120,30 @@ const UserDirectory = () => {
 
   const openEditModal = (user: typeof mockUsers[0]) => {
     setSelectedUser(user);
+    // Initialize form with current user data
+    const [firstName, lastName] = user.name.split(' ');
+    setEditForm({
+      firstName: firstName || "",
+      lastName: lastName || "",
+      dateOfBirth: "1990-05-15", // Mock data - in real app would come from user object
+      nationality: "United States",
+      countryOfResidence: "United States", 
+      idDocumentType: "Passport",
+      documentNumber: "123456789"
+    });
+    setHasChanges(false);
     setIsEditModalOpen(true);
+  };
+
+  const handleFormChange = (field: string, value: string) => {
+    setEditForm(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+
+  const handleSaveChanges = () => {
+    // In real app, this would update the global state/database
+    toast.success("User profile updated successfully");
+    setHasChanges(false);
   };
 
   const handleApproveVerification = (userId: string) => {
@@ -324,35 +359,76 @@ const UserDirectory = () => {
                     <TabsContent value="identity" className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <Label className="text-sm font-medium">First Name</Label>
-                          <p className="text-sm text-muted-foreground">John</p>
+                          <Label htmlFor="firstName" className="text-sm font-medium">First Name</Label>
+                          <Input
+                            id="firstName"
+                            value={editForm.firstName}
+                            onChange={(e) => handleFormChange("firstName", e.target.value)}
+                            className="mt-1"
+                          />
                         </div>
                         <div>
-                          <Label className="text-sm font-medium">Last Name</Label>
-                          <p className="text-sm text-muted-foreground">Smith</p>
+                          <Label htmlFor="lastName" className="text-sm font-medium">Last Name</Label>
+                          <Input
+                            id="lastName"
+                            value={editForm.lastName}
+                            onChange={(e) => handleFormChange("lastName", e.target.value)}
+                            className="mt-1"
+                          />
                         </div>
                         <div>
-                          <Label className="text-sm font-medium">Date of Birth</Label>
-                          <p className="text-sm text-muted-foreground">1990-05-15</p>
+                          <Label htmlFor="dateOfBirth" className="text-sm font-medium">Date of Birth</Label>
+                          <Input
+                            id="dateOfBirth"
+                            type="date"
+                            value={editForm.dateOfBirth}
+                            onChange={(e) => handleFormChange("dateOfBirth", e.target.value)}
+                            className="mt-1"
+                          />
                         </div>
                         <div>
-                          <Label className="text-sm font-medium">Nationality</Label>
-                          <p className="text-sm text-muted-foreground">United States</p>
+                          <Label htmlFor="nationality" className="text-sm font-medium">Nationality</Label>
+                          <Input
+                            id="nationality"
+                            value={editForm.nationality}
+                            onChange={(e) => handleFormChange("nationality", e.target.value)}
+                            className="mt-1"
+                          />
                         </div>
                         <div>
-                          <Label className="text-sm font-medium">Country of Residence</Label>
-                          <p className="text-sm text-muted-foreground">United States</p>
+                          <Label htmlFor="countryOfResidence" className="text-sm font-medium">Country of Residence</Label>
+                          <Input
+                            id="countryOfResidence"
+                            value={editForm.countryOfResidence}
+                            onChange={(e) => handleFormChange("countryOfResidence", e.target.value)}
+                            className="mt-1"
+                          />
                         </div>
                         <div>
-                          <Label className="text-sm font-medium">ID Document Type</Label>
-                          <p className="text-sm text-muted-foreground">Passport</p>
+                          <Label htmlFor="idDocumentType" className="text-sm font-medium">ID Document Type</Label>
+                          <Select value={editForm.idDocumentType} onValueChange={(value) => handleFormChange("idDocumentType", value)}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Select document type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Passport">Passport</SelectItem>
+                              <SelectItem value="Driver's License">Driver's License</SelectItem>
+                              <SelectItem value="National ID">National ID</SelectItem>
+                              <SelectItem value="State ID">State ID</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div>
-                          <Label className="text-sm font-medium">Document Number</Label>
-                          <p className="text-sm text-muted-foreground">123456789</p>
+                          <Label htmlFor="documentNumber" className="text-sm font-medium">Document Number</Label>
+                          <Input
+                            id="documentNumber"
+                            value={editForm.documentNumber}
+                            onChange={(e) => handleFormChange("documentNumber", e.target.value)}
+                            className="mt-1"
+                          />
                         </div>
                         <div>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="mt-6">
                             <Eye className="mr-2 h-4 w-4" />
                             View Uploaded Document
                           </Button>
@@ -395,6 +471,15 @@ const UserDirectory = () => {
                     </TabsContent>
                   </Tabs>
                 )}
+                <DialogFooter>
+                  <Button 
+                    onClick={handleSaveChanges} 
+                    disabled={!hasChanges}
+                    className="w-full sm:w-auto"
+                  >
+                    Save Changes
+                  </Button>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
           </main>

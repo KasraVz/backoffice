@@ -27,13 +27,13 @@ const AdminDirectory = () => {
   const [admins, setAdmins] = useState(mockAdmins);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newAdminEmail, setNewAdminEmail] = useState("");
-  const [newAdminRole, setNewAdminRole] = useState("");
+  const [newAdminRoles, setNewAdminRoles] = useState<string[]>([]);
   const { sendPasswordSetupLink } = useAuth();
   const { toast } = useToast();
 
-  const adminRoles = ["Admin", "Content Manager"];
+  const adminRoles = ["Admin", "Content Manager", "Faculty Member", "Ambassador", "Judge"];
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newAdminEmail);
-const isFormValid = isEmailValid && newAdminRole !== "";
+const isFormValid = isEmailValid && newAdminRoles.length > 0;
 
   // Role to permissions mapping for inheritance
   const rolePermissionsMap: Record<string, string[]> = {
@@ -49,6 +49,15 @@ const isFormValid = isEmailValid && newAdminRole !== "";
       "questionnaire:view","questionnaire:create","questionnaire:edit","questionnaire:publish",
       "bank:view","bank:create","bank:edit",
       "submission:view"
+    ],
+    "Faculty Member": [
+      "faculty:review_questions"
+    ],
+    "Ambassador": [
+      "questionnaire:view","submission:view"
+    ],
+    "Judge": [
+      "submission:view","submission:review"
     ]
   };
 
@@ -62,6 +71,8 @@ const isFormValid = isEmailValid && newAdminRole !== "";
   const [editStatus, setEditStatus] = useState("Active");
 
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  const [isEmailConfirmOpen, setIsEmailConfirmOpen] = useState(false);
+  const [pendingUpdatedAdmin, setPendingUpdatedAdmin] = useState<any | null>(null);
 
   const getBasePermissions = (roles: string[]) => {
     const perms = new Set<string>();
@@ -90,6 +101,13 @@ const isFormValid = isEmailValid && newAdminRole !== "";
       setSelectedPermissions(effective);
     }
   }, [isEditOpen, editingAdmin]);
+
+  // Keep permissions in sync when roles change during editing
+  useEffect(() => {
+    if (!isEditOpen) return;
+    const base = getBasePermissions(selectedRoles);
+    setSelectedPermissions(() => base);
+  }, [selectedRoles, isEditOpen]);
 
   const handlePermissionToggle = (permissionId: string) => {
     setSelectedPermissions(prev =>
@@ -136,6 +154,12 @@ const isFormValid = isEmailValid && newAdminRole !== "";
       permissionOverrides: { granted, revoked }
     };
 
+    if (editEmail !== editingAdmin.email) {
+      setPendingUpdatedAdmin(updated);
+      setIsEmailConfirmOpen(true);
+      return;
+    }
+
     setAdmins(prev => prev.map(a => a.id === editingAdmin.id ? updated : a));
     setIsEditOpen(false);
     setEditingAdmin(null);
@@ -155,18 +179,19 @@ const isFormValid = isEmailValid && newAdminRole !== "";
       id: Date.now().toString(),
       name: newAdminEmail.split('@')[0], // Use email prefix as temporary name
       email: newAdminEmail,
-      role: newAdminRole,
+      role: newAdminRoles[0] || "",
+      roles: newAdminRoles,
       status: "Active"
     };
 
     setAdmins(prev => [...prev, newAdmin]);
     setNewAdminEmail("");
-    setNewAdminRole("");
+    setNewAdminRoles([]);
     setShowAddDialog(false);
     
     toast({
       title: "Admin Added",
-      description: `${newAdminEmail} has been added as ${newAdminRole}`,
+      description: `${newAdminEmail} has been added as ${newAdminRoles.join(", ")}`,
     });
   };
 
@@ -207,19 +232,31 @@ const isFormValid = isEmailValid && newAdminRole !== "";
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="role">Role *</Label>
-                        <Select value={newAdminRole} onValueChange={setNewAdminRole} required>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a role" />
-                          </SelectTrigger>
-                          <SelectContent>
+                        <Label htmlFor="roles">Roles *</Label>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-full justify-between">
+                              {newAdminRoles.length > 0 ? newAdminRoles.join(", ") : "Select roles"}
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56">
                             {adminRoles.map((role) => (
-                              <SelectItem key={role} value={role}>
+                              <DropdownMenuCheckboxItem
+                                key={role}
+                                checked={newAdminRoles.includes(role)}
+                                onCheckedChange={() =>
+                                  setNewAdminRoles((prev) =>
+                                    prev.includes(role)
+                                      ? prev.filter((r) => r !== role)
+                                      : [...prev, role]
+                                  )
+                                }
+                              >
                                 {role}
-                              </SelectItem>
+                              </DropdownMenuCheckboxItem>
                             ))}
-                          </SelectContent>
-                        </Select>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                       <Button 
                         onClick={handleAddAdmin}
@@ -332,6 +369,34 @@ const isFormValid = isEmailValid && newAdminRole !== "";
                     <Button variant="outline" onClick={() => { setIsEditOpen(false); setEditingAdmin(null); }}>Cancel</Button>
                     <Button onClick={handleSaveChanges}>Save Changes</Button>
                   </div>
+
+                  <AlertDialog open={isEmailConfirmOpen} onOpenChange={setIsEmailConfirmOpen}>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Email Change</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          You have changed this user's email address. A new password setup link will be sent to the new email, and their current password will be invalidated. Do you want to proceed?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setIsEmailConfirmOpen(false)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            if (!pendingUpdatedAdmin || !editingAdmin) return;
+                            setAdmins(prev => prev.map(a => a.id === editingAdmin.id ? pendingUpdatedAdmin : a));
+                            sendPasswordSetupLink(editEmail);
+                            setIsEmailConfirmOpen(false);
+                            setIsEditOpen(false);
+                            setEditingAdmin(null);
+                            setPendingUpdatedAdmin(null);
+                            toast({ title: "Admin Updated", description: `${editName} has been updated and a password setup link has been sent to ${editEmail}.` });
+                          }}
+                        >
+                          Proceed
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </DialogContent>
               </Dialog>
 
@@ -389,6 +454,9 @@ const isFormValid = isEmailValid && newAdminRole !== "";
                             <Button 
                               variant="outline" 
                               size="sm"
+                              onClick={() =>
+                                setAdmins(prev => prev.map(a => a.id === admin.id ? { ...a, status: a.status === "Active" ? "Inactive" : "Active" } : a))
+                              }
                             >
                               {admin.status === "Active" ? "Deactivate" : "Activate"}
                             </Button>

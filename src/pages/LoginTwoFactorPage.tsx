@@ -2,15 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const LoginTwoFactorPage = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { verifyOtpAndSignIn, pendingEmail } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,11 +34,7 @@ const LoginTwoFactorPage = () => {
     setIsLoading(true);
 
     try {
-      // Mock 2FA verification - accept any 6-digit code
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Complete sign-in for Super Admin
-      await signIn('superadmin@example.com', 'verified');
+      await verifyOtpAndSignIn(verificationCode);
       navigate('/');
     } catch (error) {
       toast({
@@ -56,27 +51,29 @@ const LoginTwoFactorPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Two-Factor Authentication</CardTitle>
+          <CardTitle>Check Your Email</CardTitle>
           <CardDescription>
-            Enter the 6-digit code from your authenticator app
+            {`We've sent a 6-digit code to ${pendingEmail ?? 'your email'}. The code is valid for 10 minutes.`}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="verificationCode">
-                6-Digit Authentication Code
-              </Label>
-              <Input
-                id="verificationCode"
-                type="text"
+              <InputOTP
                 value={verificationCode}
-                onChange={(e) => handleCodeChange(e.target.value)}
-                placeholder="000000"
+                onChange={handleCodeChange}
                 maxLength={6}
-                className="text-center text-lg font-mono"
-                required
-              />
+                containerClassName="w-full justify-center"
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
             </div>
             
             <Button 

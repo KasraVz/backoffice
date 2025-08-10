@@ -9,9 +9,9 @@ import Index from "./pages/Index";
 import Users from "./pages/Users";
 import UserDirectory from "./pages/users/UserDirectory";
 import PrimaryProfiles from "./pages/users/PrimaryProfiles";
-import UserRolesPermissions from "./pages/users/UserRolesPermissions";
+
 import IdentityVerificationQueue from "./pages/users/IdentityVerificationQueue";
-import UserActivityLogs from "./pages/users/UserActivityLogs";
+
 import FeedbackSubmissions from "./pages/users/FeedbackSubmissions";
 import Questionnaires from "./pages/Questionnaires";
 import QuestionnaireManagement from "./pages/QuestionnaireManagement";
@@ -31,11 +31,11 @@ import ReviewSetDetails from "./pages/partners/operational/ReviewSetDetails";
 import AdminDirectory from "./pages/manage-admins/AdminDirectory";
 import RoleManagement from "./pages/manage-admins/RoleManagement";
 
-import AuditLogPage from "./pages/manage-admins/AuditLogPage";
+
 import Login from "./pages/Login";
 import SetPassword from "./pages/SetPassword";
-import NewPasswordPage from "./pages/setup/NewPasswordPage";
-import TwoFactorAuthPage from "./pages/setup/TwoFactorAuthPage";
+
+
 import LoginTwoFactorPage from "./pages/LoginTwoFactorPage";
 import NotFound from "./pages/NotFound";
 
@@ -54,10 +54,6 @@ const App = () => (
             <Route path="/login/2fa" element={<LoginTwoFactorPage />} />
             <Route path="/set-password/:token" element={<SetPassword />} />
             
-            {/* Setup Routes - Protected but accessible during setup */}
-            <Route path="/setup/new-password" element={<ProtectedRoute><NewPasswordPage /></ProtectedRoute>} />
-            <Route path="/setup/2fa" element={<ProtectedRoute><TwoFactorAuthPage /></ProtectedRoute>} />
-            
             {/* Protected Routes */}
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
@@ -65,9 +61,9 @@ const App = () => (
             {/* User Management Routes */}
             <Route path="/users/directory" element={<ProtectedRoute><UserDirectory /></ProtectedRoute>} />
             <Route path="/users/profiles/:userId" element={<ProtectedRoute><PrimaryProfiles /></ProtectedRoute>} />
-            <Route path="/users/roles" element={<ProtectedRoute><UserRolesPermissions /></ProtectedRoute>} />
+            
             <Route path="/users/verification" element={<ProtectedRoute><IdentityVerificationQueue /></ProtectedRoute>} />
-            <Route path="/users/activity" element={<ProtectedRoute><UserActivityLogs /></ProtectedRoute>} />
+            
             <Route path="/users/feedback" element={<ProtectedRoute><FeedbackSubmissions /></ProtectedRoute>} />
             
             <Route path="/questionnaires" element={<ProtectedRoute><Questionnaires /></ProtectedRoute>} />
@@ -83,7 +79,7 @@ const App = () => (
             <Route path="/manage-admins/directory" element={<ProtectedRoute><AdminDirectory /></ProtectedRoute>} />
             <Route path="/manage-admins/roles" element={<ProtectedRoute><RoleManagement /></ProtectedRoute>} />
             
-            <Route path="/manage-admins/audit-log" element={<ProtectedRoute><AuditLogPage /></ProtectedRoute>} />
+            
             
             {/* Operational Partners Routes */}
             <Route path="/partners/operational/directory" element={<ProtectedRoute><OperationalPartnerDirectory /></ProtectedRoute>} />

@@ -18,9 +18,10 @@ interface Partner {
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  isSettingUp: boolean;
+  pendingEmail: string | null;
   partners: Partner[];
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<boolean>;
+  verifyOtpAndSignIn: (otp: string) => Promise<void>;
   signOut: () => void;
   sendPasswordSetupLink: (email: string) => void;
   addPartner: (partner: Omit<Partner, 'id' | 'status'>) => void;
@@ -68,46 +69,50 @@ const initialPartners: Partner[] = [
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [isSettingUp, setIsSettingUp] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [partners, setPartners] = useState<Partner[]>(initialPartners);
 
-  const signIn = async (email: string, password: string): Promise<void> => {
-    // Mock authentication with delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const SUPER_ADMIN_EMAIL = 'superadmin@example.com';
-    const TEMP_PASSWORD = 'SUPER_ADMIN_TEMP_PASSWORD';
-    
-    // Check for Super Admin first-time login
-    if (email === SUPER_ADMIN_EMAIL && password === TEMP_PASSWORD) {
-      setIsSettingUp(true);
-      setIsAuthenticated(true);
-      setUser({
-        id: 'super-admin',
-        email,
-        name: 'Super Admin',
-        role: 'super_admin'
-      });
-      return;
+  const signIn = async (email: string, password: string): Promise<boolean> => {
+    // Mock password validation with delay
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    // Simple mock validation: require at least 4 characters
+    if (!password || password.length < 4) {
+      throw new Error('Invalid email or password');
     }
-    
-    // Mock user data for normal users or completed Super Admin
+
+    // Stage pending email for OTP verification
+    setPendingEmail(email);
+    setUser(null);
+    setIsAuthenticated(false);
+    return true;
+  };
+
+  const verifyOtpAndSignIn = async (otp: string): Promise<void> => {
+    // Mock OTP verification with delay
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    if (!/^\d{6}$/.test(otp)) {
+      throw new Error('Invalid OTP');
+    }
+
+    const email = pendingEmail || 'user@example.com';
     const mockUser: User = {
-      id: email === SUPER_ADMIN_EMAIL ? 'super-admin' : '1',
+      id: '1',
       email,
-      name: email === SUPER_ADMIN_EMAIL ? 'Super Admin' : 'Admin User',
-      role: email === SUPER_ADMIN_EMAIL ? 'super_admin' : 'admin'
+      name: email.split('@')[0] || 'User',
+      role: 'admin',
     };
-    
+
     setUser(mockUser);
     setIsAuthenticated(true);
-    setIsSettingUp(false);
+    setPendingEmail(null);
   };
 
   const signOut = () => {
     setUser(null);
     setIsAuthenticated(false);
-    setIsSettingUp(false);
+    setPendingEmail(null);
   };
 
   const sendPasswordSetupLink = (email: string) => {
@@ -139,9 +144,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value = {
     isAuthenticated,
     user,
-    isSettingUp,
+    pendingEmail,
     partners,
     signIn,
+    verifyOtpAndSignIn,
     signOut,
     sendPasswordSetupLink,
     addPartner,

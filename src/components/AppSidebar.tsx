@@ -14,19 +14,10 @@ const mainMenuItems = [{
     title: "Primary Profiles",
     url: "/users/profiles"
   }, {
-    title: "User Roles & Permissions",
-    url: "/users/roles"
-  }, {
-    title: "Identity Verification Queue",
-    url: "/users/verification"
-  }, {
-    title: "User Activity Logs",
-    url: "/users/activity"
-  }, {
     title: "Feedback Submissions",
     url: "/users/feedback"
   }]
-}, {
+  }, {
   title: "Questionnaires",
   icon: FileText,
   children: [{
@@ -200,9 +191,6 @@ const mainMenuItems = [{
   }, {
     title: "Role Management",
     url: "/manage-admins/roles"
-  }, {
-    title: "Security & Audit Log",
-    url: "/manage-admins/audit-log"
   }]
 }];
 export function AppSidebar() {

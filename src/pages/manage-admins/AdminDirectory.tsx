@@ -15,17 +15,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { permissionCategories } from "@/data/permissions";
-
-const mockAdmins = [
-  { id: "1", name: "John Smith", email: "john.smith@company.com", role: "Super Admin", status: "Active" },
-  { id: "2", name: "Sarah Johnson", email: "sarah.johnson@company.com", role: "Admin", status: "Active" },
-  { id: "3", name: "Mike Wilson", email: "mike.wilson@company.com", role: "Admin", status: "Inactive" },
-  { id: "4", name: "Emily Davis", email: "emily.davis@company.com", role: "Admin", status: "Active" },
-];
+import { useUsers } from "@/contexts/UsersContext";
 
 const AdminDirectory = () => {
-  const [admins, setAdmins] = useState(mockAdmins);
+  const { users, addUser, updateUser, toggleUserStatus } = useUsers();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [newAdminName, setNewAdminName] = useState("");
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminRoles, setNewAdminRoles] = useState<string[]>([]);
   const { sendPasswordSetupLink } = useAuth();
@@ -33,8 +28,7 @@ const AdminDirectory = () => {
 
   const adminRoles = ["Admin", "Content Manager", "Faculty Member", "Ambassador", "Judge"];
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newAdminEmail);
-const isFormValid = isEmailValid && newAdminRoles.length > 0;
-
+  const isFormValid = newAdminName.trim().length > 0 && isEmailValid && newAdminRoles.length > 0;
   // Role to permissions mapping for inheritance
   const rolePermissionsMap: Record<string, string[]> = {
     "Admin": [
@@ -160,7 +154,7 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
       return;
     }
 
-    setAdmins(prev => prev.map(a => a.id === editingAdmin.id ? updated : a));
+    updateUser(updated);
     setIsEditOpen(false);
     setEditingAdmin(null);
     toast({ title: "Admin Updated", description: `${editName} has been updated.` });
@@ -177,21 +171,22 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
   const handleAddAdmin = () => {
     const newAdmin = {
       id: Date.now().toString(),
-      name: newAdminEmail.split('@')[0], // Use email prefix as temporary name
+      name: newAdminName,
       email: newAdminEmail,
       role: newAdminRoles[0] || "",
       roles: newAdminRoles,
       status: "Active"
     };
 
-    setAdmins(prev => [...prev, newAdmin]);
+    addUser(newAdmin);
+    setNewAdminName("");
     setNewAdminEmail("");
     setNewAdminRoles([]);
     setShowAddDialog(false);
     
     toast({
       title: "Admin Added",
-      description: `${newAdminEmail} has been added as ${newAdminRoles.join(", ")}`,
+      description: `${newAdminName} has been added as ${newAdminRoles.join(", ")}`,
     });
   };
 
@@ -215,58 +210,68 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
                   <DialogTrigger asChild>
                     <Button>Add New Admin</Button>
                   </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add New Admin</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={newAdminEmail}
-                          onChange={(e) => setNewAdminEmail(e.target.value)}
-                          placeholder="admin@example.com"
-                          required
-                        />
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add New Admin</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Full Name *</Label>
+                          <Input
+                            id="name"
+                            value={newAdminName}
+                            onChange={(e) => setNewAdminName(e.target.value)}
+                            placeholder="Jane Doe"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email Address *</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={newAdminEmail}
+                            onChange={(e) => setNewAdminEmail(e.target.value)}
+                            placeholder="admin@example.com"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="roles">Roles *</Label>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between">
+                                {newAdminRoles.length > 0 ? newAdminRoles.join(", ") : "Select roles"}
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56">
+                              {adminRoles.map((role) => (
+                                <DropdownMenuCheckboxItem
+                                  key={role}
+                                  checked={newAdminRoles.includes(role)}
+                                  onCheckedChange={() =>
+                                    setNewAdminRoles((prev) =>
+                                      prev.includes(role)
+                                        ? prev.filter((r) => r !== role)
+                                        : [...prev, role]
+                                    )
+                                  }
+                                >
+                                  {role}
+                                </DropdownMenuCheckboxItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                        <Button 
+                          onClick={handleAddAdmin}
+                          disabled={!isFormValid}
+                          className="w-full"
+                        >
+                          Done
+                        </Button>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="roles">Roles *</Label>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between">
-                              {newAdminRoles.length > 0 ? newAdminRoles.join(", ") : "Select roles"}
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-56">
-                            {adminRoles.map((role) => (
-                              <DropdownMenuCheckboxItem
-                                key={role}
-                                checked={newAdminRoles.includes(role)}
-                                onCheckedChange={() =>
-                                  setNewAdminRoles((prev) =>
-                                    prev.includes(role)
-                                      ? prev.filter((r) => r !== role)
-                                      : [...prev, role]
-                                  )
-                                }
-                              >
-                                {role}
-                              </DropdownMenuCheckboxItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                      <Button 
-                        onClick={handleAddAdmin}
-                        disabled={!isFormValid}
-                        className="w-full"
-                      >
-                        Done
-                      </Button>
-                    </div>
-                  </DialogContent>
+                    </DialogContent>
                 </Dialog>
               </div>
 
@@ -383,7 +388,7 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
                         <AlertDialogAction
                           onClick={() => {
                             if (!pendingUpdatedAdmin || !editingAdmin) return;
-                            setAdmins(prev => prev.map(a => a.id === editingAdmin.id ? pendingUpdatedAdmin : a));
+                            updateUser(pendingUpdatedAdmin);
                             sendPasswordSetupLink(editEmail);
                             setIsEmailConfirmOpen(false);
                             setIsEditOpen(false);
@@ -412,7 +417,7 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {admins.map((admin) => (
+                    {users.map((admin) => (
                       <TableRow key={admin.id}>
                         <TableCell className="font-medium">{admin.name}</TableCell>
                         <TableCell>{admin.email}</TableCell>
@@ -454,9 +459,7 @@ const isFormValid = isEmailValid && newAdminRoles.length > 0;
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() =>
-                                setAdmins(prev => prev.map(a => a.id === admin.id ? { ...a, status: a.status === "Active" ? "Inactive" : "Active" } : a))
-                              }
+                              onClick={() => toggleUserStatus(admin.id)}
                             >
                               {admin.status === "Active" ? "Deactivate" : "Activate"}
                             </Button>

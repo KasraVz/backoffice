@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import Users from "./pages/Users";
 import UserDirectory from "./pages/users/UserDirectory";
 import IdentityVerificationQueue from "./pages/users/IdentityVerificationQueue";
-
+import TeamProfilesPage from "./pages/users/TeamProfilesPage";
 import FeedbackSubmissions from "./pages/users/FeedbackSubmissions";
 import Questionnaires from "./pages/Questionnaires";
 import QuestionnaireManagement from "./pages/QuestionnaireManagement";
@@ -58,7 +58,7 @@ const App = () => (
             
             {/* User Management Routes */}
             <Route path="/users/directory" element={<ProtectedRoute><UserDirectory /></ProtectedRoute>} />
-            
+            <Route path="/users/teams" element={<ProtectedRoute><TeamProfilesPage /></ProtectedRoute>} />
             <Route path="/users/verification" element={<ProtectedRoute><IdentityVerificationQueue /></ProtectedRoute>} />
             
             <Route path="/users/feedback" element={<ProtectedRoute><FeedbackSubmissions /></ProtectedRoute>} />

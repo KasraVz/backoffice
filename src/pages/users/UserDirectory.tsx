@@ -428,6 +428,14 @@ const UserDirectory = () => {
                           />
                         </div>
                         <div>
+                          <Label className="text-sm font-medium">Team</Label>
+                          <div className="mt-1 p-2 border rounded-md">
+                            <span className="text-primary cursor-pointer hover:underline">
+                              TechVenture Solutions
+                            </span>
+                          </div>
+                        </div>
+                        <div>
                           <Button variant="outline" size="sm" className="mt-6">
                             <Eye className="mr-2 h-4 w-4" />
                             View Uploaded Document

@@ -11,6 +11,9 @@ const mainMenuItems = [{
     title: "User Directory",
     url: "/users/directory"
   }, {
+    title: "Team Profiles",
+    url: "/users/teams"
+  }, {
     title: "Feedback Submissions",
     url: "/users/feedback"
   }]

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Users, DollarSign, TrendingDown, Settings } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Subscriber {
   id: string;
@@ -94,12 +95,16 @@ export default function SubscriptionDashboardPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Subscription Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Monitor recurring subscriptions and revenue metrics
-        </p>
-      </div>
+      <PageHeader
+        title="Subscription Dashboard"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/" },
+          { label: "Orders" }
+        ]}
+      />
+      <p className="text-muted-foreground mb-6">
+        Monitor recurring subscriptions and revenue metrics
+      </p>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">

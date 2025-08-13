@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Plus, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Coupon {
   id: string;
@@ -111,13 +112,17 @@ export default function DiscountCodesPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Discount & Coupon Codes</h1>
-          <p className="text-muted-foreground mt-2">
-            Create and manage promotional discount codes
-          </p>
-        </div>
+      <PageHeader
+        title="Discount & Coupon Codes"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/" },
+          { label: "Orders" }
+        ]}
+      />
+      <div className="mb-6 flex justify-between items-end">
+        <p className="text-muted-foreground">
+          Create and manage promotional discount codes
+        </p>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
             <Button>

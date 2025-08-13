@@ -274,9 +274,9 @@ const UserDirectory = () => {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => openEditModal(user)}>
+                                  <DropdownMenuItem onClick={() => window.location.href = `/users/profile/${user.id}`}>
                                     <Edit className="mr-2 h-4 w-4" />
-                                    Edit Profile
+                                    View Profile
                                   </DropdownMenuItem>
                                   <DropdownMenuItem>
                                     <UserX className="mr-2 h-4 w-4" />

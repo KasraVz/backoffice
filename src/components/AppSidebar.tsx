@@ -106,12 +106,6 @@ const mainMenuItems = [{
     title: "Result Data",
     url: "/reports-certs/results"
   }, {
-    title: "Report History",
-    url: "/reports-certs/reports"
-  }, {
-    title: "Certificate History",
-    url: "/reports-certs/certificates"
-  }, {
     title: "Template Editor",
     url: "/reports-certs/templates"
   }, {

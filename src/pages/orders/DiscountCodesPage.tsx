@@ -11,6 +11,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import { CalendarIcon, Plus, RefreshCw, MoreHorizontal } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -155,19 +157,22 @@ export default function DiscountCodesPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Discount & Coupon Codes</h1>
-          <p className="text-muted-foreground mt-2">
-            Create and manage promotional discount codes
-          </p>
-        </div>
-        <Button onClick={handleCreateNew}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create New Coupon
-        </Button>
-      </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[27px]">
+            <SidebarTrigger className="mr-4" />
+            <h1 className="text-lg font-semibold">Discount & Coupon Codes</h1>
+          </header>
+          <main className="flex-1 p-6 bg-background mx-[27px]">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <Button onClick={handleCreateNew}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create New Coupon
+                </Button>
+              </div>
 
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent className="max-w-md">
@@ -345,5 +350,9 @@ export default function DiscountCodesPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  </main>
+</div>
+</div>
+</SidebarProvider>
+);
 }

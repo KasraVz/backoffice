@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import { Users, DollarSign, TrendingDown, Settings } from "lucide-react";
 
 interface Subscriber {
@@ -93,13 +95,16 @@ export default function SubscriptionDashboardPage() {
   const churnRate = 8.5; // Example churn rate
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Subscription Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Monitor recurring subscriptions and revenue metrics
-        </p>
-      </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[27px]">
+            <SidebarTrigger className="mr-4" />
+            <h1 className="text-lg font-semibold">Subscription Dashboard</h1>
+          </header>
+          <main className="flex-1 p-6 bg-background mx-[27px]">
+            <div className="space-y-6">
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -257,5 +262,9 @@ export default function SubscriptionDashboardPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  </main>
+</div>
+</div>
+</SidebarProvider>
+);
 }

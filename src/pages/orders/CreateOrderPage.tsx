@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import { Plus, Minus, FileText, Mail, CheckCircle, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -89,13 +91,16 @@ export default function CreateOrderPage() {
   const total = subtotal - discountAmount;
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Create New Order / Invoice</h1>
-        <p className="text-muted-foreground mt-2">
-          Generate custom orders and invoices for clients
-        </p>
-      </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[27px]">
+            <SidebarTrigger className="mr-4" />
+            <h1 className="text-lg font-semibold">Create Order / Invoice</h1>
+          </header>
+          <main className="flex-1 p-6 bg-background mx-[27px]">
+            <div className="space-y-6">
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Invoice Form */}
@@ -333,5 +338,9 @@ export default function CreateOrderPage() {
         </div>
       </div>
     </div>
-  );
+  </main>
+</div>
+</div>
+</SidebarProvider>
+);
 }

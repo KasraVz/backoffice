@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Plus, RefreshCw } from "lucide-react";
+import { CalendarIcon, Plus, RefreshCw, MoreHorizontal } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -59,6 +60,7 @@ const mockCoupons: Coupon[] = [
 export default function DiscountCodesPage() {
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
   const [newCoupon, setNewCoupon] = useState({
     code: "",
     discountType: "percentage" as "percentage" | "fixed",
@@ -84,21 +86,51 @@ export default function DiscountCodesPage() {
     ));
   };
 
+  const handleEditCoupon = (coupon: Coupon) => {
+    setEditingCoupon(coupon);
+    setNewCoupon({
+      code: coupon.code,
+      discountType: coupon.discountType,
+      value: coupon.value,
+      usageLimit: coupon.usageLimit,
+      expirationDate: coupon.expirationDate
+    });
+    setIsCreateModalOpen(true);
+  };
+
   const handleCreateCoupon = () => {
     if (!newCoupon.code || !newCoupon.value) return;
 
-    const coupon: Coupon = {
-      id: Date.now().toString(),
-      code: newCoupon.code,
-      discountType: newCoupon.discountType,
-      value: newCoupon.value,
-      usageCount: 0,
-      usageLimit: newCoupon.usageLimit,
-      expirationDate: newCoupon.expirationDate,
-      isActive: true
-    };
+    if (editingCoupon) {
+      // Update existing coupon
+      setCoupons(prev => prev.map(coupon => 
+        coupon.id === editingCoupon.id 
+          ? {
+              ...coupon,
+              code: newCoupon.code,
+              discountType: newCoupon.discountType,
+              value: newCoupon.value,
+              usageLimit: newCoupon.usageLimit,
+              expirationDate: newCoupon.expirationDate
+            }
+          : coupon
+      ));
+    } else {
+      // Create new coupon
+      const coupon: Coupon = {
+        id: Date.now().toString(),
+        code: newCoupon.code,
+        discountType: newCoupon.discountType,
+        value: newCoupon.value,
+        usageCount: 0,
+        usageLimit: newCoupon.usageLimit,
+        expirationDate: newCoupon.expirationDate,
+        isActive: true
+      };
+      setCoupons(prev => [coupon, ...prev]);
+    }
 
-    setCoupons(prev => [coupon, ...prev]);
+    // Reset form
     setNewCoupon({
       code: "",
       discountType: "percentage",
@@ -106,7 +138,20 @@ export default function DiscountCodesPage() {
       usageLimit: undefined,
       expirationDate: undefined
     });
+    setEditingCoupon(null);
     setIsCreateModalOpen(false);
+  };
+
+  const handleCreateNew = () => {
+    setEditingCoupon(null);
+    setNewCoupon({
+      code: "",
+      discountType: "percentage",
+      value: 0,
+      usageLimit: undefined,
+      expirationDate: undefined
+    });
+    setIsCreateModalOpen(true);
   };
 
   return (
@@ -118,17 +163,19 @@ export default function DiscountCodesPage() {
             Create and manage promotional discount codes
           </p>
         </div>
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Create New Coupon
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Create New Coupon</DialogTitle>
-            </DialogHeader>
+        <Button onClick={handleCreateNew}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create New Coupon
+        </Button>
+      </div>
+
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {editingCoupon ? `Edit Coupon: ${editingCoupon.code}` : "Create New Coupon"}
+            </DialogTitle>
+          </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="code">Coupon Code</Label>
@@ -227,12 +274,11 @@ export default function DiscountCodesPage() {
               </div>
 
               <Button onClick={handleCreateCoupon} className="w-full">
-                Create Coupon
+                {editingCoupon ? "Save Changes" : "Create Coupon"}
               </Button>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+        </DialogContent>
+      </Dialog>
 
       <Card>
         <CardHeader>
@@ -246,8 +292,8 @@ export default function DiscountCodesPage() {
                 <TableHead>Discount Type</TableHead>
                 <TableHead>Value</TableHead>
                 <TableHead>Usage Count</TableHead>
-                <TableHead>Expiration</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -266,23 +312,26 @@ export default function DiscountCodesPage() {
                     {coupon.usageCount}
                     {coupon.usageLimit && ` / ${coupon.usageLimit}`}
                   </TableCell>
-                  <TableCell>
-                    {coupon.expirationDate 
-                      ? format(coupon.expirationDate, "MMM dd, yyyy")
-                      : "No expiration"
-                    }
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={coupon.isActive}
-                        onCheckedChange={() => handleToggleActive(coupon.id)}
-                      />
-                      <span className="text-sm">
-                        {coupon.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-                  </TableCell>
+                   <TableCell>
+                     <Switch
+                       checked={coupon.isActive}
+                       onCheckedChange={() => handleToggleActive(coupon.id)}
+                     />
+                   </TableCell>
+                   <TableCell>
+                     <DropdownMenu>
+                       <DropdownMenuTrigger asChild>
+                         <Button variant="ghost" className="h-8 w-8 p-0">
+                           <MoreHorizontal className="h-4 w-4" />
+                         </Button>
+                       </DropdownMenuTrigger>
+                       <DropdownMenuContent align="end">
+                         <DropdownMenuItem onClick={() => handleEditCoupon(coupon)}>
+                           Edit
+                         </DropdownMenuItem>
+                       </DropdownMenuContent>
+                     </DropdownMenu>
+                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>

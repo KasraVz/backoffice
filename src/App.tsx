@@ -115,7 +115,7 @@ const App = () => (
             {/* Orders Routes */}
             <Route path="/orders/history" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
             <Route path="/orders/subscriptions" element={<ProtectedRoute><SubscriptionDashboardPage /></ProtectedRoute>} />
-            <Route path="/orders/discounts" element={<ProtectedRoute><DiscountCodesPage /></ProtectedRoute>} />
+            <Route path="/orders/coupons" element={<ProtectedRoute><DiscountCodesPage /></ProtectedRoute>} />
             <Route path="/orders/create" element={<ProtectedRoute><CreateOrderPage /></ProtectedRoute>} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

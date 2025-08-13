@@ -244,9 +244,16 @@ export function AppSidebar() {
                         className={`w-full justify-start px-4 py-3 ${getParentNavClasses(parentActive)} transition-all duration-200`}
                       >
                         <div className="flex items-center w-full">
-                          {hasChildren && (itemExpanded ? <ChevronDown className="mr-3 h-4 w-4 flex-shrink-0 transition-transform duration-200" /> : <ChevronRight className="mr-3 h-4 w-4 flex-shrink-0 transition-transform duration-200" />)}
                           {ItemIcon && <ItemIcon className="mr-3 h-4 w-4 flex-shrink-0" />}
                           {!collapsed && <span className="truncate">{item.title}</span>}
+                          {hasChildren && (
+                            <div className="ml-auto">
+                              {itemExpanded ? 
+                                <ChevronDown className="h-4 w-4 flex-shrink-0 transition-transform duration-200" /> : 
+                                <ChevronRight className="h-4 w-4 flex-shrink-0 transition-transform duration-200" />
+                              }
+                            </div>
+                          )}
                         </div>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

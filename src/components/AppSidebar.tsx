@@ -107,7 +107,7 @@ const mainMenuItems = [{
     url: "/reports-certs/results"
   }, {
     title: "Template Editor",
-    url: "/reports-certs/templates"
+    url: "/reports/editor"
   }, {
     title: "Issuance & Rules Engine",
     url: "/reports-certs/rules"

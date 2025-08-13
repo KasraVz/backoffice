@@ -29,6 +29,11 @@ import QuestionReview from "./pages/faculty/QuestionReview";
 import ReviewSetDetails from "./pages/partners/operational/ReviewSetDetails";
 import AdminDirectory from "./pages/manage-admins/AdminDirectory";
 import RoleManagement from "./pages/manage-admins/RoleManagement";
+import TemplateEditor from "./pages/TemplateEditor";
+import ReportTemplateGallery from "./pages/ReportTemplateGallery";
+import ReportTemplateEditor from "./pages/ReportTemplateEditor";
+import CertificateTemplateGallery from "./pages/CertificateTemplateGallery";
+import CertificateTemplateEditor from "./pages/CertificateTemplateEditor";
 
 
 import Login from "./pages/Login";
@@ -90,6 +95,13 @@ const App = () => (
             {/* Faculty Portal Routes */}
             <Route path="/faculty/dashboard" element={<ProtectedRoute><FacultyDashboard /></ProtectedRoute>} />
             <Route path="/faculty/review/:setId" element={<ProtectedRoute><QuestionReview /></ProtectedRoute>} />
+            
+            {/* Template Editor Routes */}
+            <Route path="/reports/editor" element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />
+            <Route path="/reports/editor/reports" element={<ProtectedRoute><ReportTemplateGallery /></ProtectedRoute>} />
+            <Route path="/reports/editor/reports/:templateId" element={<ProtectedRoute><ReportTemplateEditor /></ProtectedRoute>} />
+            <Route path="/reports/editor/certificates" element={<ProtectedRoute><CertificateTemplateGallery /></ProtectedRoute>} />
+            <Route path="/reports/editor/certificates/:templateId" element={<ProtectedRoute><CertificateTemplateEditor /></ProtectedRoute>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

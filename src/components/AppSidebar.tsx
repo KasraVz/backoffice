@@ -110,7 +110,7 @@ const mainMenuItems = [{
     url: "/reports/editor"
   }, {
     title: "Issuance & Rules Engine",
-    url: "/reports-certs/rules"
+    url: "/reports/rules-engine"
   }]
 }, {
   title: "Tickets",

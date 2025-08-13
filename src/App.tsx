@@ -34,6 +34,7 @@ import ReportTemplateGallery from "./pages/ReportTemplateGallery";
 import ReportTemplateEditor from "./pages/ReportTemplateEditor";
 import CertificateTemplateGallery from "./pages/CertificateTemplateGallery";
 import CertificateTemplateEditor from "./pages/CertificateTemplateEditor";
+import RulesEnginePage from "./pages/reports/RulesEnginePage";
 
 
 import Login from "./pages/Login";
@@ -102,6 +103,9 @@ const App = () => (
             <Route path="/reports/editor/reports/:templateId" element={<ProtectedRoute><ReportTemplateEditor /></ProtectedRoute>} />
             <Route path="/reports/editor/certificates" element={<ProtectedRoute><CertificateTemplateGallery /></ProtectedRoute>} />
             <Route path="/reports/editor/certificates/:templateId" element={<ProtectedRoute><CertificateTemplateEditor /></ProtectedRoute>} />
+            
+            {/* Rules Engine Route */}
+            <Route path="/reports/rules-engine" element={<ProtectedRoute><RulesEnginePage /></ProtectedRoute>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

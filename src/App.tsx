@@ -35,6 +35,10 @@ import ReportTemplateEditor from "./pages/ReportTemplateEditor";
 import CertificateTemplateGallery from "./pages/CertificateTemplateGallery";
 import CertificateTemplateEditor from "./pages/CertificateTemplateEditor";
 import RulesEnginePage from "./pages/reports/RulesEnginePage";
+import OrderHistoryPage from "./pages/orders/OrderHistoryPage";
+import SubscriptionDashboardPage from "./pages/orders/SubscriptionDashboardPage";
+import DiscountCodesPage from "./pages/orders/DiscountCodesPage";
+import CreateOrderPage from "./pages/orders/CreateOrderPage";
 
 
 import Login from "./pages/Login";
@@ -107,7 +111,13 @@ const App = () => (
             
             {/* Rules Engine Route */}
             <Route path="/reports/rules-engine" element={<ProtectedRoute><RulesEnginePage /></ProtectedRoute>} />
-            
+
+            {/* Orders Routes */}
+            <Route path="/orders/history" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
+            <Route path="/orders/subscriptions" element={<ProtectedRoute><SubscriptionDashboardPage /></ProtectedRoute>} />
+            <Route path="/orders/discounts" element={<ProtectedRoute><DiscountCodesPage /></ProtectedRoute>} />
+            <Route path="/orders/create" element={<ProtectedRoute><CreateOrderPage /></ProtectedRoute>} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

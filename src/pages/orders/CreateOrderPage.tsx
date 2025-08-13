@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Minus, FileText, Mail, CheckCircle, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { PageHeader } from "@/components/PageHeader";
 
 interface LineItem {
   id: string;
@@ -91,16 +90,12 @@ export default function CreateOrderPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <PageHeader
-        title="Create New Order / Invoice"
-        breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Orders" }
-        ]}
-      />
-      <p className="text-muted-foreground mb-6">
-        Generate custom orders and invoices for clients
-      </p>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-foreground">Create New Order / Invoice</h1>
+        <p className="text-muted-foreground mt-2">
+          Generate custom orders and invoices for clients
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Invoice Form */}

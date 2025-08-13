@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DatePickerWithRange } from "@/components/ui/date-picker";
 import { DateRange } from "react-day-picker";
 import { Search, Eye } from "lucide-react";
-import { PageHeader } from "@/components/PageHeader";
 
 interface Order {
   id: string;
@@ -89,16 +88,12 @@ export default function OrderHistoryPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <PageHeader
-        title="Order History"
-        breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Orders" }
-        ]}
-      />
-      <p className="text-muted-foreground mb-6">
-        View and manage all one-time purchase transactions
-      </p>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-foreground">Order History</h1>
+        <p className="text-muted-foreground mt-2">
+          View and manage all one-time purchase transactions
+        </p>
+      </div>
 
       <Card>
         <CardHeader>

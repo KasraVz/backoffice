@@ -103,9 +103,6 @@ const mainMenuItems = [{
   title: "Report & Certs",
   icon: FileBarChart,
   children: [{
-    title: "Result Data",
-    url: "/reports-certs/results"
-  }, {
     title: "Template Editor",
     url: "/reports/editor"
   }, {

@@ -108,6 +108,9 @@ const mainMenuItems = [{
   }, {
     title: "Template Editor",
     url: "/reports/editor"
+  }, {
+    title: "Issuance & Rules Engine",
+    url: "/reports/rules-engine"
   }]
 }, {
   title: "Tickets",

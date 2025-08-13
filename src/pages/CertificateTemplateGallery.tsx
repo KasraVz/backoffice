@@ -36,8 +36,8 @@ export default function CertificateTemplateGallery() {
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <main className="flex-1 bg-background">
-          <div className="flex-1 space-y-6 p-6">
+        <main className="flex-1 p-6 bg-background mx-[27px]">
+          <div className="flex-1 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">

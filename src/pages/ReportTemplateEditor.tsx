@@ -233,7 +233,7 @@ export default function ReportTemplateEditor() {
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <main className="flex-1 bg-background">
+        <main className="flex-1 bg-background mx-[27px]">
           <div className="h-screen flex flex-col">
             {/* Top Header */}
             <div className="border-b bg-background px-6 py-4">
@@ -271,7 +271,7 @@ export default function ReportTemplateEditor() {
             <div className="flex-1 flex overflow-hidden">
               {/* Left Panel - Component Library or Settings */}
               <div className="w-80 border-r bg-background flex flex-col">
-                <div className="p-4 border-b">
+                <div className="p-6 border-b">
                   <div className="flex gap-2">
                     <Button 
                       variant={viewMode === "components" ? "default" : "outline"}
@@ -296,7 +296,7 @@ export default function ReportTemplateEditor() {
 
                 <ScrollArea className="flex-1">
                   {viewMode === "components" ? (
-                    <div className="p-4 space-y-3">
+                    <div className="p-6 space-y-3">
                       <h3 className="font-semibold mb-3">Component Library</h3>
                       {componentTypes.map((componentType) => (
                         <Card 
@@ -321,7 +321,7 @@ export default function ReportTemplateEditor() {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4">
+                    <div className="p-6">
                       {selectedComponentData && selectedComponentType ? (
                         <div className="space-y-4">
                           <div className="flex items-center gap-2">

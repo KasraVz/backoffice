@@ -165,7 +165,7 @@ export default function CertificateTemplateEditor() {
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <main className="flex-1 bg-background">
+        <main className="flex-1 bg-background mx-[27px]">
           <div className="h-screen flex flex-col">
             {/* Top Header */}
             <div className="border-b bg-background px-6 py-4">
@@ -203,7 +203,7 @@ export default function CertificateTemplateEditor() {
             <div className="flex-1 flex overflow-hidden">
               {/* Left Panel - Elements or Settings */}
               <div className="w-80 border-r bg-background flex flex-col">
-                <div className="p-4 border-b">
+                <div className="p-6 border-b">
                   <div className="flex gap-2">
                     <Button 
                       variant={viewMode === "elements" ? "default" : "outline"}
@@ -228,7 +228,7 @@ export default function CertificateTemplateEditor() {
 
                 <ScrollArea className="flex-1">
                   {viewMode === "elements" ? (
-                    <div className="p-4 space-y-3">
+                    <div className="p-6 space-y-3">
                       <h3 className="font-semibold mb-3">Certificate Elements</h3>
                       {elementTypes.map((elementType) => (
                         <Card 
@@ -253,7 +253,7 @@ export default function CertificateTemplateEditor() {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4">
+                    <div className="p-6">
                       {selectedElementData && selectedElementType ? (
                         <div className="space-y-4">
                           <div className="flex items-center gap-2">

@@ -72,11 +72,11 @@ const mockAssessmentHistory = {
 
 const mockReportHistory = {
   "1": [
-    { id: "RPT-001", questionnaireName: "General Pre-Assessment", dateGenerated: "2024-03-02", status: "Generated" },
-    { id: "RPT-002", questionnaireName: "Advanced Post-Assessment", dateGenerated: "2024-02-16", status: "Generated" },
+    { id: "RPT-001", questionnaireName: "FPA-GEN-PRE-1", dateGenerated: "2024-03-02", status: "Generated" },
+    { id: "RPT-002", questionnaireName: "FPA-ADV-POST-3", dateGenerated: "2024-02-16", status: "Generated" },
   ],
   "2": [
-    { id: "RPT-003", questionnaireName: "Intermediate Mid-Assessment", dateGenerated: "2024-03-06", status: "Pending" },
+    { id: "RPT-003", questionnaireName: "FPA-INT-MID-2", dateGenerated: "2024-03-06", status: "Pending" },
   ]
 };
 

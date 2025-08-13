@@ -10,7 +10,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Plus, RefreshCw } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { CalendarIcon, Plus, RefreshCw, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/PageHeader";
@@ -60,6 +62,9 @@ const mockCoupons: Coupon[] = [
 export default function DiscountCodesPage() {
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
   const [newCoupon, setNewCoupon] = useState({
     code: "",
     discountType: "percentage" as "percentage" | "fixed",
@@ -88,18 +93,64 @@ export default function DiscountCodesPage() {
   const handleCreateCoupon = () => {
     if (!newCoupon.code || !newCoupon.value) return;
 
-    const coupon: Coupon = {
-      id: Date.now().toString(),
-      code: newCoupon.code,
-      discountType: newCoupon.discountType,
-      value: newCoupon.value,
-      usageCount: 0,
-      usageLimit: newCoupon.usageLimit,
-      expirationDate: newCoupon.expirationDate,
-      isActive: true
-    };
+    if (editingCoupon) {
+      // Update existing coupon
+      setCoupons(prev => prev.map(coupon =>
+        coupon.id === editingCoupon.id
+          ? {
+              ...coupon,
+              code: newCoupon.code,
+              discountType: newCoupon.discountType,
+              value: newCoupon.value,
+              usageLimit: newCoupon.usageLimit,
+              expirationDate: newCoupon.expirationDate
+            }
+          : coupon
+      ));
+    } else {
+      // Create new coupon
+      const coupon: Coupon = {
+        id: Date.now().toString(),
+        code: newCoupon.code,
+        discountType: newCoupon.discountType,
+        value: newCoupon.value,
+        usageCount: 0,
+        usageLimit: newCoupon.usageLimit,
+        expirationDate: newCoupon.expirationDate,
+        isActive: true
+      };
+      setCoupons(prev => [coupon, ...prev]);
+    }
 
-    setCoupons(prev => [coupon, ...prev]);
+    resetForm();
+  };
+
+  const handleEditCoupon = (coupon: Coupon) => {
+    setEditingCoupon(coupon);
+    setNewCoupon({
+      code: coupon.code,
+      discountType: coupon.discountType,
+      value: coupon.value,
+      usageLimit: coupon.usageLimit,
+      expirationDate: coupon.expirationDate
+    });
+    setIsCreateModalOpen(true);
+  };
+
+  const handleDeleteCoupon = (coupon: Coupon) => {
+    setCouponToDelete(coupon);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (couponToDelete) {
+      setCoupons(prev => prev.filter(coupon => coupon.id !== couponToDelete.id));
+      setDeleteDialogOpen(false);
+      setCouponToDelete(null);
+    }
+  };
+
+  const resetForm = () => {
     setNewCoupon({
       code: "",
       discountType: "percentage",
@@ -107,6 +158,7 @@ export default function DiscountCodesPage() {
       usageLimit: undefined,
       expirationDate: undefined
     });
+    setEditingCoupon(null);
     setIsCreateModalOpen(false);
   };
 
@@ -123,7 +175,10 @@ export default function DiscountCodesPage() {
         <p className="text-muted-foreground">
           Create and manage promotional discount codes
         </p>
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <Dialog open={isCreateModalOpen} onOpenChange={(open) => {
+          setIsCreateModalOpen(open);
+          if (!open) resetForm();
+        }}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
@@ -132,7 +187,7 @@ export default function DiscountCodesPage() {
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Create New Coupon</DialogTitle>
+              <DialogTitle>{editingCoupon ? `Edit Coupon: ${editingCoupon.code}` : "Create New Coupon"}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2">
@@ -232,7 +287,7 @@ export default function DiscountCodesPage() {
               </div>
 
               <Button onClick={handleCreateCoupon} className="w-full">
-                Create Coupon
+                {editingCoupon ? "Update Coupon" : "Create Coupon"}
               </Button>
             </div>
           </DialogContent>
@@ -253,6 +308,7 @@ export default function DiscountCodesPage() {
                 <TableHead>Usage Count</TableHead>
                 <TableHead>Expiration</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -288,6 +344,28 @@ export default function DiscountCodesPage() {
                       </span>
                     </div>
                   </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditCoupon(coupon)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteCoupon(coupon)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -300,6 +378,24 @@ export default function DiscountCodesPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the coupon code "{couponToDelete?.code}". This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -59,7 +59,7 @@ export default function ReportTemplateGallery() {
                   <p className="text-muted-foreground mt-1">Manage and edit your report templates</p>
                 </div>
               </div>
-              <Button onClick={() => navigate('/reports/editor/reports/new')}>
+              <Button onClick={() => navigate('/reports/editor/reports/new-template')}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create New Template
               </Button>
@@ -69,7 +69,7 @@ export default function ReportTemplateGallery() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Create New Template Card */}
               <Card className="border-dashed border-2 hover:border-primary/50 transition-colors cursor-pointer" 
-                    onClick={() => navigate('/reports/editor/reports/new')}>
+                    onClick={() => navigate('/reports/editor/reports/new-template')}>
                 <CardContent className="flex flex-col items-center justify-center p-8 text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                     <Plus className="h-8 w-8 text-primary" />

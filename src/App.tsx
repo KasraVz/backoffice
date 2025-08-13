@@ -100,6 +100,7 @@ const App = () => (
             {/* Template Editor Routes */}
             <Route path="/reports/editor" element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />
             <Route path="/reports/editor/reports" element={<ProtectedRoute><ReportTemplateGallery /></ProtectedRoute>} />
+            <Route path="/reports/editor/reports/new-template" element={<ProtectedRoute><ReportTemplateEditor /></ProtectedRoute>} />
             <Route path="/reports/editor/reports/:templateId" element={<ProtectedRoute><ReportTemplateEditor /></ProtectedRoute>} />
             <Route path="/reports/editor/certificates" element={<ProtectedRoute><CertificateTemplateGallery /></ProtectedRoute>} />
             <Route path="/reports/editor/certificates/:templateId" element={<ProtectedRoute><CertificateTemplateEditor /></ProtectedRoute>} />

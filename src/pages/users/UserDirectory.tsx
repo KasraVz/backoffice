@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,6 +74,7 @@ const mockAssessmentHistory = {
 };
 
 const UserDirectory = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedUser, setSelectedUser] = useState<typeof mockUsers[0] | null>(null);
@@ -274,7 +276,7 @@ const UserDirectory = () => {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => window.location.href = `/users/profile/${user.id}`}>
+                                  <DropdownMenuItem onClick={() => navigate(`/users/profile/${user.id}`)}>
                                     <Edit className="mr-2 h-4 w-4" />
                                     View Profile
                                   </DropdownMenuItem>

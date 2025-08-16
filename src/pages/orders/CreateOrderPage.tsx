@@ -30,9 +30,9 @@ const mockCustomers: Customer[] = [
 ];
 
 const availableProducts = [
-  { name: "FPA Assessment Basic", price: 29.99 },
-  { name: "FPA Assessment Premium", price: 49.99 },
-  { name: "FPA Assessment Enterprise", price: 99.99 },
+  { name: "Founder Public Awareness (FPA)", price: 49.99 },
+  { name: "Ecosystem Environment Awareness (EEA)", price: 39.99 },
+  { name: "General Entrepreneurial Behavior (GEB)", price: 29.99 },
   { name: "Consultation Session", price: 150.00 }
 ];
 

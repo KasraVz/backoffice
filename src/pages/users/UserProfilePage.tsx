@@ -33,11 +33,16 @@ const mockUserData = {
     countryOfResidence: "United States",
     idDocumentType: "Passport",
     documentNumber: "123456789",
-    startupName: "TechVenture Inc.",
-    industry: "Technology",
-    companyStage: "Series A",
-    website: "https://techventure.com",
-    linkedin: "https://linkedin.com/in/johnsmith"
+    primaryIndustry: "AI & Machine Learning",
+    developmentStage: "Scaling",
+    scientificBackground: "Strong (PhD)",
+    ecosystemExperience: ["Previous Founder", "VC/Angel"],
+    targetEcosystem: "Silicon Valley",
+    mostExperiencedEcosystem: "London",
+    currentTeamSize: "6-15",
+    spending: "£5k-20k",
+    fundingSources: ["VC", "Angel", "Personal"],
+    reasonForPlatform: "Assess capabilities"
   },
   "2": {
     id: "2",
@@ -51,13 +56,18 @@ const mockUserData = {
     dateOfBirth: "1988-09-22",
     nationality: "Canada",
     countryOfResidence: "Canada",
-    idDocumentType: "Driver's License",
+    idDocumentType: "National ID",
     documentNumber: "987654321",
-    startupName: "HealthTech Solutions",
-    industry: "Healthcare",
-    companyStage: "Seed",
-    website: "https://healthtech.ca",
-    linkedin: "https://linkedin.com/in/sarahjohnson"
+    primaryIndustry: "Healthcare",
+    developmentStage: "Revenue",
+    scientificBackground: "Some (Bachelor's)",
+    ecosystemExperience: ["No Experience"],
+    targetEcosystem: "Toronto",
+    mostExperiencedEcosystem: "Toronto",
+    currentTeamSize: "1-5",
+    spending: "< £1,000",
+    fundingSources: ["Personal", "Bootstrapped"],
+    reasonForPlatform: "Training needs"
   }
 };
 
@@ -151,11 +161,16 @@ const UserProfilePage = () => {
   });
 
   const [businessForm, setBusinessForm] = useState({
-    startupName: "",
-    industry: "",
-    companyStage: "",
-    website: "",
-    linkedin: ""
+    primaryIndustry: "",
+    developmentStage: "",
+    scientificBackground: "",
+    ecosystemExperience: [] as string[],
+    targetEcosystem: "",
+    mostExperiencedEcosystem: "",
+    currentTeamSize: "",
+    spending: "",
+    fundingSources: [] as string[],
+    reasonForPlatform: ""
   });
 
   const [teamData, setTeamData] = useState<any[]>([]);
@@ -178,11 +193,16 @@ const UserProfilePage = () => {
       });
 
       setBusinessForm({
-        startupName: userData.startupName,
-        industry: userData.industry,
-        companyStage: userData.companyStage,
-        website: userData.website,
-        linkedin: userData.linkedin
+        primaryIndustry: userData.primaryIndustry || "",
+        developmentStage: userData.developmentStage || "",
+        scientificBackground: userData.scientificBackground || "",
+        ecosystemExperience: userData.ecosystemExperience || [],
+        targetEcosystem: userData.targetEcosystem || "",
+        mostExperiencedEcosystem: userData.mostExperiencedEcosystem || "",
+        currentTeamSize: userData.currentTeamSize || "",
+        spending: userData.spending || "",
+        fundingSources: userData.fundingSources || [],
+        reasonForPlatform: userData.reasonForPlatform || ""
       });
 
       // Initialize team data
@@ -203,7 +223,7 @@ const UserProfilePage = () => {
     setHasChanges(true);
   };
 
-  const handleBusinessFormChange = (field: string, value: string) => {
+  const handleBusinessFormChange = (field: string, value: string | string[]) => {
     setBusinessForm(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
   };
@@ -450,70 +470,279 @@ const UserProfilePage = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Business Profile</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Thank you for your interest in our certification program! Please complete the following profile to help us understand your startup better.
+                    </p>
                   </CardHeader>
                   <CardContent>
-                    <ScrollArea className="h-[400px]">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ScrollArea className="h-[600px]">
+                      <div className="space-y-6">
+                        {/* Startup's Primary Industry */}
                         <div>
-                          <Label htmlFor="startupName">Startup Name</Label>
-                          <Input
-                            id="startupName"
-                            value={businessForm.startupName}
-                            onChange={(e) => handleBusinessFormChange("startupName", e.target.value)}
-                            className="mt-1"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="industry">Industry</Label>
-                          <Select value={businessForm.industry} onValueChange={(value) => handleBusinessFormChange("industry", value)}>
+                          <Label htmlFor="primaryIndustry">Startup's Primary Industry *</Label>
+                          <Select value={businessForm.primaryIndustry} onValueChange={(value) => handleBusinessFormChange("primaryIndustry", value)}>
                             <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select industry" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Technology">Technology</SelectItem>
+                              <SelectItem value="AI & Machine Learning">AI & Machine Learning</SelectItem>
+                              <SelectItem value="Biotech">Biotech</SelectItem>
+                              <SelectItem value="SaaS">SaaS</SelectItem>
+                              <SelectItem value="Fintech">Fintech</SelectItem>
+                              <SelectItem value="E-commerce">E-commerce</SelectItem>
                               <SelectItem value="Healthcare">Healthcare</SelectItem>
-                              <SelectItem value="Finance">Finance</SelectItem>
-                              <SelectItem value="Education">Education</SelectItem>
-                              <SelectItem value="Retail">Retail</SelectItem>
-                              <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                              <SelectItem value="CleanTech">CleanTech</SelectItem>
+                              <SelectItem value="EdTech">EdTech</SelectItem>
+                              <SelectItem value="Gaming">Gaming</SelectItem>
+                              <SelectItem value="IoT">IoT</SelectItem>
+                              <SelectItem value="Cybersecurity">Cybersecurity</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
+
+                        {/* Development Stage */}
                         <div>
-                          <Label htmlFor="companyStage">Company Stage</Label>
-                          <Select value={businessForm.companyStage} onValueChange={(value) => handleBusinessFormChange("companyStage", value)}>
+                          <Label>Development Stage *</Label>
+                          <RadioGroup
+                            value={businessForm.developmentStage}
+                            onValueChange={(value) => handleBusinessFormChange("developmentStage", value)}
+                            className="mt-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Idea" id="idea" />
+                              <Label htmlFor="idea">Idea</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="MVP" id="mvp" />
+                              <Label htmlFor="mvp">MVP</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Traction" id="traction" />
+                              <Label htmlFor="traction">Traction</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Revenue" id="revenue" />
+                              <Label htmlFor="revenue">Revenue</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Scaling" id="scaling" />
+                              <Label htmlFor="scaling">Scaling</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Established" id="established" />
+                              <Label htmlFor="established">Established</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {/* Scientific Background */}
+                        <div>
+                          <Label>Scientific Background *</Label>
+                          <RadioGroup
+                            value={businessForm.scientificBackground}
+                            onValueChange={(value) => handleBusinessFormChange("scientificBackground", value)}
+                            className="mt-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Strong (PhD)" id="strong" />
+                              <Label htmlFor="strong">Strong (PhD)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Significant (Master's)" id="significant" />
+                              <Label htmlFor="significant">Significant (Master's)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Some (Bachelor's)" id="some" />
+                              <Label htmlFor="some">Some (Bachelor's)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="None" id="none" />
+                              <Label htmlFor="none">None</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {/* Ecosystem Experience */}
+                        <div>
+                          <Label>Ecosystem Experience</Label>
+                          <div className="mt-2 grid grid-cols-2 gap-2">
+                            {[
+                              "Previous Founder",
+                              "VC/Angel", 
+                              "Community Involvement",
+                              "Incubator Experience",
+                              "Mentor",
+                              "No Experience"
+                            ].map((option) => (
+                              <div key={option} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={option.replace(/\s+/g, '').toLowerCase()}
+                                  checked={businessForm.ecosystemExperience?.includes(option) || false}
+                                  onChange={(e) => {
+                                    const current = businessForm.ecosystemExperience || [];
+                                    const updated = e.target.checked
+                                      ? [...current, option]
+                                      : current.filter(item => item !== option);
+                                    handleBusinessFormChange("ecosystemExperience", updated);
+                                  }}
+                                  className="rounded border-gray-300"
+                                />
+                                <Label htmlFor={option.replace(/\s+/g, '').toLowerCase()}>{option}</Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Target Ecosystem */}
+                        <div>
+                          <Label htmlFor="targetEcosystem">Target Ecosystem</Label>
+                          <Select value={businessForm.targetEcosystem} onValueChange={(value) => handleBusinessFormChange("targetEcosystem", value)}>
                             <SelectTrigger className="mt-1">
-                              <SelectValue placeholder="Select stage" />
+                              <SelectValue placeholder="Select target ecosystem" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Idea">Idea</SelectItem>
-                              <SelectItem value="Pre-Seed">Pre-Seed</SelectItem>
-                              <SelectItem value="Seed">Seed</SelectItem>
-                              <SelectItem value="Series A">Series A</SelectItem>
-                              <SelectItem value="Series B">Series B</SelectItem>
-                              <SelectItem value="Series C+">Series C+</SelectItem>
+                              <SelectItem value="Silicon Valley">Silicon Valley</SelectItem>
+                              <SelectItem value="London">London</SelectItem>
+                              <SelectItem value="Berlin">Berlin</SelectItem>
+                              <SelectItem value="Tel Aviv">Tel Aviv</SelectItem>
+                              <SelectItem value="Singapore">Singapore</SelectItem>
+                              <SelectItem value="Toronto">Toronto</SelectItem>
+                              <SelectItem value="Sydney">Sydney</SelectItem>
+                              <SelectItem value="Boston">Boston</SelectItem>
+                              <SelectItem value="New York">New York</SelectItem>
+                              <SelectItem value="Paris">Paris</SelectItem>
+                              <SelectItem value="Stockholm">Stockholm</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
+
+                        {/* Most Experienced Ecosystem */}
                         <div>
-                          <Label htmlFor="website">Website</Label>
-                          <Input
-                            id="website"
-                            type="url"
-                            value={businessForm.website}
-                            onChange={(e) => handleBusinessFormChange("website", e.target.value)}
-                            className="mt-1"
-                          />
+                          <Label htmlFor="mostExperiencedEcosystem">Most Experienced Ecosystem</Label>
+                          <Select value={businessForm.mostExperiencedEcosystem} onValueChange={(value) => handleBusinessFormChange("mostExperiencedEcosystem", value)}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Select most experienced ecosystem" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Silicon Valley">Silicon Valley</SelectItem>
+                              <SelectItem value="London">London</SelectItem>
+                              <SelectItem value="Berlin">Berlin</SelectItem>
+                              <SelectItem value="Tel Aviv">Tel Aviv</SelectItem>
+                              <SelectItem value="Singapore">Singapore</SelectItem>
+                              <SelectItem value="Toronto">Toronto</SelectItem>
+                              <SelectItem value="Sydney">Sydney</SelectItem>
+                              <SelectItem value="Boston">Boston</SelectItem>
+                              <SelectItem value="New York">New York</SelectItem>
+                              <SelectItem value="Paris">Paris</SelectItem>
+                              <SelectItem value="Stockholm">Stockholm</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                        <div className="md:col-span-2">
-                          <Label htmlFor="linkedin">LinkedIn Profile</Label>
-                          <Input
-                            id="linkedin"
-                            type="url"
-                            value={businessForm.linkedin}
-                            onChange={(e) => handleBusinessFormChange("linkedin", e.target.value)}
-                            className="mt-1"
-                          />
+
+                        {/* Current Team Size */}
+                        <div>
+                          <Label>Current Team Size</Label>
+                          <RadioGroup
+                            value={businessForm.currentTeamSize}
+                            onValueChange={(value) => handleBusinessFormChange("currentTeamSize", value)}
+                            className="mt-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Founders only" id="foundersonly" />
+                              <Label htmlFor="foundersonly">Founders only</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="1-5" id="oneToFive" />
+                              <Label htmlFor="oneToFive">1-5</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="6-15" id="sixToFifteen" />
+                              <Label htmlFor="sixToFifteen">6-15</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="16+" id="sixteenPlus" />
+                              <Label htmlFor="sixteenPlus">16+</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {/* Spending */}
+                        <div>
+                          <Label>Spending</Label>
+                          <RadioGroup
+                            value={businessForm.spending}
+                            onValueChange={(value) => handleBusinessFormChange("spending", value)}
+                            className="mt-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="< £1,000" id="under1k" />
+                              <Label htmlFor="under1k">&lt; £1,000</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="£1k-5k" id="oneToFiveK" />
+                              <Label htmlFor="oneToFiveK">£1k-5k</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="£5k-20k" id="fiveToTwentyK" />
+                              <Label htmlFor="fiveToTwentyK">£5k-20k</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="> £20k" id="overTwentyK" />
+                              <Label htmlFor="overTwentyK">&gt; £20k</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {/* Funding Sources */}
+                        <div>
+                          <Label>Funding Sources</Label>
+                          <div className="mt-2 grid grid-cols-2 gap-2">
+                            {[
+                              "Personal",
+                              "Family",
+                              "Revenue", 
+                              "VC",
+                              "Grants",
+                              "Loans",
+                              "Angel",
+                              "Bootstrapped"
+                            ].map((option) => (
+                              <div key={option} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={option.toLowerCase()}
+                                  checked={businessForm.fundingSources?.includes(option) || false}
+                                  onChange={(e) => {
+                                    const current = businessForm.fundingSources || [];
+                                    const updated = e.target.checked
+                                      ? [...current, option]
+                                      : current.filter(item => item !== option);
+                                    handleBusinessFormChange("fundingSources", updated);
+                                  }}
+                                  className="rounded border-gray-300"
+                                />
+                                <Label htmlFor={option.toLowerCase()}>{option}</Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Reason for Using Platform */}
+                        <div>
+                          <Label htmlFor="reasonForPlatform">Reason for Using Platform</Label>
+                          <Select value={businessForm.reasonForPlatform} onValueChange={(value) => handleBusinessFormChange("reasonForPlatform", value)}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Select reason" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Assess capabilities">Assess capabilities</SelectItem>
+                              <SelectItem value="Gain certification">Gain certification</SelectItem>
+                              <SelectItem value="Benchmark">Benchmark</SelectItem>
+                              <SelectItem value="Training needs">Training needs</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                     </ScrollArea>

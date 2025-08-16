@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BookOpen, Clock, CheckCircle, Calendar, Users, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 const mockReviewSets = [
   {
@@ -77,15 +79,23 @@ const FacultyDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">My Question Review Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Review your assigned question sets and provide feedback to improve our assessment quality.
-          </p>
-        </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 flex items-center border-b bg-background px-6 mx-[28px]">
+            <SidebarTrigger className="mr-4" />
+            <h1 className="text-lg font-semibold">My Question Review Dashboard</h1>
+          </header>
+          <main className="flex-1 p-8 bg-gray-50 mx-[28px]">
+            <div className="max-w-7xl">
+              {/* Page Header */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold">My Question Review Dashboard</h2>
+                <p className="text-muted-foreground mt-2">
+                  Review your assigned question sets and provide feedback to improve our assessment quality.
+                </p>
+              </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -190,20 +200,23 @@ const FacultyDashboard = () => {
           </CardContent>
         </Card>
 
-        {mockReviewSets.length === 0 && (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Review Sets Available</h3>
-              <p className="text-muted-foreground text-center">
-                You don't have any question sets assigned for review at the moment.
-                Check back later or contact the admin if you believe this is an error.
-              </p>
-            </CardContent>
-          </Card>
-        )}
+              {mockReviewSets.length === 0 && (
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Review Sets Available</h3>
+                    <p className="text-muted-foreground text-center">
+                      You don't have any question sets assigned for review at the moment.
+                      Check back later or contact the admin if you believe this is an error.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 

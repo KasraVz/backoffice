@@ -14,7 +14,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowLeft, Download, Eye, Save, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Download, Eye, Save, Plus, Trash2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 // Mock user data - in real app would come from API
@@ -761,7 +761,20 @@ const UserProfilePage = () => {
                             return (
                               <AccordionItem key={team.id} value={team.id}>
                                 <AccordionTrigger>
-                                  Team: {teamForm.startupName || "Unnamed Team"}
+                                  <div className="flex items-center gap-2">
+                                    <span>Team: {teamForm.startupName || "Unnamed Team"}</span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(`/users/teams/${team.id}`, '_blank');
+                                      }}
+                                    >
+                                      <ExternalLink className="h-3 w-3" />
+                                    </Button>
+                                  </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="space-y-4">
                                   <div className="space-y-4">

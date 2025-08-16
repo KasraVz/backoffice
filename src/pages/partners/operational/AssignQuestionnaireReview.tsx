@@ -55,7 +55,7 @@ const mockFeedbackData = [{
   comment: "This question needs clearer context for different stages",
   date: "2024-01-14"
 }];
-const QuestionReviewDashboard = () => {
+const AssignQuestionnaireReview = () => {
   const navigate = useNavigate();
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [reviewSets, setReviewSets] = useState(mockReviewSets);
@@ -261,4 +261,4 @@ const QuestionReviewDashboard = () => {
       <AssignReviewSetModal open={isAssignModalOpen} onOpenChange={setIsAssignModalOpen} onAssignmentComplete={handleAssignmentComplete} />
     </SidebarProvider>;
 };
-export default QuestionReviewDashboard;
+export default AssignQuestionnaireReview;

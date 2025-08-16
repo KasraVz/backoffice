@@ -33,20 +33,12 @@ export const assessmentCategories = {
       "Market Entry Strategies"
     ]
   },
-  TDA: {
+  GEB: {
     general: [
-      "Technology Assessment",
-      "Innovation Management",
-      "Digital Transformation",
-      "Technical Due Diligence",
-      "Research & Development"
+      // Categories to be defined later
     ],
     industrySpecific: [
-      "Industry-Specific Technologies",
-      "Sector Innovation Trends",
-      "Technical Standards & Protocols",
-      "Technology Integration Challenges",
-      "Digital Infrastructure Requirements"
+      // Categories to be defined later  
     ]
   }
 };

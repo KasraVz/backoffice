@@ -17,7 +17,7 @@ const getAssessmentTypeFromName = (name: string): keyof typeof assessmentCategor
   const upperName = name.toUpperCase();
   if (upperName.includes('FPA') || upperName.includes('FOUNDER PUBLIC AWARENESS')) return 'FPA';
   if (upperName.includes('EEA') || upperName.includes('ECOSYSTEM ENVIRONMENT AWARENESS')) return 'EEA';
-  if (upperName.includes('TDA') || upperName.includes('TECHNOLOGY')) return 'TDA';
+  if (upperName.includes('GEB') || upperName.includes('GENERAL ENTREPRENEURIAL BEHAVIOR')) return 'GEB';
   return 'FPA'; // default fallback
 };
 

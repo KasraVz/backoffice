@@ -167,7 +167,7 @@ const PromptCriteriaLibrary = () => {
                           <SelectContent className="bg-background border shadow-md z-50">
                             <SelectItem value="FPA">FPA - Founder Public Awareness</SelectItem>
                             <SelectItem value="EEA">EEA - Ecosystem Environment Awareness</SelectItem>
-                            <SelectItem value="TDA">TDA - Technology Development Assessment</SelectItem>
+                            <SelectItem value="GEB" disabled className="text-muted-foreground">GEB - General Entrepreneurial Behavior (Coming Soon)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

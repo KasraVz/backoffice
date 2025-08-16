@@ -470,9 +470,6 @@ const UserProfilePage = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Business Profile</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Thank you for your interest in our certification program! Please complete the following profile to help us understand your startup better.
-                    </p>
                   </CardHeader>
                   <CardContent>
                     <ScrollArea className="h-[600px]">

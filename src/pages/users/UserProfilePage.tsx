@@ -711,22 +711,20 @@ const UserProfilePage = () => {
                   </CardHeader>
                   <CardContent>
                     <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Assessment ID</TableHead>
-                          <TableHead>Questionnaire</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Score</TableHead>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {assessmentHistory.map((assessment) => (
-                          <TableRow key={assessment.id}>
-                            <TableCell className="font-medium">{assessment.name}</TableCell>
-                            <TableCell>{assessment.questionnaire}</TableCell>
-                            <TableCell>
+                       <TableHeader>
+                         <TableRow>
+                           <TableHead>Assessment ID</TableHead>
+                           <TableHead>Status</TableHead>
+                           <TableHead>Score</TableHead>
+                           <TableHead>Date</TableHead>
+                           <TableHead>Actions</TableHead>
+                         </TableRow>
+                       </TableHeader>
+                       <TableBody>
+                         {assessmentHistory.map((assessment) => (
+                           <TableRow key={assessment.id}>
+                             <TableCell className="font-medium">{assessment.name}</TableCell>
+                             <TableCell>
                               <Badge variant={assessment.status === "Completed" ? "default" : "secondary"}>
                                 {assessment.status}
                               </Badge>

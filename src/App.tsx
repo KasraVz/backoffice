@@ -26,6 +26,7 @@ import AssignQuestionnaireReview from "./pages/partners/operational/AssignQuesti
 import PromptCriteriaLibrary from "./pages/partners/operational/PromptCriteriaLibrary";
 import FacultyDashboard from "./pages/faculty/FacultyDashboard";
 import QuestionReview from "./pages/faculty/QuestionReview";
+import QuestionReviewEnhanced from "./pages/faculty/QuestionReviewEnhanced";
 import ReviewSetDetails from "./pages/partners/operational/ReviewSetDetails";
 import AdminDirectory from "./pages/manage-admins/AdminDirectory";
 import RoleManagement from "./pages/manage-admins/RoleManagement";
@@ -99,7 +100,7 @@ const App = () => (
             
             {/* Faculty Portal Routes */}
             <Route path="/faculty/dashboard" element={<ProtectedRoute><FacultyDashboard /></ProtectedRoute>} />
-            <Route path="/faculty/review/:setId" element={<ProtectedRoute><QuestionReview /></ProtectedRoute>} />
+            <Route path="/faculty/review/:setId" element={<ProtectedRoute><QuestionReviewEnhanced /></ProtectedRoute>} />
             
             {/* Template Editor Routes */}
             <Route path="/reports/editor" element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />

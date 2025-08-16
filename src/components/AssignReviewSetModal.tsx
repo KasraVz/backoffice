@@ -16,6 +16,7 @@ interface AssignReviewSetModalProps {
     questionnaireName: string;
     description: string;
     questionCount: number;
+    selectedCategories: string[];
   }) => void;
 }
 
@@ -65,12 +66,13 @@ export const AssignReviewSetModal = ({ open, onOpenChange, onAssignmentComplete 
     const description = `${questionnaireName} - ${selectedCategories.join(", ")}`;
     const assigneeName = getSelectedReviewerName();
     
-    // Pass assignment data to parent component
+    // Pass assignment data to parent component including selected categories
     onAssignmentComplete({
       assigneeName,
       questionnaireName,
       description,
-      questionCount: totalQuestions
+      questionCount: totalQuestions,
+      selectedCategories
     });
     
     onOpenChange(false);

@@ -11,6 +11,7 @@ import { BarChart3, Eye, MessageSquare, Users, ClipboardCheck, Plus } from "luci
 import { useNavigate } from "react-router-dom";
 import { AssignReviewSetModal } from "@/components/AssignReviewSetModal";
 import { toast } from "@/components/ui/use-toast";
+import { createReviewSetData, type ReviewSetData } from "@/services/promptCriteriaService";
 const mockKPIs = {
   pendingReview: 14,
   activeReviewers: 28,
@@ -76,13 +77,14 @@ const AssignQuestionnaireReview = () => {
     questionnaireName: string;
     description: string;
     questionCount: number;
+    selectedCategories: string[];
   }) => {
-    // Generate a new unique ID
-    const newId = (Math.max(...reviewSets.map(set => parseInt(set.id))) + 1).toString();
+    // Create complete review set data with categories and prompt criteria
+    const reviewSetData = createReviewSetData(assignmentData, assignmentData.selectedCategories);
     
-    // Create new review set object
+    // Create new review set for the table
     const newReviewSet = {
-      id: newId,
+      id: reviewSetData.id,
       assignedTo: assignmentData.assigneeName,
       description: assignmentData.description,
       status: "Pending" as const,
@@ -94,6 +96,9 @@ const AssignQuestionnaireReview = () => {
     
     // Add to beginning of array
     setReviewSets(prev => [newReviewSet, ...prev]);
+    
+    // Store complete review set data (in real app, this would be saved to database)
+    localStorage.setItem(`reviewSet_${reviewSetData.id}`, JSON.stringify(reviewSetData));
     
     toast({
       title: "Review Set Assigned",

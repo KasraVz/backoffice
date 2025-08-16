@@ -15,9 +15,21 @@ interface Order {
   id: string;
   date: string;
   customerName: string;
-  items: string;
-  amount: number;
-  status: "Completed" | "Refunded" | "Pending" | "Failed";
+  itemsPurchased: string;
+  stages: {
+    payment: {
+      status: "Paid" | "Not Paid";
+      amountDue: number;
+      amountPaid: number;
+    };
+    assessment: {
+      status: "Taken" | "Not Taken";
+    };
+    kyc: {
+      status: "Approved" | "Not Approved" | "Pending" | "Rejected";
+      rejectionReason: string | null;
+    };
+  };
 }
 
 const mockOrders: Order[] = [
@@ -25,46 +37,129 @@ const mockOrders: Order[] = [
     id: "ORD-001",
     date: "2024-08-10",
     customerName: "John Smith",
-    items: "FPA Assessment Premium",
-    amount: 49.99,
-    status: "Completed"
+    itemsPurchased: "1x FPA Assessment Premium",
+    stages: {
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 49.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Approved",
+        rejectionReason: null
+      }
+    }
   },
   {
     id: "ORD-002",
     date: "2024-08-09",
     customerName: "Sarah Johnson",
-    items: "FPA Assessment Basic",
-    amount: 29.99,
-    status: "Completed"
+    itemsPurchased: "1x FPA Assessment Basic",
+    stages: {
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 29.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Approved",
+        rejectionReason: null
+      }
+    }
   },
   {
     id: "ORD-003",
     date: "2024-08-08",
     customerName: "Mike Wilson",
-    items: "FPA Assessment Premium",
-    amount: 49.99,
-    status: "Refunded"
+    itemsPurchased: "1x FPA Assessment Premium",
+    stages: {
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 49.99
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Rejected",
+        rejectionReason: "Invalid identification documents provided"
+      }
+    }
   },
   {
     id: "ORD-004",
     date: "2024-08-07",
     customerName: "Emma Davis",
-    items: "FPA Assessment Basic",
-    amount: 29.99,
-    status: "Pending"
+    itemsPurchased: "1x FPA Assessment Basic",
+    stages: {
+      payment: {
+        status: "Not Paid",
+        amountDue: 29.99,
+        amountPaid: 0.00
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-005",
+    date: "2024-08-06",
+    customerName: "Robert Chen",
+    itemsPurchased: "1x FPA Assessment Premium",
+    stages: {
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 49.99
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
   }
 ];
 
-const getStatusVariant = (status: Order['status']) => {
+const getOverallStatus = (order: Order) => {
+  const { payment, assessment, kyc } = order.stages;
+  
+  // If KYC is rejected, show Canceled
+  if (kyc.status === "Rejected") {
+    return "Canceled";
+  }
+  
+  // If all stages are complete, show Completed
+  if (payment.status === "Paid" && assessment.status === "Taken" && kyc.status === "Approved") {
+    return "Completed";
+  }
+  
+  // Otherwise, show In Progress
+  return "In Progress";
+};
+
+const getStatusVariant = (status: string) => {
   switch (status) {
     case "Completed":
       return "default";
-    case "Refunded":
+    case "Canceled":
       return "destructive";
-    case "Pending":
+    case "In Progress":
       return "secondary";
-    case "Failed":
-      return "destructive";
     default:
       return "secondary";
   }
@@ -127,8 +222,7 @@ export default function OrderHistoryPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>Customer Name</TableHead>
                 <TableHead>Items Purchased</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Overall Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -138,11 +232,10 @@ export default function OrderHistoryPage() {
                   <TableCell className="font-medium">{order.id}</TableCell>
                   <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
                   <TableCell>{order.customerName}</TableCell>
-                  <TableCell>{order.items}</TableCell>
-                  <TableCell>${order.amount.toFixed(2)}</TableCell>
+                  <TableCell>{order.itemsPurchased}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusVariant(order.status)}>
-                      {order.status}
+                    <Badge variant={getStatusVariant(getOverallStatus(order))}>
+                      {getOverallStatus(order)}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -157,35 +250,90 @@ export default function OrderHistoryPage() {
                           View Details
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-md">
+                      <DialogContent className="max-w-2xl">
                         <DialogHeader>
                           <DialogTitle>Order Details - {order.id}</DialogTitle>
                         </DialogHeader>
                         {selectedOrder && (
-                          <div className="space-y-4">
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Customer</label>
-                              <p className="text-foreground">{selectedOrder.customerName}</p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Date</label>
-                              <p className="text-foreground">{new Date(selectedOrder.date).toLocaleDateString()}</p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Items</label>
-                              <p className="text-foreground">{selectedOrder.items}</p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Amount</label>
-                              <p className="text-foreground font-semibold">${selectedOrder.amount.toFixed(2)}</p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Status</label>
-                              <div className="mt-1">
-                                <Badge variant={getStatusVariant(selectedOrder.status)}>
-                                  {selectedOrder.status}
-                                </Badge>
+                          <div className="space-y-6">
+                            {/* Order Summary */}
+                            <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Customer</label>
+                                <p className="text-foreground font-medium">{selectedOrder.customerName}</p>
                               </div>
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Date</label>
+                                <p className="text-foreground">{new Date(selectedOrder.date).toLocaleDateString()}</p>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Total Amount</label>
+                                <p className="text-foreground font-semibold">${selectedOrder.stages.payment.amountPaid.toFixed(2)}</p>
+                              </div>
+                            </div>
+
+                            {/* Stage Status Cards */}
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-semibold">Order Stages</h3>
+                              
+                              {/* Payment Status Card */}
+                              <Card>
+                                <CardHeader className="pb-3">
+                                  <div className="flex items-center justify-between">
+                                    <CardTitle className="text-base">Payment</CardTitle>
+                                    <Badge variant={selectedOrder.stages.payment.status === "Paid" ? "default" : "destructive"}>
+                                      {selectedOrder.stages.payment.status}
+                                    </Badge>
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="pt-0">
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                      <span className="text-muted-foreground">Amount Due:</span>
+                                      <p className="font-medium">${selectedOrder.stages.payment.amountDue.toFixed(2)}</p>
+                                    </div>
+                                    <div>
+                                      <span className="text-muted-foreground">Amount Paid:</span>
+                                      <p className="font-medium">${selectedOrder.stages.payment.amountPaid.toFixed(2)}</p>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+
+                              {/* Assessment Status Card */}
+                              <Card>
+                                <CardHeader className="pb-3">
+                                  <div className="flex items-center justify-between">
+                                    <CardTitle className="text-base">Assessment</CardTitle>
+                                    <Badge variant={selectedOrder.stages.assessment.status === "Taken" ? "default" : "secondary"}>
+                                      {selectedOrder.stages.assessment.status}
+                                    </Badge>
+                                  </div>
+                                </CardHeader>
+                              </Card>
+
+                              {/* KYC Status Card */}
+                              <Card>
+                                <CardHeader className="pb-3">
+                                  <div className="flex items-center justify-between">
+                                    <CardTitle className="text-base">KYC Verification</CardTitle>
+                                    <Badge variant={
+                                      selectedOrder.stages.kyc.status === "Approved" ? "default" :
+                                      selectedOrder.stages.kyc.status === "Rejected" ? "destructive" : "secondary"
+                                    }>
+                                      {selectedOrder.stages.kyc.status}
+                                    </Badge>
+                                  </div>
+                                </CardHeader>
+                                {selectedOrder.stages.kyc.status === "Rejected" && selectedOrder.stages.kyc.rejectionReason && (
+                                  <CardContent className="pt-0">
+                                    <div className="text-sm">
+                                      <span className="text-muted-foreground">Reason for Rejection:</span>
+                                      <p className="mt-1 text-destructive">{selectedOrder.stages.kyc.rejectionReason}</p>
+                                    </div>
+                                  </CardContent>
+                                )}
+                              </Card>
                             </div>
                           </div>
                         )}

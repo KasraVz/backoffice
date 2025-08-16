@@ -57,8 +57,8 @@ const mainMenuItems = [{
       title: "Partner Directory",
       url: "/partners/operational/directory"
     }, {
-      title: "Question Review Dashboard",
-      url: "/partners/operational/review-dashboard"
+      title: "Assign questionnaire review",
+      url: "/partners/operational/assign-questionnaire-review"
     }, {
       title: "Prompt Criteria Library",
       url: "/partners/operational/prompt-criteria"

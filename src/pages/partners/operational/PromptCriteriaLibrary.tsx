@@ -30,6 +30,8 @@ const mockCriteria = [{
 const PromptCriteriaLibrary = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCriterion, setEditingCriterion] = useState<any>(null);
+  const [criteria, setCriteria] = useState(mockCriteria);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     promptText: "",
     indexCode: "",
@@ -51,6 +53,75 @@ const PromptCriteriaLibrary = () => {
       indexCode: value,
       category: "" // Reset category when index code changes
     });
+    // Clear category error when index code changes
+    if (errors.category) {
+      setErrors(prev => ({
+        ...prev,
+        category: ""
+      }));
+    }
+  };
+
+  // Validation function
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.promptText.trim()) {
+      newErrors.promptText = "Prompt text is required";
+    }
+    
+    if (!formData.indexCode) {
+      newErrors.indexCode = "Index code is required";
+    }
+    
+    if (!formData.stage) {
+      newErrors.stage = "Stage is required";
+    }
+    
+    if (!formData.category) {
+      newErrors.category = "Category is required";
+    }
+    
+    if (!formData.industry) {
+      newErrors.industry = "Industry is required";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Save function
+  const handleSave = () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    const tags = [formData.indexCode, formData.stage, formData.category].filter(Boolean);
+    
+    if (editingCriterion) {
+      // Update existing criterion
+      setCriteria(prev => prev.map(criterion => 
+        criterion.id === editingCriterion.id 
+          ? { ...formData, id: editingCriterion.id, tags }
+          : criterion
+      ));
+    } else {
+      // Add new criterion
+      const newId = Math.max(...criteria.map(c => c.id)) + 1;
+      setCriteria(prev => [...prev, { ...formData, id: newId, tags }]);
+    }
+    
+    // Reset form and close modal
+    setFormData({
+      promptText: "",
+      indexCode: "",
+      stage: "",
+      category: "",
+      industry: ""
+    });
+    setErrors({});
+    setEditingCriterion(null);
+    setIsModalOpen(false);
   };
   const handleEdit = (criterion: any) => {
     setEditingCriterion(criterion);
@@ -109,7 +180,7 @@ const PromptCriteriaLibrary = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockCriteria.map(criterion => <TableRow key={criterion.id}>
+                      {criteria.map(criterion => <TableRow key={criterion.id}>
                           <TableCell className="font-medium">#{criterion.id}</TableCell>
                           <TableCell className="max-w-md">
                             <p className="break-words">{criterion.promptText}</p>
@@ -150,18 +221,31 @@ const PromptCriteriaLibrary = () => {
                   
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="promptText">Prompt Text</Label>
-                      <Textarea id="promptText" placeholder="Enter the prompt text that will be shown to reviewers..." value={formData.promptText} onChange={e => setFormData({
-                      ...formData,
-                      promptText: e.target.value
-                    })} rows={4} />
+                      <Label htmlFor="promptText">Prompt Text *</Label>
+                      <Textarea 
+                        id="promptText" 
+                        placeholder="Enter the prompt text that will be shown to reviewers..." 
+                        value={formData.promptText} 
+                        onChange={e => {
+                          setFormData({
+                            ...formData,
+                            promptText: e.target.value
+                          });
+                          if (errors.promptText) {
+                            setErrors(prev => ({ ...prev, promptText: "" }));
+                          }
+                        }} 
+                        rows={4}
+                        className={errors.promptText ? "border-red-500" : ""}
+                      />
+                      {errors.promptText && <p className="text-sm text-red-500">{errors.promptText}</p>}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="indexCode">Index Code</Label>
+                        <Label htmlFor="indexCode">Index Code *</Label>
                         <Select value={formData.indexCode} onValueChange={handleIndexCodeChange}>
-                          <SelectTrigger className="bg-background">
+                          <SelectTrigger className={`bg-background ${errors.indexCode ? "border-red-500" : ""}`}>
                             <SelectValue placeholder="Select index code" />
                           </SelectTrigger>
                           <SelectContent className="bg-background border shadow-md z-50">
@@ -170,15 +254,21 @@ const PromptCriteriaLibrary = () => {
                             <SelectItem value="GEB" disabled className="text-muted-foreground">GEB - General Entrepreneurial Behavior (Coming Soon)</SelectItem>
                           </SelectContent>
                         </Select>
+                        {errors.indexCode && <p className="text-sm text-red-500">{errors.indexCode}</p>}
                       </div>
 
                       <div>
-                        <Label htmlFor="stage">Stage</Label>
-                        <Select value={formData.stage} onValueChange={value => setFormData({
+                        <Label htmlFor="stage">Stage *</Label>
+                        <Select value={formData.stage} onValueChange={value => {
+                        setFormData({
                         ...formData,
                         stage: value
-                      })}>
-                          <SelectTrigger className="bg-background">
+                      });
+                      if (errors.stage) {
+                        setErrors(prev => ({ ...prev, stage: "" }));
+                      }
+                    }}>
+                          <SelectTrigger className={`bg-background ${errors.stage ? "border-red-500" : ""}`}>
                             <SelectValue placeholder="Select stage" />
                           </SelectTrigger>
                           <SelectContent className="bg-background border shadow-md z-50">
@@ -187,19 +277,25 @@ const PromptCriteriaLibrary = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        {errors.stage && <p className="text-sm text-red-500">{errors.stage}</p>}
                       </div>
 
                       <div>
-                        <Label htmlFor="category">Category</Label>
-                        <Select 
+                        <Label htmlFor="category">Category *</Label>
+                        <Select
                           value={formData.category} 
-                          onValueChange={value => setFormData({
-                            ...formData,
-                            category: value
-                          })}
+                          onValueChange={value => {
+                            setFormData({
+                              ...formData,
+                              category: value
+                            });
+                            if (errors.category) {
+                              setErrors(prev => ({ ...prev, category: "" }));
+                            }
+                          }}
                           disabled={!formData.indexCode}
                         >
-                          <SelectTrigger className="bg-background">
+                          <SelectTrigger className={`bg-background ${errors.category ? "border-red-500" : ""}`}>
                             <SelectValue placeholder={formData.indexCode ? "Select category" : "Select index code first"} />
                           </SelectTrigger>
                           <SelectContent className="bg-background border shadow-md z-50">
@@ -208,15 +304,21 @@ const PromptCriteriaLibrary = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        {errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
                       </div>
 
                       <div>
-                        <Label htmlFor="industry">Industry</Label>
-                        <Select value={formData.industry} onValueChange={value => setFormData({
+                        <Label htmlFor="industry">Industry *</Label>
+                        <Select value={formData.industry} onValueChange={value => {
+                        setFormData({
                         ...formData,
                         industry: value
-                      })}>
-                          <SelectTrigger className="bg-background">
+                      });
+                      if (errors.industry) {
+                        setErrors(prev => ({ ...prev, industry: "" }));
+                      }
+                    }}>
+                          <SelectTrigger className={`bg-background ${errors.industry ? "border-red-500" : ""}`}>
                             <SelectValue placeholder="Select industry" />
                           </SelectTrigger>
                           <SelectContent className="bg-background border shadow-md z-50">
@@ -225,14 +327,18 @@ const PromptCriteriaLibrary = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        {errors.industry && <p className="text-sm text-red-500">{errors.industry}</p>}
                       </div>
                     </div>
 
                     <div className="flex justify-end gap-2 pt-4">
-                      <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                      <Button variant="outline" onClick={() => {
+                        setIsModalOpen(false);
+                        setErrors({});
+                      }}>
                         Cancel
                       </Button>
-                      <Button>
+                      <Button onClick={handleSave}>
                         {editingCriterion ? "Update Criterion" : "Save Criterion"}
                       </Button>
                     </div>

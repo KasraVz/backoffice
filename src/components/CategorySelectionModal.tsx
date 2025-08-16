@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { assessmentCategories } from "@/data/categories";
 
 interface CategorySelectionModalProps {
   open: boolean;
@@ -11,22 +12,13 @@ interface CategorySelectionModalProps {
   onCategoriesSelected: (categories: string[], totalQuestions: number) => void;
 }
 
-// Mock categories data - in real app this would be fetched based on questionnaireName
-const mockCategories = {
-  general: [
-    "Financial Management & Fundraising",
-    "Business Strategy & Market Analysis", 
-    "Technology & Product Development",
-    "Operations & Human Resources",
-    "Legal & Compliance"
-  ],
-  industrySpecific: [
-    "Industry-Specific Regulations",
-    "Sector Market Dynamics",
-    "Specialized Technology Requirements",
-    "Industry Best Practices",
-    "Compliance & Standards"
-  ]
+// Helper function to determine assessment type from questionnaire name
+const getAssessmentTypeFromName = (name: string): keyof typeof assessmentCategories => {
+  const upperName = name.toUpperCase();
+  if (upperName.includes('FPA') || upperName.includes('FOUNDER PUBLIC AWARENESS')) return 'FPA';
+  if (upperName.includes('EEA') || upperName.includes('ECOSYSTEM ENVIRONMENT AWARENESS')) return 'EEA';
+  if (upperName.includes('TDA') || upperName.includes('TECHNOLOGY')) return 'TDA';
+  return 'FPA'; // default fallback
 };
 
 export const CategorySelectionModal = ({ 
@@ -36,6 +28,10 @@ export const CategorySelectionModal = ({
   onCategoriesSelected 
 }: CategorySelectionModalProps) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  
+  // Get the appropriate categories based on questionnaire name
+  const assessmentType = getAssessmentTypeFromName(questionnaireName);
+  const categories = assessmentCategories[assessmentType];
 
   // Calculate total questions (5 questions per category for now)
   const totalQuestions = selectedCategories.length * 5;
@@ -71,7 +67,7 @@ export const CategorySelectionModal = ({
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-foreground">General</h3>
             <div className="space-y-2">
-              {mockCategories.general.map((category) => (
+              {categories.general.map((category) => (
                 <div key={category} className="flex items-center space-x-2">
                   <Checkbox
                     id={category}
@@ -90,7 +86,7 @@ export const CategorySelectionModal = ({
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-foreground">Industry-Specific</h3>
             <div className="space-y-2">
-              {mockCategories.industrySpecific.map((category) => (
+              {categories.industrySpecific.map((category) => (
                 <div key={category} className="flex items-center space-x-2">
                   <Checkbox
                     id={category}

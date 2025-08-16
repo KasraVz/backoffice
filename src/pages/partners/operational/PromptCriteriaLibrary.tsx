@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Edit, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { assessmentCategories, industries, stages, getAllCategoriesForAssessment } from "@/data/categories";
 const mockCriteria = [{
   id: 1,
   promptText: "Based on your expertise in Financial Management for Seed-stage startups, please review the following questions for clarity, relevance, and accuracy.",
@@ -36,6 +37,21 @@ const PromptCriteriaLibrary = () => {
     category: "",
     industry: ""
   });
+
+  // Get available categories based on selected index code
+  const availableCategories = useMemo(() => {
+    if (!formData.indexCode) return [];
+    return getAllCategoriesForAssessment(formData.indexCode as keyof typeof assessmentCategories);
+  }, [formData.indexCode]);
+
+  // Reset category when index code changes
+  const handleIndexCodeChange = (value: string) => {
+    setFormData({
+      ...formData,
+      indexCode: value,
+      category: "" // Reset category when index code changes
+    });
+  };
   const handleEdit = (criterion: any) => {
     setEditingCriterion(criterion);
     setFormData({
@@ -144,17 +160,14 @@ const PromptCriteriaLibrary = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="indexCode">Index Code</Label>
-                        <Select value={formData.indexCode} onValueChange={value => setFormData({
-                        ...formData,
-                        indexCode: value
-                      })}>
-                          <SelectTrigger>
+                        <Select value={formData.indexCode} onValueChange={handleIndexCodeChange}>
+                          <SelectTrigger className="bg-background">
                             <SelectValue placeholder="Select index code" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="FPA">FPA</SelectItem>
-                            <SelectItem value="EEA">EEA</SelectItem>
-                            <SelectItem value="TDA">TDA</SelectItem>
+                          <SelectContent className="bg-background border shadow-md z-50">
+                            <SelectItem value="FPA">FPA - Founder Public Awareness</SelectItem>
+                            <SelectItem value="EEA">EEA - Ecosystem Environment Awareness</SelectItem>
+                            <SelectItem value="TDA">TDA - Technology Development Assessment</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -165,31 +178,34 @@ const PromptCriteriaLibrary = () => {
                         ...formData,
                         stage: value
                       })}>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-background">
                             <SelectValue placeholder="Select stage" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Pre-seed">Pre-seed</SelectItem>
-                            <SelectItem value="Seed">Seed</SelectItem>
-                            <SelectItem value="Early Stage">Early Stage</SelectItem>
-                            <SelectItem value="Growth Stage">Growth Stage</SelectItem>
+                          <SelectContent className="bg-background border shadow-md z-50">
+                            {stages.map(stage => (
+                              <SelectItem key={stage} value={stage}>{stage}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
 
                       <div>
                         <Label htmlFor="category">Category</Label>
-                        <Select value={formData.category} onValueChange={value => setFormData({
-                        ...formData,
-                        category: value
-                      })}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
+                        <Select 
+                          value={formData.category} 
+                          onValueChange={value => setFormData({
+                            ...formData,
+                            category: value
+                          })}
+                          disabled={!formData.indexCode}
+                        >
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder={formData.indexCode ? "Select category" : "Select index code first"} />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Financial Management">Financial Management</SelectItem>
-                            <SelectItem value="Human Resources">Human Resources</SelectItem>
-                            <SelectItem value="Marketing & Sales">Marketing & Sales</SelectItem>
+                          <SelectContent className="bg-background border shadow-md z-50">
+                            {availableCategories.map(category => (
+                              <SelectItem key={category} value={category}>{category}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
@@ -200,14 +216,13 @@ const PromptCriteriaLibrary = () => {
                         ...formData,
                         industry: value
                       })}>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-background">
                             <SelectValue placeholder="Select industry" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="General">General</SelectItem>
-                            <SelectItem value="Finance">Finance</SelectItem>
-                            <SelectItem value="HR Tech">HR Tech</SelectItem>
-                            <SelectItem value="Healthtech">Healthtech</SelectItem>
+                          <SelectContent className="bg-background border shadow-md z-50">
+                            {industries.map(industry => (
+                              <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>

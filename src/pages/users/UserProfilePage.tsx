@@ -769,7 +769,7 @@ const UserProfilePage = () => {
                                       className="h-6 w-6 p-0"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        window.open(`/users/teams/${team.id}`, '_blank');
+                                        window.open('/users/teams', '_blank');
                                       }}
                                     >
                                       <ExternalLink className="h-3 w-3" />

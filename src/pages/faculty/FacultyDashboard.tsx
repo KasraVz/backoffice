@@ -1,33 +1,54 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Clock, CheckCircle } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { BookOpen, Clock, CheckCircle, Calendar, Users, Target } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const mockQuestionSets = [
+const mockReviewSets = [
   {
-    id: "101",
-    title: "FPA: Financial Management & Fundraising - Seed Stage",
+    id: "RS-001",
+    setName: "FPA: Financial Management & Fundraising - Seed Stage",
     questionCount: 25,
-    status: "Not Started",
+    dateAssigned: "2024-01-15",
+    status: "Pending",
     description: "Review questions related to financial planning and fundraising strategies for seed-stage startups."
   },
   {
-    id: "102",
-    title: "EEA: Human Resources - Early Stage",
+    id: "RS-002", 
+    setName: "EEA: Human Resources - Early Stage",
     questionCount: 18,
+    dateAssigned: "2024-01-12",
     status: "In Progress",
     description: "Evaluate HR-related questions for Early Stage companies."
   },
   {
-    id: "103",
-    title: "TDA: Technology Development - Pre-seed",
+    id: "RS-003",
+    setName: "GEB: General Entrepreneurial Behavior - Growth Stage", 
     questionCount: 22,
+    dateAssigned: "2024-01-10",
     status: "Completed",
-    description: "Questions focusing on technical development aspects for early-stage startups."
+    description: "Questions focusing on general entrepreneurial behavior for growth-stage companies."
+  },
+  {
+    id: "RS-004",
+    setName: "FPA: Investment & Valuation - Series A",
+    questionCount: 30,
+    dateAssigned: "2024-01-18", 
+    status: "Pending",
+    description: "Review investment and valuation questions for Series A stage companies."
   }
 ];
 
+const mockKPIs = {
+  pendingReviewSets: 2,
+  inProgressSets: 1, 
+  completedReviews: 1
+};
+
 const FacultyDashboard = () => {
+  const navigate = useNavigate();
+  
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "Completed": return <CheckCircle className="h-4 w-4 text-green-600" />;
@@ -51,56 +72,125 @@ const FacultyDashboard = () => {
     }
   };
 
+  const handleStartReview = (setId: string) => {
+    navigate(`/faculty/review/${setId}`);
+  };
+
   return (
     <div className="min-h-screen bg-background p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
+        {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Welcome, Dr. Sharma</h1>
+          <h1 className="text-3xl font-bold">My Question Review Dashboard</h1>
           <p className="text-muted-foreground mt-2">
             Review your assigned question sets and provide feedback to improve our assessment quality.
           </p>
         </div>
 
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">Your Assigned Question Sets for Review</h2>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending Review Sets</CardTitle>
+              <Target className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockKPIs.pendingReviewSets}</div>
+              <p className="text-xs text-muted-foreground">
+                Awaiting your review
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">In Progress Sets</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockKPIs.inProgressSets}</div>
+              <p className="text-xs text-muted-foreground">
+                Currently being reviewed
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Completed Reviews</CardTitle>
+              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockKPIs.completedReviews}</div>
+              <p className="text-xs text-muted-foreground">
+                Successfully reviewed
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid gap-6">
-          {mockQuestionSets.map((set) => (
-            <Card key={set.id} className="transition-shadow hover:shadow-md">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <CardTitle className="text-lg">{set.title}</CardTitle>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
+        {/* Review Sets Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>My Review Sets</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Set Name</TableHead>
+                  <TableHead>Questions</TableHead>
+                  <TableHead>Date Assigned</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mockReviewSets.map((set) => (
+                  <TableRow key={set.id}>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{set.setName}</div>
+                        <div className="text-sm text-muted-foreground">{set.description}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
                         <BookOpen className="h-4 w-4" />
-                        {set.questionCount} Questions
-                      </span>
+                        {set.questionCount}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {new Date(set.dateAssigned).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         {getStatusIcon(set.status)}
                         <Badge variant={getStatusColor(set.status)}>
                           {set.status}
                         </Badge>
                       </div>
-                    </div>
-                  </div>
-                  <Button 
-                    className="shrink-0"
-                    disabled={set.status === "Completed"}
-                  >
-                    {getButtonText(set.status)}
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{set.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                    </TableCell>
+                    <TableCell>
+                      <Button 
+                        size="sm"
+                        disabled={set.status === "Completed"}
+                        onClick={() => handleStartReview(set.id)}
+                      >
+                        {getButtonText(set.status)}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-        {mockQuestionSets.length === 0 && (
+        {mockReviewSets.length === 0 && (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />

@@ -62,6 +62,9 @@ const mainMenuItems = [{
     }, {
       title: "Prompt Criteria Library",
       url: "/partners/operational/prompt-criteria"
+    }, {
+      title: "Question Review Dashboard",
+      url: "/faculty/dashboard"
     }]
   }]
 }, {

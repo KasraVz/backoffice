@@ -75,6 +75,8 @@ const FacultyDashboard = () => {
   };
 
   const handleStartReview = (setId: string) => {
+    console.log('Navigating to review set:', setId);
+    console.log('Target URL:', `/faculty/review/${setId}`);
     navigate(`/faculty/review/${setId}`);
   };
 

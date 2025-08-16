@@ -37,7 +37,7 @@ const mockOrders: Order[] = [
     id: "ORD-001",
     date: "2024-08-10",
     customerName: "John Smith",
-    itemsPurchased: "1x FPA Assessment Premium",
+    itemsPurchased: "1x Founder Public Awareness (FPA)",
     stages: {
       payment: {
         status: "Paid",
@@ -57,7 +57,7 @@ const mockOrders: Order[] = [
     id: "ORD-002",
     date: "2024-08-09",
     customerName: "Sarah Johnson",
-    itemsPurchased: "1x FPA Assessment Basic",
+    itemsPurchased: "1x Ecosystem Environment Awareness (EEA)",
     stages: {
       payment: {
         status: "Paid",
@@ -77,7 +77,7 @@ const mockOrders: Order[] = [
     id: "ORD-003",
     date: "2024-08-08",
     customerName: "Mike Wilson",
-    itemsPurchased: "1x FPA Assessment Premium",
+    itemsPurchased: "1x Founder Public Awareness (FPA)",
     stages: {
       payment: {
         status: "Paid",
@@ -97,7 +97,7 @@ const mockOrders: Order[] = [
     id: "ORD-004",
     date: "2024-08-07",
     customerName: "Emma Davis",
-    itemsPurchased: "1x FPA Assessment Basic",
+    itemsPurchased: "1x General Entrepreneurial Behavior (GEB)",
     stages: {
       payment: {
         status: "Not Paid",
@@ -117,7 +117,7 @@ const mockOrders: Order[] = [
     id: "ORD-005",
     date: "2024-08-06",
     customerName: "Robert Chen",
-    itemsPurchased: "1x FPA Assessment Premium",
+    itemsPurchased: "1x Founder Public Awareness (FPA)",
     stages: {
       payment: {
         status: "Paid",

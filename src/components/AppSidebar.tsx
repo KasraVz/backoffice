@@ -71,8 +71,8 @@ const mainMenuItems = [{
     title: "Order History",
     url: "/orders/history"
   }, {
-    title: "Subscription Dashboard",
-    url: "/orders/subscriptions"
+    title: "Pricing Dashboard",
+    url: "/orders/pricing"
   }, {
     title: "Discount & Coupon Codes",
     url: "/orders/coupons"

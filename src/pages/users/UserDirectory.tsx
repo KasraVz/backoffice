@@ -278,7 +278,7 @@ const UserDirectory = () => {
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem onClick={() => navigate(`/users/profile/${user.id}`)}>
                                     <Edit className="mr-2 h-4 w-4" />
-                                    View Profile
+                                    Edit/View Profile
                                   </DropdownMenuItem>
                                   <DropdownMenuItem>
                                     <UserX className="mr-2 h-4 w-4" />

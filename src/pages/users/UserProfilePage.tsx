@@ -12,7 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft, Download, Eye, Save } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ArrowLeft, Download, Eye, Save, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 // Mock user data - in real app would come from API
@@ -57,6 +59,50 @@ const mockUserData = {
     website: "https://healthtech.ca",
     linkedin: "https://linkedin.com/in/sarahjohnson"
   }
+};
+
+// Comprehensive list of countries
+const countries = [
+  "Afghanistan", "Albania", "Algeria", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+  "Bahrain", "Bangladesh", "Belarus", "Belgium", "Bolivia", "Bosnia and Herzegovina", "Brazil", "Bulgaria",
+  "Cambodia", "Canada", "Chile", "China", "Colombia", "Croatia", "Czech Republic", "Denmark", "Ecuador",
+  "Egypt", "Estonia", "Ethiopia", "Finland", "France", "Georgia", "Germany", "Ghana", "Greece", "Hungary",
+  "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Japan", "Jordan",
+  "Kazakhstan", "Kenya", "Kuwait", "Latvia", "Lebanon", "Lithuania", "Luxembourg", "Malaysia", "Mexico",
+  "Morocco", "Netherlands", "New Zealand", "Nigeria", "Norway", "Pakistan", "Peru", "Philippines", "Poland",
+  "Portugal", "Qatar", "Romania", "Russia", "Saudi Arabia", "Singapore", "Slovakia", "Slovenia", "South Africa",
+  "South Korea", "Spain", "Sri Lanka", "Sweden", "Switzerland", "Thailand", "Turkey", "Ukraine", "United Arab Emirates",
+  "United Kingdom", "United States", "Uruguay", "Venezuela", "Vietnam"
+];
+
+// Mock team data
+const mockTeamData = {
+  "1": [
+    {
+      id: "team1",
+      startupName: "TechVenture Inc.",
+      members: [
+        { name: "John Smith", equityShare: "45", role: "CEO" }
+      ],
+      addTeamMembers: "yes",
+      startupWebsite: "https://techventure.com",
+      includeTestResults: "yes",
+      memberEmails: ["john@techventure.com"]
+    }
+  ],
+  "2": [
+    {
+      id: "team2", 
+      startupName: "HealthTech Solutions",
+      members: [
+        { name: "Sarah Johnson", equityShare: "60", role: "Founder & CEO" }
+      ],
+      addTeamMembers: "no",
+      startupWebsite: "",
+      includeTestResults: "no",
+      memberEmails: []
+    }
+  ]
 };
 
 const mockAssessmentHistory = {
@@ -112,6 +158,9 @@ const UserProfilePage = () => {
     linkedin: ""
   });
 
+  const [teamData, setTeamData] = useState<any[]>([]);
+  const [teamForms, setTeamForms] = useState<any>({});
+
   useEffect(() => {
     if (userId && mockUserData[userId as keyof typeof mockUserData]) {
       const userData = mockUserData[userId as keyof typeof mockUserData];
@@ -135,6 +184,17 @@ const UserProfilePage = () => {
         website: userData.website,
         linkedin: userData.linkedin
       });
+
+      // Initialize team data
+      const userTeams = mockTeamData[userId as keyof typeof mockTeamData] || [];
+      setTeamData(userTeams);
+      
+      // Initialize team forms
+      const forms: any = {};
+      userTeams.forEach(team => {
+        forms[team.id] = { ...team };
+      });
+      setTeamForms(forms);
     }
   }, [userId]);
 
@@ -145,6 +205,64 @@ const UserProfilePage = () => {
 
   const handleBusinessFormChange = (field: string, value: string) => {
     setBusinessForm(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+
+  const handleTeamFormChange = (teamId: string, field: string, value: string | string[]) => {
+    setTeamForms((prev: any) => ({
+      ...prev,
+      [teamId]: {
+        ...prev[teamId],
+        [field]: value
+      }
+    }));
+    setHasChanges(true);
+  };
+
+  const handleMemberChange = (teamId: string, memberIndex: number, field: string, value: string) => {
+    setTeamForms((prev: any) => {
+      const team = prev[teamId];
+      const updatedMembers = [...team.members];
+      updatedMembers[memberIndex] = { ...updatedMembers[memberIndex], [field]: value };
+      
+      return {
+        ...prev,
+        [teamId]: {
+          ...team,
+          members: updatedMembers
+        }
+      };
+    });
+    setHasChanges(true);
+  };
+
+  const addMember = (teamId: string) => {
+    setTeamForms((prev: any) => {
+      const team = prev[teamId];
+      return {
+        ...prev,
+        [teamId]: {
+          ...team,
+          members: [...team.members, { name: "", equityShare: "", role: "" }]
+        }
+      };
+    });
+    setHasChanges(true);
+  };
+
+  const removeMember = (teamId: string, memberIndex: number) => {
+    setTeamForms((prev: any) => {
+      const team = prev[teamId];
+      const updatedMembers = team.members.filter((_: any, index: number) => index !== memberIndex);
+      
+      return {
+        ...prev,
+        [teamId]: {
+          ...team,
+          members: updatedMembers
+        }
+      };
+    });
     setHasChanges(true);
   };
 
@@ -230,9 +348,10 @@ const UserProfilePage = () => {
 
             {/* Tabbed Content */}
             <Tabs defaultValue="identity" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="identity">Identity Data</TabsTrigger>
                 <TabsTrigger value="business">Business Profile</TabsTrigger>
+                <TabsTrigger value="team">Team Profile</TabsTrigger>
                 <TabsTrigger value="assessments">Assessment History</TabsTrigger>
                 <TabsTrigger value="reports">Report History</TabsTrigger>
                 <TabsTrigger value="certificates">Certificate History</TabsTrigger>
@@ -276,21 +395,29 @@ const UserProfilePage = () => {
                         </div>
                         <div>
                           <Label htmlFor="nationality">Nationality</Label>
-                          <Input
-                            id="nationality"
-                            value={identityForm.nationality}
-                            onChange={(e) => handleIdentityFormChange("nationality", e.target.value)}
-                            className="mt-1"
-                          />
+                          <Select value={identityForm.nationality} onValueChange={(value) => handleIdentityFormChange("nationality", value)}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Select nationality" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {countries.map((country) => (
+                                <SelectItem key={country} value={country}>{country}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div>
                           <Label htmlFor="countryOfResidence">Country of Residence</Label>
-                          <Input
-                            id="countryOfResidence"
-                            value={identityForm.countryOfResidence}
-                            onChange={(e) => handleIdentityFormChange("countryOfResidence", e.target.value)}
-                            className="mt-1"
-                          />
+                          <Select value={identityForm.countryOfResidence} onValueChange={(value) => handleIdentityFormChange("countryOfResidence", value)}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Select country of residence" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {countries.map((country) => (
+                                <SelectItem key={country} value={country}>{country}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div>
                           <Label htmlFor="idDocumentType">ID Document Type</Label>
@@ -300,14 +427,12 @@ const UserProfilePage = () => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="Passport">Passport</SelectItem>
-                              <SelectItem value="Driver's License">Driver's License</SelectItem>
                               <SelectItem value="National ID">National ID</SelectItem>
-                              <SelectItem value="State ID">State ID</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         <div>
-                          <Label htmlFor="documentNumber">Document Number</Label>
+                          <Label htmlFor="documentNumber">Passport/National ID Number</Label>
                           <Input
                             id="documentNumber"
                             value={identityForm.documentNumber}
@@ -391,6 +516,189 @@ const UserProfilePage = () => {
                           />
                         </div>
                       </div>
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="team" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Team Profile</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ScrollArea className="h-[400px]">
+                      {teamData.length > 0 ? (
+                        <Accordion type="single" collapsible className="w-full">
+                          {teamData.map((team) => {
+                            const teamForm = teamForms[team.id] || team;
+                            return (
+                              <AccordionItem key={team.id} value={team.id}>
+                                <AccordionTrigger>
+                                  Team: {teamForm.startupName || "Unnamed Team"}
+                                </AccordionTrigger>
+                                <AccordionContent className="space-y-4">
+                                  <div className="space-y-4">
+                                    <div>
+                                      <Label className="text-sm font-medium">Do you want to add your team members right now? *</Label>
+                                      <RadioGroup 
+                                        value={teamForm.addTeamMembers} 
+                                        onValueChange={(value) => handleTeamFormChange(team.id, "addTeamMembers", value)}
+                                        className="flex gap-6 mt-2"
+                                      >
+                                        <div className="flex items-center space-x-2">
+                                          <RadioGroupItem value="yes" id={`yes-${team.id}`} />
+                                          <Label htmlFor={`yes-${team.id}`}>Yes</Label>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                          <RadioGroupItem value="no" id={`no-${team.id}`} />
+                                          <Label htmlFor={`no-${team.id}`}>No</Label>
+                                        </div>
+                                      </RadioGroup>
+                                    </div>
+
+                                    {teamForm.addTeamMembers === "yes" && (
+                                      <>
+                                        <div className="space-y-4">
+                                          <div className="flex items-center justify-between">
+                                            <Label className="text-sm font-medium">Team Members</Label>
+                                            <Button 
+                                              type="button" 
+                                              variant="outline" 
+                                              size="sm"
+                                              onClick={() => addMember(team.id)}
+                                            >
+                                              <Plus className="h-4 w-4 mr-2" />
+                                              Add Member
+                                            </Button>
+                                          </div>
+                                          
+                                          {teamForm.members?.map((member: any, index: number) => (
+                                            <div key={index} className="border rounded-lg p-4 space-y-3">
+                                              <div className="flex items-center justify-between">
+                                                <Label className="text-sm font-medium">Member {index + 1}</Label>
+                                                {teamForm.members.length > 1 && (
+                                                  <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => removeMember(team.id, index)}
+                                                  >
+                                                    <Trash2 className="h-4 w-4" />
+                                                  </Button>
+                                                )}
+                                              </div>
+                                              <div className="grid grid-cols-3 gap-3">
+                                                <div>
+                                                  <Label htmlFor={`name-${team.id}-${index}`} className="text-xs">Name</Label>
+                                                  <Input
+                                                    id={`name-${team.id}-${index}`}
+                                                    placeholder="Full name"
+                                                    value={member.name}
+                                                    onChange={(e) => handleMemberChange(team.id, index, "name", e.target.value)}
+                                                    className="mt-1"
+                                                  />
+                                                </div>
+                                                <div>
+                                                  <Label htmlFor={`equity-${team.id}-${index}`} className="text-xs">Equity Share (%)</Label>
+                                                  <Input
+                                                    id={`equity-${team.id}-${index}`}
+                                                    placeholder="0"
+                                                    value={member.equityShare}
+                                                    onChange={(e) => handleMemberChange(team.id, index, "equityShare", e.target.value)}
+                                                    className="mt-1"
+                                                  />
+                                                </div>
+                                                <div>
+                                                  <Label htmlFor={`role-${team.id}-${index}`} className="text-xs">Role/Responsibility</Label>
+                                                  <Input
+                                                    id={`role-${team.id}-${index}`}
+                                                    placeholder="e.g., CTO, CMO"
+                                                    value={member.role}
+                                                    onChange={(e) => handleMemberChange(team.id, index, "role", e.target.value)}
+                                                    className="mt-1"
+                                                  />
+                                                </div>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+
+                                        <div>
+                                          <Label htmlFor={`startup-name-${team.id}`}>Startup Name</Label>
+                                          <Input
+                                            id={`startup-name-${team.id}`}
+                                            placeholder="Enter startup name"
+                                            value={teamForm.startupName}
+                                            onChange={(e) => handleTeamFormChange(team.id, "startupName", e.target.value)}
+                                            className="mt-1"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <Label htmlFor={`startup-website-${team.id}`}>Startup Website</Label>
+                                          <Input
+                                            id={`startup-website-${team.id}`}
+                                            placeholder="https://yourwebsite.com"
+                                            value={teamForm.startupWebsite}
+                                            onChange={(e) => handleTeamFormChange(team.id, "startupWebsite", e.target.value)}
+                                            className="mt-1"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <Label className="text-sm font-medium">Include individual test results of these team members?</Label>
+                                          <RadioGroup 
+                                            value={teamForm.includeTestResults} 
+                                            onValueChange={(value) => handleTeamFormChange(team.id, "includeTestResults", value)}
+                                            className="flex gap-6 mt-2"
+                                          >
+                                            <div className="flex items-center space-x-2">
+                                              <RadioGroupItem value="yes" id={`include-yes-${team.id}`} />
+                                              <Label htmlFor={`include-yes-${team.id}`}>Yes</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                              <RadioGroupItem value="no" id={`include-no-${team.id}`} />
+                                              <Label htmlFor={`include-no-${team.id}`}>No</Label>
+                                            </div>
+                                          </RadioGroup>
+                                        </div>
+
+                                        <div>
+                                          <Label className="text-sm font-medium">Team Member Supsindex Account Emails</Label>
+                                          <div className="space-y-2 mt-2">
+                                            {teamForm.members?.map((member: any, index: number) => (
+                                              <div key={index}>
+                                                <Label htmlFor={`email-${team.id}-${index}`} className="text-xs">Email for Member {index + 1}</Label>
+                                                <Input
+                                                  id={`email-${team.id}-${index}`}
+                                                  type="email"
+                                                  placeholder="member@example.com"
+                                                  value={teamForm.memberEmails?.[index] || ""}
+                                                  onChange={(e) => {
+                                                    const emails = [...(teamForm.memberEmails || [])];
+                                                    emails[index] = e.target.value;
+                                                    handleTeamFormChange(team.id, "memberEmails", emails);
+                                                  }}
+                                                  className="mt-1"
+                                                />
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                </AccordionContent>
+                              </AccordionItem>
+                            );
+                          })}
+                        </Accordion>
+                      ) : (
+                        <div className="text-center text-muted-foreground py-8">
+                          No team profiles found for this user.
+                        </div>
+                      )}
                     </ScrollArea>
                   </CardContent>
                 </Card>

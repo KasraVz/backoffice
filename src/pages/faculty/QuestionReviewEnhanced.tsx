@@ -3,7 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { ThumbsUp, ThumbsDown, Minus, AlertCircle, FileText, Users } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { CheckCircle, XCircle, AlertCircle, FileText, Users, ChevronRight, FolderOpen, Folder } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { type ReviewSetData, type ReviewSetCategory } from "@/services/promptCriteriaService";
@@ -12,9 +15,10 @@ interface Question {
   id: number;
   text: string;
   answers: string[];
-  vote: 'upvote' | 'downvote' | 'neutral' | null;
+  vote: 'approve' | 'reject' | 'neutral' | null;
   comment: string;
   category: string;
+  scope: 'General' | 'Industry-Specific';
 }
 
 const QuestionReviewEnhanced = () => {
@@ -23,6 +27,8 @@ const QuestionReviewEnhanced = () => {
   const [reviewSetData, setReviewSetData] = useState<ReviewSetData | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentProgress, setCurrentProgress] = useState(0);
+  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
+  const [currentPrompt, setCurrentPrompt] = useState<string>("");
 
   // Load review set data on component mount
   useEffect(() => {
@@ -45,10 +51,15 @@ const QuestionReviewEnhanced = () => {
   // Generate mock questions for each category
   const generateQuestionsFromCategories = (categories: ReviewSetCategory[]): Question[] => {
     const questionTemplates = {
-      "Financial Management": [
+      "Financial Management & Fundraising": [
         "What is your current monthly burn rate, and how many months of runway do you have?",
         "How do you plan to achieve profitability?",
         "What is your customer acquisition cost (CAC) compared to lifetime value (LTV)?"
+      ],
+      "Business Strategy & Market Analysis": [
+        "What is your primary competitive advantage?",
+        "How do you measure market penetration?",
+        "What is your go-to-market strategy?"
       ],
       "Human Resources": [
         "How do you plan to scale your team over the next 12 months?",
@@ -70,14 +81,17 @@ const QuestionReviewEnhanced = () => {
     let questionId = 1;
     const allQuestions: Question[] = [];
 
-    categories.forEach(categoryData => {
+    categories.forEach((categoryData, index) => {
       const templates = questionTemplates[categoryData.category as keyof typeof questionTemplates] || [
         `Sample question 1 for ${categoryData.category}`,
         `Sample question 2 for ${categoryData.category}`,
         `Sample question 3 for ${categoryData.category}`
       ];
 
-      templates.forEach(template => {
+      templates.forEach((template, templateIndex) => {
+        // Alternate between General and Industry-Specific scope
+        const scope = index % 2 === 0 ? 'General' : 'Industry-Specific';
+        
         allQuestions.push({
           id: questionId++,
           text: template,
@@ -89,7 +103,8 @@ const QuestionReviewEnhanced = () => {
           ],
           vote: null,
           comment: "",
-          category: categoryData.category
+          category: categoryData.category,
+          scope: scope
         });
       });
     });
@@ -97,12 +112,12 @@ const QuestionReviewEnhanced = () => {
     return allQuestions;
   };
 
-  const handleVote = (questionId: number, vote: 'upvote' | 'downvote' | 'neutral') => {
+  const handleVote = (questionId: number, vote: 'approve' | 'reject' | 'neutral') => {
     setQuestions(prev => prev.map(q => {
       if (q.id === questionId) {
         const updatedQuestion = { ...q, vote };
-        // Clear comment if not neutral
-        if (vote !== 'neutral') {
+        // Clear comment if approve (since it's optional)
+        if (vote === 'approve') {
           updatedQuestion.comment = '';
         }
         return updatedQuestion;
@@ -121,17 +136,42 @@ const QuestionReviewEnhanced = () => {
     ));
   };
 
-  const allQuestionsVoted = questions.every(q => q.vote);
+  // Validation: Check if all questions are voted and comments are provided where required
+  const allQuestionsValid = questions.every(q => {
+    if (!q.vote) return false;
+    // Comments required for reject and neutral
+    if ((q.vote === 'reject' || q.vote === 'neutral') && !q.comment.trim()) return false;
+    return true;
+  });
+  
   const progressPercentage = questions.length > 0 ? (currentProgress / questions.length) * 100 : 0;
 
-  // Group questions by category
-  const questionsByCategory = questions.reduce((acc, question) => {
-    if (!acc[question.category]) {
-      acc[question.category] = [];
+  // Group questions by scope and then by category
+  const questionsByScope = questions.reduce((acc, question) => {
+    if (!acc[question.scope]) {
+      acc[question.scope] = {};
     }
-    acc[question.category].push(question);
+    if (!acc[question.scope][question.category]) {
+      acc[question.scope][question.category] = [];
+    }
+    acc[question.scope][question.category].push(question);
     return acc;
-  }, {} as Record<string, Question[]>);
+  }, {} as Record<string, Record<string, Question[]>>);
+
+  // Update current prompt when a question is selected
+  const handleQuestionSelect = (questionId: number) => {
+    setSelectedQuestionId(questionId);
+    const question = questions.find(q => q.id === questionId);
+    if (question && reviewSetData) {
+      const categoryData = reviewSetData.categories.find(cat => cat.category === question.category);
+      if (categoryData?.promptCriterion) {
+        setCurrentPrompt(categoryData.promptCriterion.promptText);
+      }
+    }
+  };
+
+  // Get the selected question
+  const selectedQuestion = questions.find(q => q.id === selectedQuestionId);
 
   if (!reviewSetData) {
     return (
@@ -147,9 +187,9 @@ const QuestionReviewEnhanced = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sticky Header with Review Set Info */}
+      {/* Sticky Header */}
       <div className="sticky top-0 z-10 bg-background border-b">
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-4">
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -174,9 +214,9 @@ const QuestionReviewEnhanced = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-4">
         {/* Progress Indicator */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-2xl font-bold">Question Review Progress</h2>
             <span className="text-sm text-muted-foreground">
@@ -186,150 +226,251 @@ const QuestionReviewEnhanced = () => {
           <Progress value={progressPercentage} className="w-full h-3" />
         </div>
 
-        {/* Categories and Questions */}
-        <div className="space-y-8">
-          {reviewSetData.categories.map((categoryData, categoryIndex) => {
-            const categoryQuestions = questionsByCategory[categoryData.category] || [];
-            const categoryVotedQuestions = categoryQuestions.filter(q => q.vote).length;
-            const categoryProgress = categoryQuestions.length > 0 ? (categoryVotedQuestions / categoryQuestions.length) * 100 : 0;
-
-            return (
-              <div key={categoryIndex} className="space-y-6">
-                {/* Category Header with Prompt Criteria */}
-                <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="h-5 w-5 text-amber-600 mt-1" />
-                      <div className="flex-1">
-                        <CardTitle className="text-lg text-amber-900 mb-2">
-                          {categoryData.category} Review Instructions
-                        </CardTitle>
-                        <p className="text-amber-800 leading-relaxed">
-                          {categoryData.promptCriterion?.promptText}
-                        </p>
-                        <div className="flex items-center gap-4 mt-3">
-                          <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-                            {categoryQuestions.length} Questions
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Panel - Question Navigator */}
+          <div className="lg:col-span-1">
+            <Card className="h-fit">
+              <CardHeader>
+                <CardTitle className="text-lg">Question Navigator</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Accordion type="multiple" defaultValue={["general", "industry-specific"]} className="w-full">
+                  {Object.entries(questionsByScope).map(([scope, categories]) => (
+                    <AccordionItem key={scope} value={scope.toLowerCase().replace(' ', '-')}>
+                      <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          {scope === 'General' ? (
+                            <FolderOpen className="h-4 w-4 text-blue-600" />
+                          ) : (
+                            <Folder className="h-4 w-4 text-purple-600" />
+                          )}
+                          <span className="font-medium">{scope}</span>
+                          <Badge variant="secondary" className="ml-auto">
+                            {Object.values(categories).flat().length}
                           </Badge>
-                          <div className="flex-1 max-w-xs">
-                            <Progress value={categoryProgress} className="h-2" />
-                          </div>
-                          <span className="text-sm text-amber-700">
-                            {categoryVotedQuestions}/{categoryQuestions.length} Complete
-                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        <div className="space-y-3">
+                          {Object.entries(categories).map(([category, questions]) => (
+                            <div key={category} className="space-y-2">
+                              <div className="flex items-center justify-between text-sm font-medium text-muted-foreground">
+                                <span>{category}</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {questions.filter(q => q.vote).length}/{questions.length}
+                                </Badge>
+                              </div>
+                              <div className="space-y-1 ml-4">
+                                {questions.map((question) => (
+                                  <button
+                                    key={question.id}
+                                    onClick={() => handleQuestionSelect(question.id)}
+                                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-2 ${
+                                      selectedQuestionId === question.id
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'hover:bg-muted'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 flex-1">
+                                      <span>Q{question.id}</span>
+                                      {question.vote && (
+                                        question.vote === 'approve' ? (
+                                          <CheckCircle className="h-3 w-3 text-green-500" />
+                                        ) : question.vote === 'reject' ? (
+                                          <XCircle className="h-3 w-3 text-red-500" />
+                                        ) : (
+                                          <AlertCircle className="h-3 w-3 text-yellow-500" />
+                                        )
+                                      )}
+                                    </div>
+                                    <ChevronRight className="h-3 w-3" />
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Panel - Main Review Area */}
+          <div className="lg:col-span-2">
+            {selectedQuestion ? (
+              <div className="space-y-6">
+                {/* Dynamic Prompt Display */}
+                {currentPrompt && (
+                  <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="h-5 w-5 text-amber-600 mt-1" />
+                        <div>
+                          <CardTitle className="text-lg text-amber-900 mb-2">
+                            Review Instructions - {selectedQuestion.category}
+                          </CardTitle>
+                          <p className="text-amber-800 leading-relaxed">
+                            {currentPrompt}
+                          </p>
                         </div>
                       </div>
+                    </CardHeader>
+                  </Card>
+                )}
+
+                {/* Question Content */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline" className="text-xs">
+                        {selectedQuestion.scope} - {selectedQuestion.category}
+                      </Badge>
+                      <CardTitle className="text-lg">Question {selectedQuestion.id}</CardTitle>
                     </div>
                   </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h4 className="font-medium mb-3 text-gray-900">{selectedQuestion.text}</h4>
+                      <div className="space-y-2">
+                        {selectedQuestion.answers.map((answer, index) => (
+                          <div key={index} className="p-3 bg-gray-50 rounded-md border">
+                            <span className="font-medium text-sm text-gray-700">Option {index + 1}:</span>
+                            <span className="ml-2 text-gray-900">{answer}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
 
-                {/* Questions for this Category */}
-                <div className="space-y-6 ml-8">
-                  {categoryQuestions.map((question) => (
-                    <Card key={question.id} className="transition-all hover:shadow-lg border-l-4 border-l-amber-200">
-                      <CardHeader>
-                        <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="text-xs">
-                            {categoryData.category}
-                          </Badge>
-                          <CardTitle className="text-lg">Question {question.id}</CardTitle>
+                {/* Feedback Form */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Provide Feedback</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label className="text-base font-medium">Your Assessment</Label>
+                      <RadioGroup
+                        value={selectedQuestion.vote || ''}
+                        onValueChange={(value) => handleVote(selectedQuestion.id, value as 'approve' | 'reject' | 'neutral')}
+                        className="mt-3"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="approve" id="approve" />
+                          <Label htmlFor="approve" className="flex items-center gap-2 cursor-pointer">
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                            Approve
+                          </Label>
                         </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div>
-                          <h4 className="font-medium mb-3 text-gray-900">{question.text}</h4>
-                          <div className="space-y-2">
-                            {question.answers.map((answer, index) => (
-                              <div key={index} className="p-3 bg-gray-50 rounded-md border">
-                                <span className="font-medium text-sm text-gray-700">Option {index + 1}:</span>
-                                <span className="ml-2 text-gray-900">{answer}</span>
-                              </div>
-                            ))}
-                          </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="reject" id="reject" />
+                          <Label htmlFor="reject" className="flex items-center gap-2 cursor-pointer">
+                            <XCircle className="h-4 w-4 text-red-600" />
+                            Reject
+                          </Label>
                         </div>
-
-                        {/* Voting Actions */}
-                        <div className="space-y-3">
-                          <div className="flex gap-3">
-                            <Button
-                              variant={question.vote === 'upvote' ? 'default' : 'outline'}
-                              onClick={() => handleVote(question.id, 'upvote')}
-                              className="gap-2 flex-1"
-                            >
-                              <ThumbsUp className="h-4 w-4" />
-                              Approve
-                            </Button>
-                            <Button
-                              variant={question.vote === 'downvote' ? 'destructive' : 'outline'}
-                              onClick={() => handleVote(question.id, 'downvote')}
-                              className="gap-2 flex-1"
-                            >
-                              <ThumbsDown className="h-4 w-4" />
-                              Reject
-                            </Button>
-                            <Button
-                              variant={question.vote === 'neutral' ? 'secondary' : 'outline'}
-                              onClick={() => handleVote(question.id, 'neutral')}
-                              className="gap-2 flex-1"
-                            >
-                              <Minus className="h-4 w-4" />
-                              Needs Review
-                            </Button>
-                          </div>
-
-                          {/* Comment Box - Show only when Neutral is selected */}
-                          {question.vote === 'neutral' && (
-                            <Textarea
-                              placeholder="Please provide your suggestions or comments for improvement..."
-                              value={question.comment}
-                              onChange={(e) => handleCommentChange(question.id, e.target.value)}
-                              rows={3}
-                              className="border-orange-200 focus:border-orange-400"
-                            />
-                          )}
-
-                          {/* Vote Status */}
-                          {question.vote && (
-                            <div className="flex items-center gap-2">
-                              <Badge variant={
-                                question.vote === 'upvote' ? 'default' :
-                                question.vote === 'downvote' ? 'destructive' : 'secondary'
-                              }>
-                                {question.vote === 'upvote' ? 'Approved' :
-                                 question.vote === 'downvote' ? 'Rejected' : 'Needs Review'}
-                              </Badge>
-                              {question.vote === 'neutral' && question.comment && (
-                                <span className="text-sm text-muted-foreground">
-                                  Feedback provided
-                                </span>
-                              )}
-                            </div>
-                          )}
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="neutral" id="neutral" />
+                          <Label htmlFor="neutral" className="flex items-center gap-2 cursor-pointer">
+                            <AlertCircle className="h-4 w-4 text-yellow-600" />
+                            Neutral
+                          </Label>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                      </RadioGroup>
+                    </div>
+
+                    {/* Conditional Comment Section */}
+                    {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'neutral') && (
+                      <div>
+                        <Label htmlFor="comment" className="text-base font-medium">
+                          Comments <span className="text-red-500">*</span>
+                        </Label>
+                        <Textarea
+                          id="comment"
+                          placeholder="Please provide your feedback and suggestions..."
+                          value={selectedQuestion.comment}
+                          onChange={(e) => handleCommentChange(selectedQuestion.id, e.target.value)}
+                          rows={4}
+                          className="mt-2"
+                          required
+                        />
+                        {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'neutral') && !selectedQuestion.comment.trim() && (
+                          <p className="text-sm text-red-600 mt-1">Comment is required for this assessment.</p>
+                        )}
+                      </div>
+                    )}
+
+                    {selectedQuestion.vote === 'approve' && (
+                      <div>
+                        <Label htmlFor="optional-comment" className="text-base font-medium">
+                          Additional Comments <span className="text-gray-500">(Optional)</span>
+                        </Label>
+                        <Textarea
+                          id="optional-comment"
+                          placeholder="Any additional feedback or suggestions..."
+                          value={selectedQuestion.comment}
+                          onChange={(e) => handleCommentChange(selectedQuestion.id, e.target.value)}
+                          rows={3}
+                          className="mt-2"
+                        />
+                      </div>
+                    )}
+
+                    {/* Vote Status */}
+                    {selectedQuestion.vote && (
+                      <div className="flex items-center gap-2 pt-2">
+                        <Badge variant={
+                          selectedQuestion.vote === 'approve' ? 'default' :
+                          selectedQuestion.vote === 'reject' ? 'destructive' : 'secondary'
+                        }>
+                          {selectedQuestion.vote === 'approve' ? 'Approved' :
+                           selectedQuestion.vote === 'reject' ? 'Rejected' : 'Neutral'}
+                        </Badge>
+                        {selectedQuestion.comment && (
+                          <span className="text-sm text-muted-foreground">
+                            Comment provided
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
-            );
-          })}
+            ) : (
+              <Card className="h-96 flex items-center justify-center">
+                <CardContent>
+                  <div className="text-center text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Select a question from the navigator to begin reviewing</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
 
         {/* Submit Button */}
-        <div className="mt-12 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <Button 
             size="lg" 
-            disabled={!allQuestionsVoted}
+            disabled={!allQuestionsValid}
             className="px-12 py-3 text-base"
           >
             Submit Complete Review
           </Button>
         </div>
 
-        {!allQuestionsVoted && (
-          <p className="text-center text-sm text-muted-foreground mt-4">
-            Please review all questions before submitting your feedback.
-          </p>
+        {!allQuestionsValid && (
+          <div className="text-center text-sm text-muted-foreground mt-4">
+            <p>Please complete all questions with required feedback before submitting.</p>
+            {questions.some(q => (q.vote === 'reject' || q.vote === 'neutral') && !q.comment.trim()) && (
+              <p className="text-red-600 mt-1">Comments are required for rejected or neutral assessments.</p>
+            )}
+          </div>
         )}
       </div>
     </div>

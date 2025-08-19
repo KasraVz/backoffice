@@ -202,7 +202,7 @@ const QuestionReviewEnhanced = () => {
                     {getAssessmentTitle(reviewSetData.assessmentType, reviewSetData.stage)}
                   </h1>
                   <p className="text-sm text-blue-700 mt-1">
-                    {reviewSetData.assessmentType} • {reviewSetData.stage} Stage • {reviewSetData.industry}
+                    {reviewSetData.assessmentType} • {reviewSetData.industry}
                   </p>
                 </div>
               </div>

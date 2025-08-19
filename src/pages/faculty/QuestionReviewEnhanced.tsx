@@ -10,6 +10,7 @@ import { CheckCircle, XCircle, AlertCircle, FileText, Users, ChevronRight, Folde
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { type ReviewSetData, type ReviewSetCategory } from "@/services/promptCriteriaService";
+import { assessmentCategories } from "@/data/categories";
 
 interface Question {
   id: number;
@@ -50,64 +51,96 @@ const QuestionReviewEnhanced = () => {
 
   // Generate mock questions for each category
   const generateQuestionsFromCategories = (categories: ReviewSetCategory[]): Question[] => {
-    const questionTemplates = {
-      "Financial Management & Fundraising": [
-        "What is your current monthly burn rate, and how many months of runway do you have?",
-        "How do you plan to achieve profitability?",
-        "What is your customer acquisition cost (CAC) compared to lifetime value (LTV)?"
-      ],
-      "Business Strategy & Market Analysis": [
-        "What is your primary competitive advantage?",
-        "How do you measure market penetration?",
-        "What is your go-to-market strategy?"
-      ],
-      "Human Resources": [
-        "How do you plan to scale your team over the next 12 months?",
-        "What is your current employee retention rate?",
-        "How do you measure employee satisfaction and engagement?"
-      ],
-      "Marketing": [
-        "What is your primary customer acquisition channel?",
-        "How do you measure marketing ROI?",
-        "What is your customer conversion rate from lead to purchase?"
-      ],
-      "Operations": [
-        "What are your key operational metrics?",
-        "How do you ensure quality control in your processes?",
-        "What systems do you use for inventory management?"
-      ]
+    // Get real categories from the assessment data
+    const getQuestionTemplates = (assessmentType: string) => {
+      const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
+      if (!assessment) return {};
+      
+      const templates: Record<string, string[]> = {};
+      
+      // Add templates for general categories
+      assessment.general.forEach(category => {
+        templates[category] = [
+          `What is your approach to ${category.toLowerCase()}?`,
+          `How do you measure success in ${category.toLowerCase()}?`,
+          `What challenges have you faced in ${category.toLowerCase()}?`
+        ];
+      });
+      
+      // Add templates for industry-specific categories
+      assessment.industrySpecific.forEach(category => {
+        templates[category] = [
+          `How does ${category.toLowerCase()} impact your business?`,
+          `What specific requirements do you have for ${category.toLowerCase()}?`,
+          `How do you stay compliant with ${category.toLowerCase()}?`
+        ];
+      });
+      
+      return templates;
     };
+    
+    const questionTemplates = getQuestionTemplates(reviewSetData?.assessmentType || 'FPA');
 
     let questionId = 1;
     const allQuestions: Question[] = [];
 
-    categories.forEach((categoryData, index) => {
-      const templates = questionTemplates[categoryData.category as keyof typeof questionTemplates] || [
-        `Sample question 1 for ${categoryData.category}`,
-        `Sample question 2 for ${categoryData.category}`,
-        `Sample question 3 for ${categoryData.category}`
-      ];
+    // Get assessment type and determine scope for categories
+    const assessmentType = reviewSetData?.assessmentType || 'FPA';
+    const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
+    
+    if (assessment) {
+      // Add general categories
+      assessment.general.forEach((category, index) => {
+        const templates = questionTemplates[category] || [
+          `Sample question 1 for ${category}`,
+          `Sample question 2 for ${category}`,
+          `Sample question 3 for ${category}`
+        ];
 
-      templates.forEach((template, templateIndex) => {
-        // Alternate between General and Industry-Specific scope
-        const scope = index % 2 === 0 ? 'General' : 'Industry-Specific';
-        
-        allQuestions.push({
-          id: questionId++,
-          text: template,
-          answers: [
-            "Option A - Strong position",
-            "Option B - Moderate position", 
-            "Option C - Needs improvement",
-            "Option D - Significant concerns"
-          ],
-          vote: null,
-          comment: "",
-          category: categoryData.category,
-          scope: scope
+        templates.forEach((template) => {
+          allQuestions.push({
+            id: questionId++,
+            text: template,
+            answers: [
+              "Option A - Strong position",
+              "Option B - Moderate position", 
+              "Option C - Needs improvement",
+              "Option D - Significant concerns"
+            ],
+            vote: null,
+            comment: "",
+            category: category,
+            scope: 'General'
+          });
         });
       });
-    });
+      
+      // Add industry-specific categories
+      assessment.industrySpecific.forEach((category, index) => {
+        const templates = questionTemplates[category] || [
+          `Sample question 1 for ${category}`,
+          `Sample question 2 for ${category}`,
+          `Sample question 3 for ${category}`
+        ];
+
+        templates.forEach((template) => {
+          allQuestions.push({
+            id: questionId++,
+            text: template,
+            answers: [
+              "Option A - Strong position",
+              "Option B - Moderate position", 
+              "Option C - Needs improvement",
+              "Option D - Significant concerns"
+            ],
+            vote: null,
+            comment: "",
+            category: category,
+            scope: 'Industry-Specific'
+          });
+        });
+      });
+    }
 
     return allQuestions;
   };
@@ -251,45 +284,49 @@ const QuestionReviewEnhanced = () => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-4 pb-4">
-                        <div className="space-y-3">
+                        <Accordion type="multiple" className="w-full">
                           {Object.entries(categories).map(([category, questions]) => (
-                            <div key={category} className="space-y-2">
-                              <div className="flex items-center justify-between text-sm font-medium text-muted-foreground">
-                                <span>{category}</span>
-                                <Badge variant="outline" className="text-xs">
-                                  {questions.filter(q => q.vote).length}/{questions.length}
-                                </Badge>
-                              </div>
-                              <div className="space-y-1 ml-4">
-                                {questions.map((question) => (
-                                  <button
-                                    key={question.id}
-                                    onClick={() => handleQuestionSelect(question.id)}
-                                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-2 ${
-                                      selectedQuestionId === question.id
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'hover:bg-muted'
-                                    }`}
-                                  >
-                                    <div className="flex items-center gap-2 flex-1">
-                                      <span>Q{question.id}</span>
-                                      {question.vote && (
-                                        question.vote === 'approve' ? (
-                                          <CheckCircle className="h-3 w-3 text-green-500" />
-                                        ) : question.vote === 'reject' ? (
-                                          <XCircle className="h-3 w-3 text-red-500" />
-                                        ) : (
-                                          <AlertCircle className="h-3 w-3 text-yellow-500" />
-                                        )
-                                      )}
-                                    </div>
-                                    <ChevronRight className="h-3 w-3" />
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
+                            <AccordionItem key={category} value={category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}>
+                              <AccordionTrigger className="px-2 py-2 text-sm hover:no-underline">
+                                <div className="flex items-center justify-between w-full">
+                                  <span className="font-medium text-muted-foreground">{category}</span>
+                                  <Badge variant="outline" className="text-xs ml-2">
+                                    {questions.filter(q => q.vote).length}/{questions.length}
+                                  </Badge>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-2 pb-2">
+                                <div className="space-y-1 ml-2">
+                                  {questions.map((question) => (
+                                    <button
+                                      key={question.id}
+                                      onClick={() => handleQuestionSelect(question.id)}
+                                      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-2 ${
+                                        selectedQuestionId === question.id
+                                          ? 'bg-primary text-primary-foreground'
+                                          : 'hover:bg-muted'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2 flex-1">
+                                        <span>Q{question.id}</span>
+                                        {question.vote && (
+                                          question.vote === 'approve' ? (
+                                            <CheckCircle className="h-3 w-3 text-green-500" />
+                                          ) : question.vote === 'reject' ? (
+                                            <XCircle className="h-3 w-3 text-red-500" />
+                                          ) : (
+                                            <AlertCircle className="h-3 w-3 text-yellow-500" />
+                                          )
+                                        )}
+                                      </div>
+                                      <ChevronRight className="h-3 w-3" />
+                                    </button>
+                                  ))}
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
                           ))}
-                        </div>
+                        </Accordion>
                       </AccordionContent>
                     </AccordionItem>
                   ))}

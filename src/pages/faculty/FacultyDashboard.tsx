@@ -6,6 +6,7 @@ import { BookOpen, Clock, CheckCircle, Calendar, Users, Target } from "lucide-re
 import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { assessmentCategories } from "@/data/categories";
 
 const mockReviewSets = [
   {
@@ -90,8 +91,7 @@ const FacultyDashboard = () => {
   };
 
   const getCategoriesForAssessment = (assessmentType: string, stage: string) => {
-    // Import assessment categories to get both general and industry-specific
-    const { assessmentCategories } = require('@/data/categories');
+    // Use imported assessment categories to get both general and industry-specific
     const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
     
     if (assessment) {

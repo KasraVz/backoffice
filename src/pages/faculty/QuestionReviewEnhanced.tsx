@@ -248,7 +248,7 @@ const QuestionReviewEnhanced = () => {
           </div>
 
           <div className="flex-1 bg-background">
-            <div className="max-w-7xl mx-auto p-6">
+            <div className="max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
         {/* Progress Indicator */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-3">

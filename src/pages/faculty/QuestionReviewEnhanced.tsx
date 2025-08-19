@@ -13,7 +13,6 @@ import { type ReviewSetData, type ReviewSetCategory } from "@/services/promptCri
 import { assessmentCategories } from "@/data/categories";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-
 interface Question {
   id: number;
   text: string;
@@ -23,9 +22,12 @@ interface Question {
   category: string;
   scope: 'General' | 'Industry-Specific';
 }
-
 const QuestionReviewEnhanced = () => {
-  const { setId } = useParams<{ setId: string }>();
+  const {
+    setId
+  } = useParams<{
+    setId: string;
+  }>();
   const navigate = useNavigate();
   const [reviewSetData, setReviewSetData] = useState<ReviewSetData | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -40,7 +42,7 @@ const QuestionReviewEnhanced = () => {
       if (storedData) {
         const data: ReviewSetData = JSON.parse(storedData);
         setReviewSetData(data);
-        
+
         // Generate mock questions based on categories
         const generatedQuestions = generateQuestionsFromCategories(data.categories);
         setQuestions(generatedQuestions);
@@ -57,58 +59,35 @@ const QuestionReviewEnhanced = () => {
     const getQuestionTemplates = (assessmentType: string) => {
       const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
       if (!assessment) return {};
-      
       const templates: Record<string, string[]> = {};
-      
+
       // Add templates for general categories
       assessment.general.forEach(category => {
-        templates[category] = [
-          `What is your approach to ${category.toLowerCase()}?`,
-          `How do you measure success in ${category.toLowerCase()}?`,
-          `What challenges have you faced in ${category.toLowerCase()}?`
-        ];
+        templates[category] = [`What is your approach to ${category.toLowerCase()}?`, `How do you measure success in ${category.toLowerCase()}?`, `What challenges have you faced in ${category.toLowerCase()}?`];
       });
-      
+
       // Add templates for industry-specific categories
       assessment.industrySpecific.forEach(category => {
-        templates[category] = [
-          `How does ${category.toLowerCase()} impact your business?`,
-          `What specific requirements do you have for ${category.toLowerCase()}?`,
-          `How do you stay compliant with ${category.toLowerCase()}?`
-        ];
+        templates[category] = [`How does ${category.toLowerCase()} impact your business?`, `What specific requirements do you have for ${category.toLowerCase()}?`, `How do you stay compliant with ${category.toLowerCase()}?`];
       });
-      
       return templates;
     };
-    
     const questionTemplates = getQuestionTemplates(reviewSetData?.assessmentType || 'FPA');
-
     let questionId = 1;
     const allQuestions: Question[] = [];
 
     // Get assessment type and determine scope for categories
     const assessmentType = reviewSetData?.assessmentType || 'FPA';
     const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
-    
     if (assessment) {
       // Add general categories
       assessment.general.forEach((category, index) => {
-        const templates = questionTemplates[category] || [
-          `Sample question 1 for ${category}`,
-          `Sample question 2 for ${category}`,
-          `Sample question 3 for ${category}`
-        ];
-
-        templates.forEach((template) => {
+        const templates = questionTemplates[category] || [`Sample question 1 for ${category}`, `Sample question 2 for ${category}`, `Sample question 3 for ${category}`];
+        templates.forEach(template => {
           allQuestions.push({
             id: questionId++,
             text: template,
-            answers: [
-              "Option A - Strong position",
-              "Option B - Moderate position", 
-              "Option C - Needs improvement",
-              "Option D - Significant concerns"
-            ],
+            answers: ["Option A - Strong position", "Option B - Moderate position", "Option C - Needs improvement", "Option D - Significant concerns"],
             vote: null,
             comment: "",
             category: category,
@@ -116,25 +95,15 @@ const QuestionReviewEnhanced = () => {
           });
         });
       });
-      
+
       // Add industry-specific categories
       assessment.industrySpecific.forEach((category, index) => {
-        const templates = questionTemplates[category] || [
-          `Sample question 1 for ${category}`,
-          `Sample question 2 for ${category}`,
-          `Sample question 3 for ${category}`
-        ];
-
-        templates.forEach((template) => {
+        const templates = questionTemplates[category] || [`Sample question 1 for ${category}`, `Sample question 2 for ${category}`, `Sample question 3 for ${category}`];
+        templates.forEach(template => {
           allQuestions.push({
             id: questionId++,
             text: template,
-            answers: [
-              "Option A - Strong position",
-              "Option B - Moderate position", 
-              "Option C - Needs improvement",
-              "Option D - Significant concerns"
-            ],
+            answers: ["Option A - Strong position", "Option B - Moderate position", "Option C - Needs improvement", "Option D - Significant concerns"],
             vote: null,
             comment: "",
             category: category,
@@ -143,14 +112,15 @@ const QuestionReviewEnhanced = () => {
         });
       });
     }
-
     return allQuestions;
   };
-
   const handleVote = (questionId: number, vote: 'approve' | 'reject' | 'neutral') => {
     setQuestions(prev => prev.map(q => {
       if (q.id === questionId) {
-        const updatedQuestion = { ...q, vote };
+        const updatedQuestion = {
+          ...q,
+          vote
+        };
         // Clear comment if approve (since it's optional)
         if (vote === 'approve') {
           updatedQuestion.comment = '';
@@ -164,11 +134,11 @@ const QuestionReviewEnhanced = () => {
     const votedQuestions = questions.filter(q => q.vote || q.id === questionId).length;
     setCurrentProgress(votedQuestions);
   };
-
   const handleCommentChange = (questionId: number, comment: string) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? { ...q, comment } : q
-    ));
+    setQuestions(prev => prev.map(q => q.id === questionId ? {
+      ...q,
+      comment
+    } : q));
   };
 
   // Validation: Check if all questions are voted and comments are provided where required
@@ -178,8 +148,7 @@ const QuestionReviewEnhanced = () => {
     if ((q.vote === 'reject' || q.vote === 'neutral') && !q.comment.trim()) return false;
     return true;
   });
-  
-  const progressPercentage = questions.length > 0 ? (currentProgress / questions.length) * 100 : 0;
+  const progressPercentage = questions.length > 0 ? currentProgress / questions.length * 100 : 0;
 
   // Group questions by scope and then by category
   const questionsByScope = questions.reduce((acc, question) => {
@@ -207,27 +176,22 @@ const QuestionReviewEnhanced = () => {
 
   // Get the selected question
   const selectedQuestion = questions.find(q => q.id === selectedQuestionId);
-
   if (!reviewSetData) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+    return <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">Loading review set...</p>
           </CardContent>
         </Card>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-background border-b">
-            <div className="h-16 flex items-center px-4 sm:px-6 lg:px-8">
+          <div className="sticky top-0 z-10 bg-background border-b mx-[27px]">
+            <div className="h-14 flex items-center px-6 mx-0">
               <SidebarTrigger className="mr-4" />
               <div className="flex items-center gap-3">
                 <FileText className="h-6 w-6 text-blue-600" />
@@ -248,7 +212,7 @@ const QuestionReviewEnhanced = () => {
           </div>
 
           <div className="flex-1 bg-background">
-            <div className="max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
+            <div className="max-w-7xl p-4 sm:p-6 md:p-8 mx-[28px]">
         {/* Progress Indicator */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
@@ -269,15 +233,10 @@ const QuestionReviewEnhanced = () => {
               </CardHeader>
               <CardContent className="p-0">
                 <Accordion type="multiple" defaultValue={["general", "industry-specific"]} className="w-full">
-                  {Object.entries(questionsByScope).map(([scope, categories]) => (
-                    <AccordionItem key={scope} value={scope.toLowerCase().replace(' ', '-')}>
+                  {Object.entries(questionsByScope).map(([scope, categories]) => <AccordionItem key={scope} value={scope.toLowerCase().replace(' ', '-')}>
                       <AccordionTrigger className="px-4 py-3 hover:no-underline">
                         <div className="flex items-center gap-2">
-                          {scope === 'General' ? (
-                            <FolderOpen className="h-4 w-4 text-blue-600" />
-                          ) : (
-                            <Folder className="h-4 w-4 text-purple-600" />
-                          )}
+                          {scope === 'General' ? <FolderOpen className="h-4 w-4 text-blue-600" /> : <Folder className="h-4 w-4 text-purple-600" />}
                           <span className="font-medium">{scope}</span>
                           <Badge variant="secondary" className="ml-auto">
                             {Object.values(categories).flat().length}
@@ -286,8 +245,7 @@ const QuestionReviewEnhanced = () => {
                       </AccordionTrigger>
                       <AccordionContent className="px-4 pb-4">
                         <Accordion type="multiple" className="w-full">
-                          {Object.entries(categories).map(([category, questions]) => (
-                            <AccordionItem key={category} value={category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}>
+                          {Object.entries(categories).map(([category, questions]) => <AccordionItem key={category} value={category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}>
                               <AccordionTrigger className="px-2 py-2 text-sm hover:no-underline">
                                 <div className="flex items-center justify-between w-full">
                                   <span className="font-medium text-muted-foreground">{category}</span>
@@ -298,39 +256,19 @@ const QuestionReviewEnhanced = () => {
                               </AccordionTrigger>
                               <AccordionContent className="px-2 pb-2">
                                 <div className="space-y-1 ml-2">
-                                  {questions.map((question) => (
-                                    <button
-                                      key={question.id}
-                                      onClick={() => handleQuestionSelect(question.id)}
-                                      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-2 ${
-                                        selectedQuestionId === question.id
-                                          ? 'bg-primary text-primary-foreground'
-                                          : 'hover:bg-muted'
-                                      }`}
-                                    >
+                                  {questions.map(question => <button key={question.id} onClick={() => handleQuestionSelect(question.id)} className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-2 ${selectedQuestionId === question.id ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}>
                                       <div className="flex items-center gap-2 flex-1">
                                         <span>Q{question.id}</span>
-                                        {question.vote && (
-                                          question.vote === 'approve' ? (
-                                            <CheckCircle className="h-3 w-3 text-green-500" />
-                                          ) : question.vote === 'reject' ? (
-                                            <XCircle className="h-3 w-3 text-red-500" />
-                                          ) : (
-                                            <AlertCircle className="h-3 w-3 text-yellow-500" />
-                                          )
-                                        )}
+                                        {question.vote && (question.vote === 'approve' ? <CheckCircle className="h-3 w-3 text-green-500" /> : question.vote === 'reject' ? <XCircle className="h-3 w-3 text-red-500" /> : <AlertCircle className="h-3 w-3 text-yellow-500" />)}
                                       </div>
                                       <ChevronRight className="h-3 w-3" />
-                                    </button>
-                                  ))}
+                                    </button>)}
                                 </div>
                               </AccordionContent>
-                            </AccordionItem>
-                          ))}
+                            </AccordionItem>)}
                         </Accordion>
                       </AccordionContent>
-                    </AccordionItem>
-                  ))}
+                    </AccordionItem>)}
                 </Accordion>
               </CardContent>
             </Card>
@@ -338,11 +276,9 @@ const QuestionReviewEnhanced = () => {
 
           {/* Right Panel - Main Review Area */}
           <div className="lg:col-span-2">
-            {selectedQuestion ? (
-              <div className="space-y-6">
+            {selectedQuestion ? <div className="space-y-6">
                 {/* Dynamic Prompt Display */}
-                {currentPrompt && (
-                  <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                {currentPrompt && <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
                     <CardHeader className="pb-4">
                       <div className="flex items-start gap-3">
                         <AlertCircle className="h-5 w-5 text-amber-600 mt-1" />
@@ -356,8 +292,7 @@ const QuestionReviewEnhanced = () => {
                         </div>
                       </div>
                     </CardHeader>
-                  </Card>
-                )}
+                  </Card>}
 
                 {/* Question Content */}
                 <Card>
@@ -373,12 +308,10 @@ const QuestionReviewEnhanced = () => {
                     <div>
                       <h4 className="font-medium mb-3 text-gray-900">{selectedQuestion.text}</h4>
                       <div className="space-y-2">
-                        {selectedQuestion.answers.map((answer, index) => (
-                          <div key={index} className="p-3 bg-gray-50 rounded-md border">
+                        {selectedQuestion.answers.map((answer, index) => <div key={index} className="p-3 bg-gray-50 rounded-md border">
                             <span className="font-medium text-sm text-gray-700">Option {index + 1}:</span>
                             <span className="ml-2 text-gray-900">{answer}</span>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
                     </div>
                   </CardContent>
@@ -392,11 +325,7 @@ const QuestionReviewEnhanced = () => {
                   <CardContent className="space-y-4">
                     <div>
                       <Label className="text-base font-medium">Your Assessment</Label>
-                      <RadioGroup
-                        value={selectedQuestion.vote || ''}
-                        onValueChange={(value) => handleVote(selectedQuestion.id, value as 'approve' | 'reject' | 'neutral')}
-                        className="mt-3"
-                      >
+                      <RadioGroup value={selectedQuestion.vote || ''} onValueChange={value => handleVote(selectedQuestion.id, value as 'approve' | 'reject' | 'neutral')} className="mt-3">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="approve" id="approve" />
                           <Label htmlFor="approve" className="flex items-center gap-2 cursor-pointer">
@@ -422,100 +351,58 @@ const QuestionReviewEnhanced = () => {
                     </div>
 
                     {/* Conditional Comment Section */}
-                    {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'neutral') && (
-                      <div>
+                    {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'neutral') && <div>
                         <Label htmlFor="comment" className="text-base font-medium">
                           Comments <span className="text-red-500">*</span>
                         </Label>
-                        <Textarea
-                          id="comment"
-                          placeholder="Please provide your feedback and suggestions..."
-                          value={selectedQuestion.comment}
-                          onChange={(e) => handleCommentChange(selectedQuestion.id, e.target.value)}
-                          rows={4}
-                          className="mt-2"
-                          required
-                        />
-                        {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'neutral') && !selectedQuestion.comment.trim() && (
-                          <p className="text-sm text-red-600 mt-1">Comment is required for this assessment.</p>
-                        )}
-                      </div>
-                    )}
+                        <Textarea id="comment" placeholder="Please provide your feedback and suggestions..." value={selectedQuestion.comment} onChange={e => handleCommentChange(selectedQuestion.id, e.target.value)} rows={4} className="mt-2" required />
+                        {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'neutral') && !selectedQuestion.comment.trim() && <p className="text-sm text-red-600 mt-1">Comment is required for this assessment.</p>}
+                      </div>}
 
-                    {selectedQuestion.vote === 'approve' && (
-                      <div>
+                    {selectedQuestion.vote === 'approve' && <div>
                         <Label htmlFor="optional-comment" className="text-base font-medium">
                           Additional Comments <span className="text-gray-500">(Optional)</span>
                         </Label>
-                        <Textarea
-                          id="optional-comment"
-                          placeholder="Any additional feedback or suggestions..."
-                          value={selectedQuestion.comment}
-                          onChange={(e) => handleCommentChange(selectedQuestion.id, e.target.value)}
-                          rows={3}
-                          className="mt-2"
-                        />
-                      </div>
-                    )}
+                        <Textarea id="optional-comment" placeholder="Any additional feedback or suggestions..." value={selectedQuestion.comment} onChange={e => handleCommentChange(selectedQuestion.id, e.target.value)} rows={3} className="mt-2" />
+                      </div>}
 
                     {/* Vote Status */}
-                    {selectedQuestion.vote && (
-                      <div className="flex items-center gap-2 pt-2">
-                        <Badge variant={
-                          selectedQuestion.vote === 'approve' ? 'default' :
-                          selectedQuestion.vote === 'reject' ? 'destructive' : 'secondary'
-                        }>
-                          {selectedQuestion.vote === 'approve' ? 'Approved' :
-                           selectedQuestion.vote === 'reject' ? 'Rejected' : 'Neutral'}
+                    {selectedQuestion.vote && <div className="flex items-center gap-2 pt-2">
+                        <Badge variant={selectedQuestion.vote === 'approve' ? 'default' : selectedQuestion.vote === 'reject' ? 'destructive' : 'secondary'}>
+                          {selectedQuestion.vote === 'approve' ? 'Approved' : selectedQuestion.vote === 'reject' ? 'Rejected' : 'Neutral'}
                         </Badge>
-                        {selectedQuestion.comment && (
-                          <span className="text-sm text-muted-foreground">
+                        {selectedQuestion.comment && <span className="text-sm text-muted-foreground">
                             Comment provided
-                          </span>
-                        )}
-                      </div>
-                    )}
+                          </span>}
+                      </div>}
                   </CardContent>
                 </Card>
-              </div>
-            ) : (
-              <Card className="h-96 flex items-center justify-center">
+              </div> : <Card className="h-96 flex items-center justify-center">
                 <CardContent>
                   <div className="text-center text-muted-foreground">
                     <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>Select a question from the navigator to begin reviewing</p>
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </div>
         </div>
 
         {/* Submit Button */}
         <div className="mt-8 flex justify-center">
-          <Button 
-            size="lg" 
-            disabled={!allQuestionsValid}
-            className="px-12 py-3 text-base"
-          >
+          <Button size="lg" disabled={!allQuestionsValid} className="px-12 py-3 text-base">
             Submit Complete Review
           </Button>
         </div>
 
-        {!allQuestionsValid && (
-          <div className="text-center text-sm text-muted-foreground mt-4">
+        {!allQuestionsValid && <div className="text-center text-sm text-muted-foreground mt-4">
             <p>Please complete all questions with required feedback before submitting.</p>
-            {questions.some(q => (q.vote === 'reject' || q.vote === 'neutral') && !q.comment.trim()) && (
-              <p className="text-red-600 mt-1">Comments are required for rejected or neutral assessments.</p>
-            )}
-           </div>
-         )}
+            {questions.some(q => (q.vote === 'reject' || q.vote === 'neutral') && !q.comment.trim()) && <p className="text-red-600 mt-1">Comments are required for rejected or neutral assessments.</p>}
+           </div>}
              </div>
            </div>
          </div>
        </div>
-     </SidebarProvider>
-   );
- };
-
+     </SidebarProvider>;
+};
 export default QuestionReviewEnhanced;

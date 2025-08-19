@@ -90,14 +90,19 @@ const FacultyDashboard = () => {
   };
 
   const getCategoriesForAssessment = (assessmentType: string, stage: string) => {
-    // Map assessment types to their categories
-    const categoryMapping: Record<string, string[]> = {
-      'FPA': ['Financial Management', 'Fundraising', 'Investment Strategy'],
-      'EEA': ['Human Resources', 'Leadership', 'Team Management'],
-      'GEB': ['General Business', 'Operations', 'Strategy']
-    };
+    // Import assessment categories to get both general and industry-specific
+    const { assessmentCategories } = require('@/data/categories');
+    const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
     
-    return categoryMapping[assessmentType] || ['General Business'];
+    if (assessment) {
+      // Return both general and industry-specific categories
+      return [
+        ...assessment.general,
+        ...assessment.industrySpecific
+      ];
+    }
+    
+    return ['General Business'];
   };
 
   const handleStartReview = (setId: string) => {

@@ -227,7 +227,7 @@ const QuestionReviewEnhanced = () => {
         <div className="flex-1 flex flex-col">
           {/* Sticky Header */}
           <div className="sticky top-0 z-10 bg-background border-b">
-            <div className="h-14 flex items-center px-6">
+            <div className="h-16 flex items-center px-4 sm:px-6 lg:px-8">
               <SidebarTrigger className="mr-4" />
               <div className="flex items-center gap-3">
                 <FileText className="h-6 w-6 text-blue-600" />

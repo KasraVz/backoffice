@@ -97,7 +97,7 @@ const FacultyDashboard = () => {
       console.log('Stored review set data:', reviewSetData);
     }
     
-    navigate(`/faculty/question-review/${setId}`);
+    navigate(`/faculty/review/${setId}`);
   };
 
   return (

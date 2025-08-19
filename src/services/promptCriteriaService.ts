@@ -29,99 +29,90 @@ export interface ReviewSetData {
 
 // Mock prompt criteria data (should eventually come from database)
 const mockPromptCriteria: PromptCriterion[] = [
-  // FPA Assessment Criteria - General Categories
+  // FPA Assessment Criteria
   {
     id: 1,
-    promptText: "As a financial expert, review these Financial Management & Fundraising questions for Seed stage startups. Focus on early-stage funding, cash flow management, and basic financial planning requirements.",
-    tags: ["FPA", "Seed", "Financial Management & Fundraising"],
+    promptText: "As a financial expert, review these Financial Management questions for Seed stage startups. Focus on early-stage funding, cash flow management, and basic financial planning requirements.",
+    tags: ["FPA", "Seed", "Financial Management"],
     indexCode: "FPA",
     stage: "Seed",
-    category: "Financial Management & Fundraising",
+    category: "Financial Management",
     industry: "General"
   },
   {
     id: 2,
-    promptText: "Evaluate these Business Strategy & Market Analysis questions for Seed stage companies. Consider market validation, competitive positioning, and strategic planning for early-stage startups.",
-    tags: ["FPA", "Seed", "Business Strategy & Market Analysis"],
+    promptText: "Evaluate these Fundraising questions for Seed stage companies. Consider investor readiness, pitch requirements, and valuation considerations typical for this stage.",
+    tags: ["FPA", "Seed", "Fundraising"],
     indexCode: "FPA",
     stage: "Seed",
-    category: "Business Strategy & Market Analysis",
+    category: "Fundraising",
     industry: "General"
   },
   {
     id: 3,
-    promptText: "Review these Technology & Product Development questions for Seed stage startups. Focus on technical feasibility, product-market fit, and development roadmap considerations.",
-    tags: ["FPA", "Seed", "Technology & Product Development"],
+    promptText: "Review these Investment Strategy questions for Seed stage startups. Focus on capital allocation, resource prioritization, and early investment decisions.",
+    tags: ["FPA", "Seed", "Investment Strategy"],
     indexCode: "FPA",
     stage: "Seed",
-    category: "Technology & Product Development",
+    category: "Investment Strategy",
     industry: "General"
   },
+  
+  // EEA Assessment Criteria
   {
     id: 4,
-    promptText: "Evaluate these Operations & Human Resources questions for Seed stage companies. Consider team building, operational efficiency, and HR processes for early-stage startups.",
-    tags: ["FPA", "Seed", "Operations & Human Resources"],
-    indexCode: "FPA",
-    stage: "Seed",
-    category: "Operations & Human Resources",
+    promptText: "As an HR and leadership expert, evaluate these Human Resources questions for Early Stage companies. Consider team building, basic HR processes, and compliance requirements.",
+    tags: ["EEA", "Early Stage", "Human Resources"],
+    indexCode: "EEA",
+    stage: "Early Stage",
+    category: "Human Resources",
     industry: "General"
   },
   {
     id: 5,
-    promptText: "Review these Legal & Compliance questions for Seed stage startups. Focus on regulatory requirements, legal structure, and compliance considerations.",
-    tags: ["FPA", "Seed", "Legal & Compliance"],
-    indexCode: "FPA",
-    stage: "Seed",
-    category: "Legal & Compliance",
+    promptText: "Review these Leadership questions for Early Stage startups. Focus on founder leadership skills, team motivation, and decision-making processes at this growth phase.",
+    tags: ["EEA", "Early Stage", "Leadership"],
+    indexCode: "EEA",
+    stage: "Early Stage",
+    category: "Leadership",
+    industry: "General"
+  },
+  {
+    id: 6,
+    promptText: "Evaluate these Team Management questions for Early Stage companies. Consider team dynamics, communication strategies, and performance management in small teams.",
+    tags: ["EEA", "Early Stage", "Team Management"],
+    indexCode: "EEA",
+    stage: "Early Stage",
+    category: "Team Management",
     industry: "General"
   },
   
-  // FPA Assessment Criteria - Industry-Specific Categories
-  {
-    id: 6,
-    promptText: "As an industry expert, evaluate these Industry-Specific Regulations questions for Seed stage companies. Consider sector-specific compliance and regulatory requirements.",
-    tags: ["FPA", "Seed", "Industry-Specific Regulations"],
-    indexCode: "FPA",
-    stage: "Seed",
-    category: "Industry-Specific Regulations",
-    industry: "General"
-  },
+  // GEB Assessment Criteria
   {
     id: 7,
-    promptText: "Review these Sector Market Dynamics questions for Seed stage startups. Focus on industry-specific market conditions and competitive landscape.",
-    tags: ["FPA", "Seed", "Sector Market Dynamics"],
-    indexCode: "FPA",
-    stage: "Seed",
-    category: "Sector Market Dynamics",
+    promptText: "As a business strategy expert, review these General Business questions for Growth stage companies. Focus on scalability, operational efficiency, and strategic planning.",
+    tags: ["GEB", "Growth", "General Business"],
+    indexCode: "GEB",
+    stage: "Growth",
+    category: "General Business",
     industry: "General"
   },
   {
     id: 8,
-    promptText: "Evaluate these Specialized Technology Requirements questions for Seed stage companies. Consider industry-specific technical needs and standards.",
-    tags: ["FPA", "Seed", "Specialized Technology Requirements"],
-    indexCode: "FPA",
-    stage: "Seed",
-    category: "Specialized Technology Requirements",
+    promptText: "Evaluate these Operations questions for Growth stage startups. Consider process optimization, system scalability, and operational challenges during rapid growth.",
+    tags: ["GEB", "Growth", "Operations"],
+    indexCode: "GEB",
+    stage: "Growth",
+    category: "Operations",
     industry: "General"
   },
-  
-  // EEA Assessment Criteria - General Categories
   {
     id: 9,
-    promptText: "As a market research expert, evaluate these Market Research & Analysis questions for Early Stage companies. Focus on market validation methodologies and analytical frameworks.",
-    tags: ["EEA", "Early Stage", "Market Research & Analysis"],
-    indexCode: "EEA",
-    stage: "Early Stage",
-    category: "Market Research & Analysis",
-    industry: "General"
-  },
-  {
-    id: 10,
-    promptText: "Review these Customer Development & Validation questions for Early Stage startups. Consider customer discovery processes and validation strategies.",
-    tags: ["EEA", "Early Stage", "Customer Development & Validation"],
-    indexCode: "EEA",
-    stage: "Early Stage",
-    category: "Customer Development & Validation",
+    promptText: "Review these Strategy questions for Growth stage companies. Focus on market expansion, competitive positioning, and long-term strategic planning.",
+    tags: ["GEB", "Growth", "Strategy"],
+    indexCode: "GEB",
+    stage: "Growth",
+    category: "Strategy",
     industry: "General"
   }
 ];

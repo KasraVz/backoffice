@@ -81,11 +81,9 @@ const QuestionReviewEnhanced = () => {
         `What resources do you need for ${category.toLowerCase()}?`
       ];
       
-      // Determine scope based on category name - check exact category definitions
+      // Determine scope based on category name
       const scope: 'General' | 'Industry-Specific' = 
-        category.toLowerCase().includes('industry-specific') || 
-        category.toLowerCase().includes('sector') || 
-        category.toLowerCase().includes('specialized') ? 'Industry-Specific' : 'General';
+        category.includes('Industry-Specific') || category.includes('Sector') || category.includes('Specialized') ? 'Industry-Specific' : 'General';
       
       for (let i = 0; i < questionCount; i++) {
         const template = questionTemplates[i % questionTemplates.length];

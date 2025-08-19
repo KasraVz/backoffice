@@ -95,13 +95,14 @@ const FacultyDashboard = () => {
     const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
     
     if (assessment) {
-      // Return both general and industry-specific categories
+      // Return both general and industry-specific categories, maintaining the exact names
       return [
         ...assessment.general,
         ...assessment.industrySpecific
       ];
     }
     
+    // Fallback for unknown assessment types
     return ['General Business'];
   };
 

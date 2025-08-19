@@ -74,6 +74,32 @@ const FacultyDashboard = () => {
     }
   };
 
+  // Parse setName to extract assessment details
+  const parseSetName = (setName: string) => {
+    // Format: "FPA: Financial Management & Fundraising - Seed Stage"
+    const parts = setName.split(' - ');
+    const stage = parts[1] || 'Seed Stage';
+    const assessmentPart = parts[0] || '';
+    const assessmentType = assessmentPart.split(':')[0] || 'FPA';
+    
+    return {
+      assessmentType,
+      stage: stage.replace(' Stage', ''),
+      industry: 'General'
+    };
+  };
+
+  const getCategoriesForAssessment = (assessmentType: string, stage: string) => {
+    // Map assessment types to their categories
+    const categoryMapping: Record<string, string[]> = {
+      'FPA': ['Financial Management', 'Fundraising', 'Investment Strategy'],
+      'EEA': ['Human Resources', 'Leadership', 'Team Management'],
+      'GEB': ['General Business', 'Operations', 'Strategy']
+    };
+    
+    return categoryMapping[assessmentType] || ['General Business'];
+  };
+
   const handleStartReview = (setId: string) => {
     console.log('Navigating to review set:', setId);
     console.log('Target URL:', `/faculty/review/${setId}`);
@@ -81,18 +107,25 @@ const FacultyDashboard = () => {
     // Find the review set data to store it for the review page
     const reviewSet = mockReviewSets.find(set => set.id === setId);
     if (reviewSet) {
-      // Store the review set data in localStorage for the review page to access
+      const { assessmentType, stage, industry } = parseSetName(reviewSet.setName);
+      const categories = getCategoriesForAssessment(assessmentType, stage);
+      
+      // Create proper ReviewSetData structure
       const reviewSetData = {
         id: reviewSet.id,
-        setName: reviewSet.setName,
+        assigneeName: "Current Faculty Member", // Mock assignee name
+        questionnaireName: reviewSet.setName,
         description: reviewSet.description,
-        questionCount: reviewSet.questionCount,
-        categories: [
-          { name: "Financial Management", questionCount: Math.floor(reviewSet.questionCount / 3) },
-          { name: "Human Resources", questionCount: Math.floor(reviewSet.questionCount / 3) },
-          { name: "General Business", questionCount: reviewSet.questionCount - 2 * Math.floor(reviewSet.questionCount / 3) }
-        ]
+        totalQuestions: reviewSet.questionCount,
+        assessmentType,
+        stage,
+        industry,
+        categories: categories.map(category => ({
+          category,
+          questionCount: Math.floor(reviewSet.questionCount / categories.length)
+        }))
       };
+      
       localStorage.setItem(`reviewSet_${setId}`, JSON.stringify(reviewSetData));
       console.log('Stored review set data:', reviewSetData);
     }

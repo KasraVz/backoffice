@@ -9,8 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { CheckCircle, XCircle, AlertCircle, FileText, Users, ChevronRight, FolderOpen, Folder } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { type ReviewSetData, type ReviewSetCategory } from "@/services/promptCriteriaService";
-import { assessmentCategories } from "@/data/categories";
+import { type ReviewSetData, type ReviewSetCategory, findPromptCriterion, createDefaultPromptCriterion } from "@/services/promptCriteriaService";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 interface Question {
@@ -65,63 +64,46 @@ const QuestionReviewEnhanced = () => {
 
   // Generate mock questions for each category
   const generateQuestionsFromCategories = (categories: ReviewSetCategory[]): Question[] => {
-    // Get real categories from the assessment data
-    const getQuestionTemplates = (assessmentType: string) => {
-      const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
-      if (!assessment) return {};
-      const templates: Record<string, string[]> = {};
-
-      // Add templates for general categories
-      assessment.general.forEach(category => {
-        templates[category] = [`What is your approach to ${category.toLowerCase()}?`, `How do you measure success in ${category.toLowerCase()}?`, `What challenges have you faced in ${category.toLowerCase()}?`];
-      });
-
-      // Add templates for industry-specific categories
-      assessment.industrySpecific.forEach(category => {
-        templates[category] = [`How does ${category.toLowerCase()} impact your business?`, `What specific requirements do you have for ${category.toLowerCase()}?`, `How do you stay compliant with ${category.toLowerCase()}?`];
-      });
-      return templates;
-    };
-    const questionTemplates = getQuestionTemplates(reviewSetData?.assessmentType || 'FPA');
     let questionId = 1;
     const allQuestions: Question[] = [];
 
-    // Get assessment type and determine scope for categories
-    const assessmentType = reviewSetData?.assessmentType || 'FPA';
-    const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
-    if (assessment) {
-      // Add general categories
-      assessment.general.forEach((category, index) => {
-        const templates = questionTemplates[category] || [`Sample question 1 for ${category}`, `Sample question 2 for ${category}`, `Sample question 3 for ${category}`];
-        templates.forEach(template => {
-          allQuestions.push({
-            id: questionId++,
-            text: template,
-            answers: ["Option A - Strong position", "Option B - Moderate position", "Option C - Needs improvement", "Option D - Significant concerns"],
-            vote: null,
-            comment: "",
-            category: category,
-            scope: 'General'
-          });
+    // Use the actual categories from the review set data
+    categories.forEach(categoryData => {
+      const category = categoryData.category;
+      const questionCount = categoryData.questionCount || 3;
+      
+      // Generate questions for this category
+      const questionTemplates = [
+        `What is your approach to ${category.toLowerCase()}?`,
+        `How do you measure success in ${category.toLowerCase()}?`,
+        `What challenges have you faced in ${category.toLowerCase()}?`,
+        `How do you plan to improve your ${category.toLowerCase()}?`,
+        `What resources do you need for ${category.toLowerCase()}?`
+      ];
+      
+      // Determine scope based on category type
+      const scope: 'General' | 'Industry-Specific' = 
+        ['General Business', 'Operations', 'Strategy'].includes(category) ? 'General' : 'Industry-Specific';
+      
+      for (let i = 0; i < questionCount; i++) {
+        const template = questionTemplates[i % questionTemplates.length];
+        allQuestions.push({
+          id: questionId++,
+          text: template,
+          answers: [
+            "Option A - Strong position", 
+            "Option B - Moderate position", 
+            "Option C - Needs improvement", 
+            "Option D - Significant concerns"
+          ],
+          vote: null,
+          comment: "",
+          category: category,
+          scope: scope
         });
-      });
-
-      // Add industry-specific categories
-      assessment.industrySpecific.forEach((category, index) => {
-        const templates = questionTemplates[category] || [`Sample question 1 for ${category}`, `Sample question 2 for ${category}`, `Sample question 3 for ${category}`];
-        templates.forEach(template => {
-          allQuestions.push({
-            id: questionId++,
-            text: template,
-            answers: ["Option A - Strong position", "Option B - Moderate position", "Option C - Needs improvement", "Option D - Significant concerns"],
-            vote: null,
-            comment: "",
-            category: category,
-            scope: 'Industry-Specific'
-          });
-        });
-      });
-    }
+      }
+    });
+    
     return allQuestions;
   };
   const handleVote = (questionId: number, vote: 'approve' | 'reject' | 'neutral') => {
@@ -177,10 +159,20 @@ const QuestionReviewEnhanced = () => {
     setSelectedQuestionId(questionId);
     const question = questions.find(q => q.id === questionId);
     if (question && reviewSetData) {
-      const categoryData = reviewSetData.categories.find(cat => cat.category === question.category);
-      if (categoryData?.promptCriterion) {
-        setCurrentPrompt(categoryData.promptCriterion.promptText);
-      }
+      // Find or create prompt criterion for this category
+      const promptCriterion = findPromptCriterion(
+        question.category, 
+        reviewSetData.assessmentType, 
+        reviewSetData.stage, 
+        reviewSetData.industry
+      ) || createDefaultPromptCriterion(
+        question.category, 
+        reviewSetData.assessmentType, 
+        reviewSetData.stage, 
+        reviewSetData.industry
+      );
+      
+      setCurrentPrompt(promptCriterion.promptText);
     }
   };
 

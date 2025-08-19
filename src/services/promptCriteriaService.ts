@@ -29,9 +29,10 @@ export interface ReviewSetData {
 
 // Mock prompt criteria data (should eventually come from database)
 const mockPromptCriteria: PromptCriterion[] = [
+  // FPA Assessment Criteria
   {
     id: 1,
-    promptText: "Based on your expertise in Financial Management for Seed-stage startups, please review the following questions for clarity, relevance, and accuracy.",
+    promptText: "As a financial expert, review these Financial Management questions for Seed stage startups. Focus on early-stage funding, cash flow management, and basic financial planning requirements.",
     tags: ["FPA", "Seed", "Financial Management"],
     indexCode: "FPA",
     stage: "Seed",
@@ -40,29 +41,78 @@ const mockPromptCriteria: PromptCriterion[] = [
   },
   {
     id: 2,
-    promptText: "As an expert in HR Tech for Early Stage companies, evaluate these questions for technical accuracy and practical applicability.",
+    promptText: "Evaluate these Fundraising questions for Seed stage companies. Consider investor readiness, pitch requirements, and valuation considerations typical for this stage.",
+    tags: ["FPA", "Seed", "Fundraising"],
+    indexCode: "FPA",
+    stage: "Seed",
+    category: "Fundraising",
+    industry: "General"
+  },
+  {
+    id: 3,
+    promptText: "Review these Investment Strategy questions for Seed stage startups. Focus on capital allocation, resource prioritization, and early investment decisions.",
+    tags: ["FPA", "Seed", "Investment Strategy"],
+    indexCode: "FPA",
+    stage: "Seed",
+    category: "Investment Strategy",
+    industry: "General"
+  },
+  
+  // EEA Assessment Criteria
+  {
+    id: 4,
+    promptText: "As an HR and leadership expert, evaluate these Human Resources questions for Early Stage companies. Consider team building, basic HR processes, and compliance requirements.",
     tags: ["EEA", "Early Stage", "Human Resources"],
     indexCode: "EEA",
     stage: "Early Stage",
     category: "Human Resources",
-    industry: "HR Tech"
-  },
-  {
-    id: 3,
-    promptText: "Review these marketing and customer acquisition questions for Growth stage companies. Focus on scalability and market fit considerations.",
-    tags: ["FPA", "Growth", "Marketing"],
-    indexCode: "FPA",
-    stage: "Growth",
-    category: "Marketing",
     industry: "General"
   },
   {
-    id: 4,
-    promptText: "Evaluate these operational efficiency questions for Scale stage startups. Consider enterprise-level processes and systems.",
-    tags: ["EEA", "Scale", "Operations"],
+    id: 5,
+    promptText: "Review these Leadership questions for Early Stage startups. Focus on founder leadership skills, team motivation, and decision-making processes at this growth phase.",
+    tags: ["EEA", "Early Stage", "Leadership"],
     indexCode: "EEA",
-    stage: "Scale",
+    stage: "Early Stage",
+    category: "Leadership",
+    industry: "General"
+  },
+  {
+    id: 6,
+    promptText: "Evaluate these Team Management questions for Early Stage companies. Consider team dynamics, communication strategies, and performance management in small teams.",
+    tags: ["EEA", "Early Stage", "Team Management"],
+    indexCode: "EEA",
+    stage: "Early Stage",
+    category: "Team Management",
+    industry: "General"
+  },
+  
+  // GEB Assessment Criteria
+  {
+    id: 7,
+    promptText: "As a business strategy expert, review these General Business questions for Growth stage companies. Focus on scalability, operational efficiency, and strategic planning.",
+    tags: ["GEB", "Growth", "General Business"],
+    indexCode: "GEB",
+    stage: "Growth",
+    category: "General Business",
+    industry: "General"
+  },
+  {
+    id: 8,
+    promptText: "Evaluate these Operations questions for Growth stage startups. Consider process optimization, system scalability, and operational challenges during rapid growth.",
+    tags: ["GEB", "Growth", "Operations"],
+    indexCode: "GEB",
+    stage: "Growth",
     category: "Operations",
+    industry: "General"
+  },
+  {
+    id: 9,
+    promptText: "Review these Strategy questions for Growth stage companies. Focus on market expansion, competitive positioning, and long-term strategic planning.",
+    tags: ["GEB", "Growth", "Strategy"],
+    indexCode: "GEB",
+    stage: "Growth",
+    category: "Strategy",
     industry: "General"
   }
 ];

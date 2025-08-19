@@ -201,9 +201,6 @@ const QuestionReviewEnhanced = () => {
                   <h1 className="text-xl font-semibold text-blue-900">
                     {getAssessmentTitle(reviewSetData.assessmentType, reviewSetData.stage)}
                   </h1>
-                  <p className="text-sm text-blue-700 mt-1">
-                    {reviewSetData.assessmentType} • {reviewSetData.industry}
-                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 text-sm text-blue-800 ml-auto">

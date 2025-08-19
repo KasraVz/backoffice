@@ -77,6 +77,26 @@ const FacultyDashboard = () => {
   const handleStartReview = (setId: string) => {
     console.log('Navigating to review set:', setId);
     console.log('Target URL:', `/faculty/review/${setId}`);
+    
+    // Find the review set data to store it for the review page
+    const reviewSet = mockReviewSets.find(set => set.id === setId);
+    if (reviewSet) {
+      // Store the review set data in localStorage for the review page to access
+      const reviewSetData = {
+        id: reviewSet.id,
+        setName: reviewSet.setName,
+        description: reviewSet.description,
+        questionCount: reviewSet.questionCount,
+        categories: [
+          { name: "Financial Management", questionCount: Math.floor(reviewSet.questionCount / 3) },
+          { name: "Human Resources", questionCount: Math.floor(reviewSet.questionCount / 3) },
+          { name: "General Business", questionCount: reviewSet.questionCount - 2 * Math.floor(reviewSet.questionCount / 3) }
+        ]
+      };
+      localStorage.setItem(`reviewSet_${setId}`, JSON.stringify(reviewSetData));
+      console.log('Stored review set data:', reviewSetData);
+    }
+    
     navigate(`/faculty/review/${setId}`);
   };
 

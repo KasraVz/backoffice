@@ -197,7 +197,7 @@ const QuestionReviewEnhanced = () => {
                 <FileText className="h-6 w-6 text-blue-600" />
                 <div>
                   <h1 className="text-xl font-semibold text-blue-900">
-                    {reviewSetData.questionnaireName}
+                    {reviewSetData.description || `${reviewSetData.assessmentType} Assessment - ${reviewSetData.stage} Stage`}
                   </h1>
                   <p className="text-sm text-blue-700 mt-1">
                     {reviewSetData.assessmentType} • {reviewSetData.stage} Stage • {reviewSetData.industry}

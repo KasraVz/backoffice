@@ -157,6 +157,150 @@ const mockOrders: Order[] = [
         rejectionReason: null
       }
     }
+  },
+  {
+    id: "ORD-006",
+    date: "2024-08-05",
+    customerName: "Lisa Anderson",
+    itemsPurchased: "1x Ecosystem Environment Awareness (EEA)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-18T09:15:00Z"
+      },
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 29.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Rejected",
+        rejectionReason: "Document verification failed - blurry images provided"
+      }
+    }
+  },
+  {
+    id: "ORD-007",
+    date: "2024-08-04",
+    customerName: "David Martinez",
+    itemsPurchased: "1x General Entrepreneurial Behavior (GEB)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-22T15:45:00Z"
+      },
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 29.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-008",
+    date: "2024-08-03",
+    customerName: "Jennifer Thompson",
+    itemsPurchased: "1x Founder Public Awareness (FPA)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-28T12:00:00Z"
+      },
+      payment: {
+        status: "Not Paid",
+        amountDue: 49.99,
+        amountPaid: 0.00
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-009",
+    date: "2024-08-02",
+    customerName: "Alex Rodriguez",
+    itemsPurchased: "1x Ecosystem Environment Awareness (EEA)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-30T08:30:00Z"
+      },
+      payment: {
+        status: "Not Paid",
+        amountDue: 15.00,
+        amountPaid: 14.99
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-010",
+    date: "2024-08-01",
+    customerName: "Maria Garcia",
+    itemsPurchased: "1x General Entrepreneurial Behavior (GEB)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-09-05T14:15:00Z"
+      },
+      payment: {
+        status: "Not Paid",
+        amountDue: 29.99,
+        amountPaid: 0.00
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-011",
+    date: "2024-07-31",
+    customerName: "Kevin Lee",
+    itemsPurchased: "1x Founder Public Awareness (FPA)",
+    stages: {
+      booking: {
+        status: "Canceled",
+        bookedDate: "2024-08-14T17:30:00Z"
+      },
+      payment: {
+        status: "Not Paid",
+        amountDue: 49.99,
+        amountPaid: 0.00
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
   }
 ];
 

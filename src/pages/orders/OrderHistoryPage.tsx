@@ -301,6 +301,201 @@ const mockOrders: Order[] = [
         rejectionReason: null
       }
     }
+  },
+  // Multi-item orders - ORD-012 Series (Customer orders all 3 assessments)
+  {
+    id: "ORD-012A",
+    date: "2024-07-28",
+    customerName: "Sarah Williams",
+    itemsPurchased: "1x Founder Public Awareness (FPA)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-10T10:00:00Z"
+      },
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 49.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Approved",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-012B",
+    date: "2024-07-28",
+    customerName: "Sarah Williams",
+    itemsPurchased: "1x Ecosystem Environment Awareness (EEA)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-12T14:30:00Z"
+      },
+      payment: {
+        status: "Not Paid",
+        amountDue: 29.99,
+        amountPaid: 0.00
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-012C",
+    date: "2024-07-28",
+    customerName: "Sarah Williams",
+    itemsPurchased: "1x General Entrepreneurial Behavior (GEB)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-15T16:00:00Z"
+      },
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 29.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  // Multi-item orders - ORD-013 Series (Customer orders 2 assessments)
+  {
+    id: "ORD-013A",
+    date: "2024-07-25",
+    customerName: "Michael Chen",
+    itemsPurchased: "1x Founder Public Awareness (FPA)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-08T11:30:00Z"
+      },
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 49.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Rejected",
+        rejectionReason: "ID document expired - please provide current documentation"
+      }
+    }
+  },
+  {
+    id: "ORD-013B",
+    date: "2024-07-25",
+    customerName: "Michael Chen",
+    itemsPurchased: "1x Ecosystem Environment Awareness (EEA)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-09T13:15:00Z"
+      },
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 29.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Approved",
+        rejectionReason: null
+      }
+    }
+  },
+  // Multi-item orders - ORD-014 Series (Customer orders all 3, then cancels one)
+  {
+    id: "ORD-014A",
+    date: "2024-07-20",
+    customerName: "Emma Johnson",
+    itemsPurchased: "1x Founder Public Awareness (FPA)",
+    stages: {
+      booking: {
+        status: "Canceled",
+        bookedDate: "2024-08-05T09:00:00Z"
+      },
+      payment: {
+        status: "Not Paid",
+        amountDue: 49.99,
+        amountPaid: 0.00
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-014B",
+    date: "2024-07-20",
+    customerName: "Emma Johnson",
+    itemsPurchased: "1x Ecosystem Environment Awareness (EEA)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-08-06T10:45:00Z"
+      },
+      payment: {
+        status: "Paid",
+        amountDue: 0.00,
+        amountPaid: 29.99
+      },
+      assessment: {
+        status: "Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
+  },
+  {
+    id: "ORD-014C",
+    date: "2024-07-20",
+    customerName: "Emma Johnson",
+    itemsPurchased: "1x General Entrepreneurial Behavior (GEB)",
+    stages: {
+      booking: {
+        status: "Confirmed",
+        bookedDate: "2024-09-01T15:30:00Z"
+      },
+      payment: {
+        status: "Not Paid",
+        amountDue: 29.99,
+        amountPaid: 0.00
+      },
+      assessment: {
+        status: "Not Taken"
+      },
+      kyc: {
+        status: "Pending",
+        rejectionReason: null
+      }
+    }
   }
 ];
 

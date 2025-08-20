@@ -755,184 +755,31 @@ const UserProfilePage = () => {
                   <CardContent>
                     <ScrollArea className="h-[400px]">
                       {teamData.length > 0 ? (
-                        <Accordion type="single" collapsible className="w-full">
+                        <div className="space-y-3">
                           {teamData.map((team) => {
                             const teamForm = teamForms[team.id] || team;
                             return (
-                              <AccordionItem key={team.id} value={team.id}>
-                                <AccordionTrigger>
+                              <Card key={team.id} className="p-4">
+                                <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2">
-                                    <span>Team: {teamForm.startupName || "Unnamed Team"}</span>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-6 w-6 p-0"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        window.open('/users/teams', '_blank');
-                                      }}
-                                    >
-                                      <ExternalLink className="h-3 w-3" />
-                                    </Button>
+                                    <span className="font-medium">Team: {teamForm.startupName || "Unnamed Team"}</span>
                                   </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="space-y-4">
-                                  <div className="space-y-4">
-                                    <div>
-                                      <Label className="text-sm font-medium">Do you want to add your team members right now? *</Label>
-                                      <RadioGroup 
-                                        value={teamForm.addTeamMembers} 
-                                        onValueChange={(value) => handleTeamFormChange(team.id, "addTeamMembers", value)}
-                                        className="flex gap-6 mt-2"
-                                      >
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="yes" id={`yes-${team.id}`} />
-                                          <Label htmlFor={`yes-${team.id}`}>Yes</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="no" id={`no-${team.id}`} />
-                                          <Label htmlFor={`no-${team.id}`}>No</Label>
-                                        </div>
-                                      </RadioGroup>
-                                    </div>
-
-                                    {teamForm.addTeamMembers === "yes" && (
-                                      <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                          <Label className="text-sm font-medium">Team Members</Label>
-                                          <Button 
-                                            type="button" 
-                                            variant="outline" 
-                                            size="sm"
-                                            onClick={() => addMember(team.id)}
-                                          >
-                                            <Plus className="h-4 w-4 mr-2" />
-                                            Add Member
-                                          </Button>
-                                        </div>
-                                        
-                                        {teamForm.members?.map((member: any, index: number) => (
-                                          <div key={index} className="border rounded-lg p-4 space-y-3">
-                                            <div className="flex items-center justify-between">
-                                              <Label className="text-sm font-medium">Member {index + 1}</Label>
-                                              {teamForm.members.length > 1 && (
-                                                <Button
-                                                  type="button"
-                                                  variant="ghost"
-                                                  size="sm"
-                                                  onClick={() => removeMember(team.id, index)}
-                                                >
-                                                  <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                              )}
-                                            </div>
-                                            <div className="grid grid-cols-3 gap-3">
-                                              <div>
-                                                <Label htmlFor={`name-${team.id}-${index}`} className="text-xs">Name</Label>
-                                                <Input
-                                                  id={`name-${team.id}-${index}`}
-                                                  placeholder="Full name"
-                                                  value={member.name}
-                                                  onChange={(e) => handleMemberChange(team.id, index, "name", e.target.value)}
-                                                  className="mt-1"
-                                                />
-                                              </div>
-                                              <div>
-                                                <Label htmlFor={`equity-${team.id}-${index}`} className="text-xs">Equity Share (%)</Label>
-                                                <Input
-                                                  id={`equity-${team.id}-${index}`}
-                                                  placeholder="0"
-                                                  value={member.equityShare}
-                                                  onChange={(e) => handleMemberChange(team.id, index, "equityShare", e.target.value)}
-                                                  className="mt-1"
-                                                />
-                                              </div>
-                                              <div>
-                                                <Label htmlFor={`role-${team.id}-${index}`} className="text-xs">Role/Responsibility</Label>
-                                                <Input
-                                                  id={`role-${team.id}-${index}`}
-                                                  placeholder="e.g., CTO, CMO"
-                                                  value={member.role}
-                                                  onChange={(e) => handleMemberChange(team.id, index, "role", e.target.value)}
-                                                  className="mt-1"
-                                                />
-                                              </div>
-                                            </div>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
-
-                                    <div>
-                                      <Label htmlFor={`startup-name-${team.id}`}>Startup Name</Label>
-                                      <Input
-                                        id={`startup-name-${team.id}`}
-                                        placeholder="Enter startup name"
-                                        value={teamForm.startupName}
-                                        onChange={(e) => handleTeamFormChange(team.id, "startupName", e.target.value)}
-                                        className="mt-1"
-                                      />
-                                    </div>
-
-                                    <div>
-                                      <Label htmlFor={`startup-website-${team.id}`}>Startup Website</Label>
-                                      <Input
-                                        id={`startup-website-${team.id}`}
-                                        placeholder="https://yourwebsite.com"
-                                        value={teamForm.startupWebsite}
-                                        onChange={(e) => handleTeamFormChange(team.id, "startupWebsite", e.target.value)}
-                                        className="mt-1"
-                                      />
-                                    </div>
-
-                                    <div>
-                                      <Label className="text-sm font-medium">Include individual test results of these team members?</Label>
-                                      <RadioGroup 
-                                        value={teamForm.includeTestResults} 
-                                        onValueChange={(value) => handleTeamFormChange(team.id, "includeTestResults", value)}
-                                        className="flex gap-6 mt-2"
-                                      >
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="yes" id={`include-yes-${team.id}`} />
-                                          <Label htmlFor={`include-yes-${team.id}`}>Yes</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="no" id={`include-no-${team.id}`} />
-                                          <Label htmlFor={`include-no-${team.id}`}>No</Label>
-                                        </div>
-                                      </RadioGroup>
-                                    </div>
-
-                                    {teamForm.includeTestResults === "yes" && (
-                                      <div>
-                                        <Label className="text-sm font-medium">Team Member Supsindex Account Emails</Label>
-                                        <div className="space-y-2 mt-2">
-                                          {teamForm.members?.map((member: any, index: number) => (
-                                            <div key={index}>
-                                              <Label htmlFor={`email-${team.id}-${index}`} className="text-xs">Email for Member {index + 1}</Label>
-                                              <Input
-                                                id={`email-${team.id}-${index}`}
-                                                type="email"
-                                                placeholder="member@example.com"
-                                                value={teamForm.memberEmails?.[index] || ""}
-                                                onChange={(e) => {
-                                                  const emails = [...(teamForm.memberEmails || [])];
-                                                  emails[index] = e.target.value;
-                                                  handleTeamFormChange(team.id, "memberEmails", emails);
-                                                }}
-                                                className="mt-1"
-                                              />
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                    onClick={() => {
+                                      window.open('/users/teams', '_blank');
+                                    }}
+                                    title="View team profile"
+                                  >
+                                    <ExternalLink className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </Card>
                             );
                           })}
-                        </Accordion>
+                        </div>
                       ) : (
                         <div className="text-center text-muted-foreground py-8">
                           No team profiles found for this user.

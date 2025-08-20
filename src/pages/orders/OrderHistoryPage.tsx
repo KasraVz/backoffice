@@ -196,6 +196,32 @@ export default function OrderHistoryPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>(mockOrders);
 
+  // Helper functions to determine stage activity based on flow rules
+  const isPaymentActive = (order: Order) => {
+    return order.stages.booking.status === "Confirmed";
+  };
+
+  const isAssessmentActive = (order: Order) => {
+    return order.stages.booking.status === "Confirmed";
+  };
+
+  const isKycActive = (order: Order) => {
+    return order.stages.booking.status === "Confirmed" && order.stages.assessment.status === "Taken";
+  };
+
+  // Get effective status for inactive stages
+  const getEffectivePaymentStatus = (order: Order) => {
+    return isPaymentActive(order) ? order.stages.payment.status : "Not Paid";
+  };
+
+  const getEffectiveAssessmentStatus = (order: Order) => {
+    return isAssessmentActive(order) ? order.stages.assessment.status : "Not Taken";
+  };
+
+  const getEffectiveKycStatus = (order: Order) => {
+    return isKycActive(order) ? order.stages.kyc.status : "Pending";
+  };
+
   const handleCancelBooking = (orderId: string) => {
     setOrders(prevOrders =>
       prevOrders.map(order =>
@@ -379,12 +405,12 @@ export default function OrderHistoryPage() {
                               </Card>
                               
                               {/* Payment Status Card */}
-                              <Card>
+                              <Card className={!isPaymentActive(selectedOrder) ? "opacity-50 pointer-events-none" : ""}>
                                 <CardHeader className="pb-3">
                                   <div className="flex items-center justify-between">
                                     <CardTitle className="text-base">Payment</CardTitle>
-                                    <Badge variant={selectedOrder.stages.payment.status === "Paid" ? "default" : "destructive"}>
-                                      {selectedOrder.stages.payment.status}
+                                    <Badge variant={getEffectivePaymentStatus(selectedOrder) === "Paid" ? "default" : "destructive"}>
+                                      {getEffectivePaymentStatus(selectedOrder)}
                                     </Badge>
                                   </div>
                                 </CardHeader>
@@ -403,31 +429,31 @@ export default function OrderHistoryPage() {
                               </Card>
 
                               {/* Assessment Status Card */}
-                              <Card>
+                              <Card className={!isAssessmentActive(selectedOrder) ? "opacity-50 pointer-events-none" : ""}>
                                 <CardHeader className="pb-3">
                                   <div className="flex items-center justify-between">
                                     <CardTitle className="text-base">Assessment</CardTitle>
-                                    <Badge variant={selectedOrder.stages.assessment.status === "Taken" ? "default" : "secondary"}>
-                                      {selectedOrder.stages.assessment.status}
+                                    <Badge variant={getEffectiveAssessmentStatus(selectedOrder) === "Taken" ? "default" : "secondary"}>
+                                      {getEffectiveAssessmentStatus(selectedOrder)}
                                     </Badge>
                                   </div>
                                 </CardHeader>
                               </Card>
 
                               {/* KYC Status Card */}
-                              <Card>
+                              <Card className={!isKycActive(selectedOrder) ? "opacity-50 pointer-events-none" : ""}>
                                 <CardHeader className="pb-3">
                                   <div className="flex items-center justify-between">
                                     <CardTitle className="text-base">KYC Verification</CardTitle>
                                     <Badge variant={
-                                      selectedOrder.stages.kyc.status === "Approved" ? "default" :
-                                      selectedOrder.stages.kyc.status === "Rejected" ? "destructive" : "secondary"
+                                      getEffectiveKycStatus(selectedOrder) === "Approved" ? "default" :
+                                      getEffectiveKycStatus(selectedOrder) === "Rejected" ? "destructive" : "secondary"
                                     }>
-                                      {selectedOrder.stages.kyc.status}
+                                      {getEffectiveKycStatus(selectedOrder)}
                                     </Badge>
                                   </div>
                                 </CardHeader>
-                                {selectedOrder.stages.kyc.status === "Rejected" && selectedOrder.stages.kyc.rejectionReason && (
+                                {isKycActive(selectedOrder) && selectedOrder.stages.kyc.status === "Rejected" && selectedOrder.stages.kyc.rejectionReason && (
                                   <CardContent className="pt-0">
                                     <div className="text-sm">
                                       <span className="text-muted-foreground">Reason for Rejection:</span>

@@ -16,7 +16,7 @@ interface Question {
   id: number;
   text: string;
   answers: string[];
-  vote: 'approve' | 'reject' | 'neutral' | null;
+  vote: 'approve' | 'reject' | 'conditionally_approved' | null;
   comment: string;
   category: string;
   scope: 'General' | 'Industry-Specific';
@@ -106,7 +106,7 @@ const QuestionReviewEnhanced = () => {
     
     return allQuestions;
   };
-  const handleVote = (questionId: number, vote: 'approve' | 'reject' | 'neutral') => {
+  const handleVote = (questionId: number, vote: 'approve' | 'reject' | 'conditionally_approved') => {
     setQuestions(prev => prev.map(q => {
       if (q.id === questionId) {
         const updatedQuestion = {
@@ -136,8 +136,8 @@ const QuestionReviewEnhanced = () => {
   // Validation: Check if all questions are voted and comments are provided where required
   const allQuestionsValid = questions.every(q => {
     if (!q.vote) return false;
-    // Comments required for reject and neutral
-    if ((q.vote === 'reject' || q.vote === 'neutral') && !q.comment.trim()) return false;
+    // Comments required for reject and conditionally approved
+    if ((q.vote === 'reject' || q.vote === 'conditionally_approved') && !q.comment.trim()) return false;
     return true;
   });
   const progressPercentage = questions.length > 0 ? currentProgress / questions.length * 100 : 0;
@@ -324,7 +324,7 @@ const QuestionReviewEnhanced = () => {
                   <CardContent className="space-y-4">
                     <div>
                       <Label className="text-base font-medium">Your Assessment</Label>
-                      <RadioGroup value={selectedQuestion.vote || ''} onValueChange={value => handleVote(selectedQuestion.id, value as 'approve' | 'reject' | 'neutral')} className="mt-3">
+                      <RadioGroup value={selectedQuestion.vote || ''} onValueChange={value => handleVote(selectedQuestion.id, value as 'approve' | 'reject' | 'conditionally_approved')} className="mt-3">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="approve" id="approve" />
                           <Label htmlFor="approve" className="flex items-center gap-2 cursor-pointer">
@@ -340,22 +340,22 @@ const QuestionReviewEnhanced = () => {
                           </Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="neutral" id="neutral" />
-                          <Label htmlFor="neutral" className="flex items-center gap-2 cursor-pointer">
+                          <RadioGroupItem value="conditionally_approved" id="conditionally_approved" />
+                          <Label htmlFor="conditionally_approved" className="flex items-center gap-2 cursor-pointer">
                             <AlertCircle className="h-4 w-4 text-yellow-600" />
-                            Neutral
+                            Conditionally Approved
                           </Label>
                         </div>
                       </RadioGroup>
                     </div>
 
                     {/* Conditional Comment Section */}
-                    {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'neutral') && <div>
+                    {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'conditionally_approved') && <div>
                         <Label htmlFor="comment" className="text-base font-medium">
                           Comments <span className="text-red-500">*</span>
                         </Label>
                         <Textarea id="comment" placeholder="Please provide your feedback and suggestions..." value={selectedQuestion.comment} onChange={e => handleCommentChange(selectedQuestion.id, e.target.value)} rows={4} className="mt-2" required />
-                        {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'neutral') && !selectedQuestion.comment.trim() && <p className="text-sm text-red-600 mt-1">Comment is required for this assessment.</p>}
+                        {(selectedQuestion.vote === 'reject' || selectedQuestion.vote === 'conditionally_approved') && !selectedQuestion.comment.trim() && <p className="text-sm text-red-600 mt-1">Comment is required for this assessment.</p>}
                       </div>}
 
                     {selectedQuestion.vote === 'approve' && <div>
@@ -368,7 +368,7 @@ const QuestionReviewEnhanced = () => {
                     {/* Vote Status */}
                     {selectedQuestion.vote && <div className="flex items-center gap-2 pt-2">
                         <Badge variant={selectedQuestion.vote === 'approve' ? 'default' : selectedQuestion.vote === 'reject' ? 'destructive' : 'secondary'}>
-                          {selectedQuestion.vote === 'approve' ? 'Approved' : selectedQuestion.vote === 'reject' ? 'Rejected' : 'Neutral'}
+                          {selectedQuestion.vote === 'approve' ? 'Approved' : selectedQuestion.vote === 'reject' ? 'Rejected' : 'Conditionally Approved'}
                         </Badge>
                         {selectedQuestion.comment && <span className="text-sm text-muted-foreground">
                             Comment provided
@@ -396,7 +396,7 @@ const QuestionReviewEnhanced = () => {
 
         {!allQuestionsValid && <div className="text-center text-sm text-muted-foreground mt-4">
             <p>Please complete all questions with required feedback before submitting.</p>
-            {questions.some(q => (q.vote === 'reject' || q.vote === 'neutral') && !q.comment.trim()) && <p className="text-red-600 mt-1">Comments are required for rejected or neutral assessments.</p>}
+            {questions.some(q => (q.vote === 'reject' || q.vote === 'conditionally_approved') && !q.comment.trim()) && <p className="text-red-600 mt-1">Comments are required for rejected or conditionally approved assessments.</p>}
            </div>}
              </div>
            </div>

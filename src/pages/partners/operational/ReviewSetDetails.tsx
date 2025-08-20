@@ -16,7 +16,7 @@ const mockQuestions = [
   {
     id: 2,
     text: "How do you plan to achieve product-market fit in the next 12 months?",
-    feedback: { type: "neutral", comment: "Consider adding more specific metrics for measuring product-market fit. The timeframe should be flexible based on the startup's current stage." },
+    feedback: { type: "conditionally_approved", comment: "Consider adding more specific metrics for measuring product-market fit. The timeframe should be flexible based on the startup's current stage." },
     reviewer: "Dr. Sarah Johnson"
   },
   {
@@ -34,7 +34,7 @@ const mockQuestions = [
   {
     id: 5,
     text: "How do you plan to scale your team in the next 6 months?",
-    feedback: { type: "neutral", comment: "This question should include budget considerations and role prioritization framework." },
+    feedback: { type: "conditionally_approved", comment: "This question should include budget considerations and role prioritization framework." },
     reviewer: "Dr. Sarah Johnson"
   }
 ];
@@ -76,7 +76,7 @@ const ReviewSetDetails = () => {
         return <ThumbsUp className="h-5 w-5 text-green-600" />;
       case "downvote":
         return <ThumbsDown className="h-5 w-5 text-red-600" />;
-      case "neutral":
+      case "conditionally_approved":
         return <Minus className="h-5 w-5 text-yellow-600" />;
       default:
         return null;
@@ -89,8 +89,8 @@ const ReviewSetDetails = () => {
         return <Badge className="bg-green-100 text-green-800 border-green-200">Upvoted</Badge>;
       case "downvote":
         return <Badge className="bg-red-100 text-red-800 border-red-200">Downvoted</Badge>;
-      case "neutral":
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Neutral</Badge>;
+      case "conditionally_approved":
+        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Conditionally Approved</Badge>;
       default:
         return <Badge variant="outline">No Feedback</Badge>;
     }
@@ -165,9 +165,9 @@ const ReviewSetDetails = () => {
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-yellow-600">
-                      {mockQuestions.filter(q => q.feedback.type === "neutral").length}
+                      {mockQuestions.filter(q => q.feedback.type === "conditionally_approved").length}
                     </div>
-                    <div className="text-muted-foreground">Neutral</div>
+                    <div className="text-muted-foreground">Conditionally Approved</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-red-600">

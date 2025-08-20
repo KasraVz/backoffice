@@ -54,12 +54,12 @@ const QuestionReview = () => {
   const [questions, setQuestions] = useState(mockQuestions);
   const [currentProgress, setCurrentProgress] = useState(0);
 
-  const handleVote = (questionId: number, vote: 'upvote' | 'downvote' | 'neutral') => {
+  const handleVote = (questionId: number, vote: 'upvote' | 'downvote' | 'conditionally_approved') => {
     setQuestions(prev => prev.map(q => {
       if (q.id === questionId) {
         const updatedQuestion = { ...q, vote };
-        // Clear comment if not neutral
-        if (vote !== 'neutral') {
+        // Clear comment if not conditionally approved
+        if (vote !== 'conditionally_approved') {
           updatedQuestion.comment = '';
         }
         return updatedQuestion;
@@ -151,17 +151,17 @@ const QuestionReview = () => {
                       Downvote
                     </Button>
                     <Button
-                      variant={question.vote === 'neutral' ? 'secondary' : 'outline'}
-                      onClick={() => handleVote(question.id, 'neutral')}
+                      variant={question.vote === 'conditionally_approved' ? 'secondary' : 'outline'}
+                      onClick={() => handleVote(question.id, 'conditionally_approved')}
                       className="gap-2 flex-1"
                     >
                       <Minus className="h-4 w-4" />
-                      Neutral
+                      Conditionally Approved
                     </Button>
                   </div>
 
-                  {/* Comment Box - Show only when Neutral is selected */}
-                  {question.vote === 'neutral' && (
+                  {/* Comment Box - Show only when Conditionally Approved is selected */}
+                  {question.vote === 'conditionally_approved' && (
                     <Textarea
                       placeholder="Please provide your suggestions or comments..."
                       value={question.comment}
@@ -178,9 +178,9 @@ const QuestionReview = () => {
                         question.vote === 'downvote' ? 'destructive' : 'secondary'
                       }>
                         {question.vote === 'upvote' ? 'Upvoted' :
-                         question.vote === 'downvote' ? 'Downvoted' : 'Neutral'}
+                         question.vote === 'downvote' ? 'Downvoted' : 'Conditionally Approved'}
                       </Badge>
-                      {question.vote === 'neutral' && question.comment && (
+                      {question.vote === 'conditionally_approved' && question.comment && (
                         <span className="text-sm text-muted-foreground">
                           Comment provided
                         </span>

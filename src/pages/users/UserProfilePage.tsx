@@ -33,6 +33,8 @@ const mockUserData = {
     countryOfResidence: "United States",
     idDocumentType: "Passport",
     documentNumber: "123456789",
+    startupName: "TechVenture Inc.",
+    startupWebsite: "https://techventure.com",
     primaryIndustry: "AI & Machine Learning",
     developmentStage: "Scaling",
     scientificBackground: "Strong (PhD)",
@@ -58,6 +60,8 @@ const mockUserData = {
     countryOfResidence: "Canada",
     idDocumentType: "National ID",
     documentNumber: "987654321",
+    startupName: "HealthTech Solutions",
+    startupWebsite: "",
     primaryIndustry: "Healthcare",
     developmentStage: "Revenue",
     scientificBackground: "Some (Bachelor's)",
@@ -161,6 +165,8 @@ const UserProfilePage = () => {
   });
 
   const [businessForm, setBusinessForm] = useState({
+    startupName: "",
+    startupWebsite: "",
     primaryIndustry: "",
     developmentStage: "",
     scientificBackground: "",
@@ -193,6 +199,8 @@ const UserProfilePage = () => {
       });
 
       setBusinessForm({
+        startupName: userData.startupName || "",
+        startupWebsite: userData.startupWebsite || "",
         primaryIndustry: userData.primaryIndustry || "",
         developmentStage: userData.developmentStage || "",
         scientificBackground: userData.scientificBackground || "",
@@ -472,9 +480,34 @@ const UserProfilePage = () => {
                     <CardTitle>Business Profile</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ScrollArea className="h-[600px]">
-                      <div className="space-y-6">
-                        {/* Startup's Primary Industry */}
+                     <ScrollArea className="h-[600px]">
+                       <div className="space-y-6">
+                         {/* Your Startup Name */}
+                         <div>
+                           <Label htmlFor="startupName">Your Startup Name</Label>
+                           <Input
+                             id="startupName"
+                             value={businessForm.startupName}
+                             onChange={(e) => handleBusinessFormChange("startupName", e.target.value)}
+                             className="mt-1"
+                             placeholder="Enter your startup name"
+                           />
+                         </div>
+
+                         {/* Your Startup Website */}
+                         <div>
+                           <Label htmlFor="startupWebsite">Your Startup Website</Label>
+                           <Input
+                             id="startupWebsite"
+                             type="url"
+                             value={businessForm.startupWebsite}
+                             onChange={(e) => handleBusinessFormChange("startupWebsite", e.target.value)}
+                             className="mt-1"
+                             placeholder="https://yourcompany.com"
+                           />
+                         </div>
+
+                         {/* Startup's Primary Industry */}
                         <div>
                           <Label htmlFor="primaryIndustry">Startup's Primary Industry *</Label>
                           <Select value={businessForm.primaryIndustry} onValueChange={(value) => handleBusinessFormChange("primaryIndustry", value)}>

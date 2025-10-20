@@ -342,7 +342,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     subCategory: "",
     scope: "General" as "" | "General" | "Industry-Specific",
     industry: "",
-    answerType: "" as "" | "single-choice" | "multiple-choice" | "ranking" | "matching",
+    answerType: "" as "" | "single-choice" | "multiple-choice" | "ranking" | "matching" | "most-least",
     choices: [] as string[],
     columnA: [] as string[],
     columnB: [] as string[],
@@ -352,7 +352,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     rankings: {} as Record<string, number>,
     matchedPairs: [] as Array<{ a: string; b: string; aIndex: number; bIndex: number }>,
     correctAnswers: [] as number[], // For single/multiple choice
-    correctRanking: {} as Record<string, number> // For ranking
+    correctRanking: {} as Record<string, number>, // For ranking
+    correctMostAnswer: null as number | null, // For most/least
+    correctLeastAnswer: null as number | null // For most/least
   });
   
   const { toast } = useToast();
@@ -380,7 +382,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
         rankings: editingQuestion.rankings || {},
         matchedPairs: editingQuestion.matchedPairs || [],
         correctAnswers: editingQuestion.correctAnswers || [],
-        correctRanking: editingQuestion.correctRanking || {}
+        correctRanking: editingQuestion.correctRanking || {},
+        correctMostAnswer: editingQuestion.correctMostAnswer || null,
+        correctLeastAnswer: editingQuestion.correctLeastAnswer || null
       });
 
       // Restore used items for matching questions
@@ -431,7 +435,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       rankings: {},
       matchedPairs: [],
       correctAnswers: [],
-      correctRanking: {}
+      correctRanking: {},
+      correctMostAnswer: null,
+      correctLeastAnswer: null
     });
   };
 
@@ -484,6 +490,34 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       return;
     }
     
+    // Validate step 2 for most-least questions
+    if (currentStep === 2 && questionData.answerType === "most-least") {
+      if (questionData.choices.length < 2) {
+        toast({
+          title: "Error",
+          description: "Most/Least questions require at least 2 choices.",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (questionData.correctMostAnswer === null || questionData.correctLeastAnswer === null) {
+        toast({
+          title: "Error",
+          description: "Please designate both a MOST likely and LEAST likely answer.",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (questionData.correctMostAnswer === questionData.correctLeastAnswer) {
+        toast({
+          title: "Error",
+          description: "MOST and LEAST answers must be different choices.",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
@@ -520,7 +554,9 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       rankings: questionData.rankings,
       matchedPairs: questionData.matchedPairs,
       correctAnswers: questionData.correctAnswers,
-      correctRanking: questionData.correctRanking
+      correctRanking: questionData.correctRanking,
+      correctMostAnswer: questionData.correctMostAnswer,
+      correctLeastAnswer: questionData.correctLeastAnswer
     };
 
     onQuestionCreated(newQuestion);
@@ -700,6 +736,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                   <SelectItem value="multiple-choice">Multiple Choice</SelectItem>
                   <SelectItem value="ranking">Ranking</SelectItem>
                   <SelectItem value="matching">Matching</SelectItem>
+                  <SelectItem value="most-least">Most/Least Likely</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1162,6 +1199,93 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               </div>
             )}
 
+            {/* Most/Least Likely */}
+            {questionData.answerType === "most-least" && (
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium mb-4">Define Answer Choices</h4>
+                  <div className="space-y-4">
+                    {questionData.choices.map((choice, index) => (
+                      <div key={index} className="flex items-center gap-3 border rounded-lg p-4">
+                        <Input
+                          placeholder={`Choice ${index + 1}`}
+                          value={choice}
+                          onChange={(e) => updateChoice(index, e.target.value)}
+                          className="flex-1"
+                        />
+                        <WeightPopover choiceId={`choice-${index}`} choiceText={choice} />
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => removeChoice(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={addChoice}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Choice
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Set Most/Least Correct Answers */}
+                {questionData.choices.length >= 2 && (
+                  <div className="space-y-4 mt-6">
+                    <h4 className="font-medium">Designate Correct Answers</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Select exactly one choice as "MOST likely" and one different choice as "LEAST likely"
+                    </p>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-[1fr_100px_100px] gap-4 items-center pb-2 border-b font-medium text-sm">
+                        <div>Choice</div>
+                        <div className="text-center">MOST</div>
+                        <div className="text-center">LEAST</div>
+                      </div>
+                      
+                      {questionData.choices.map((choice, index) => {
+                        const isMost = questionData.correctMostAnswer === index;
+                        const isLeast = questionData.correctLeastAnswer === index;
+                        
+                        return (
+                          <div key={index} className="grid grid-cols-[1fr_100px_100px] gap-4 items-center p-3 border rounded-lg bg-muted/20">
+                            <div className="text-sm font-medium">{choice || `Choice ${index + 1}`}</div>
+                            <div className="flex justify-center">
+                              <input
+                                type="radio"
+                                name="most-answer"
+                                checked={isMost}
+                                onChange={() => setQuestionData(prev => ({ 
+                                  ...prev, 
+                                  correctMostAnswer: index 
+                                }))}
+                                disabled={!choice.trim() || isLeast}
+                                className="w-4 h-4 cursor-pointer disabled:cursor-not-allowed"
+                              />
+                            </div>
+                            <div className="flex justify-center">
+                              <input
+                                type="radio"
+                                name="least-answer"
+                                checked={isLeast}
+                                onChange={() => setQuestionData(prev => ({ 
+                                  ...prev, 
+                                  correctLeastAnswer: index 
+                                }))}
+                                disabled={!choice.trim() || isMost}
+                                className="w-4 h-4 cursor-pointer disabled:cursor-not-allowed"
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Matching */}
             {questionData.answerType === "matching" && (
               <div className="space-y-6">
@@ -1373,7 +1497,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                   )}
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">Answer Type</Label>
-                    <p className="text-sm capitalize">{questionData.answerType.replace('-', ' ')}</p>
+                    <p className="text-sm capitalize">{questionData.answerType.replace(/-/g, ' ')}</p>
                   </div>
                 </div>
               </div>
@@ -1430,6 +1554,23 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
                               <Badge variant="outline" className="ml-auto">
                                 Correct Rank: {questionData.rankings[`choice-${index}`]}
                               </Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {questionData.answerType === "most-least" && (
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium">Select the MOST likely and LEAST likely responses:</Label>
+                        {questionData.choices.map((choice, index) => (
+                          <div key={index} className="flex items-center space-x-3 p-3 border rounded bg-muted/20">
+                            <span className="text-sm flex-1">{choice}</span>
+                            {questionData.correctMostAnswer === index && (
+                              <Badge variant="default" className="bg-green-600">MOST Likely</Badge>
+                            )}
+                            {questionData.correctLeastAnswer === index && (
+                              <Badge variant="destructive">LEAST Likely</Badge>
                             )}
                           </div>
                         ))}

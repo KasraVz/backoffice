@@ -34,51 +34,292 @@ const behavioralCodes = [
   "Ability to delegate responsibility to others"
 ];
 
-const indexCodes = ["FPA", "EEA"];
+const indexCodes = ["FPA", "EEA", "GEB"];
 
 const questionTaxonomy = {
   FPA: {
     General: {
-      "Problem-Solution Fit & Market Validation": ["Market Research", "Customer Discovery", "MVP Development"],
-      "Business Model & Revenue Strategy": ["Revenue Models", "Pricing Strategy", "Market Entry"],
-      "Product Development & Technology": ["Technology Stack", "Development Process", "Innovation"],
-      "Team Building & Leadership": ["Team Formation", "Leadership Skills", "Culture Building"],
-      "Sales, Marketing & Customer Acquisition": ["Sales Strategy", "Marketing Channels", "Customer Retention"],
-      "Financial Management & Fundraising": ["Financial Planning", "Investment Strategy", "Cash Flow Management"],
-      "Legal & IP": ["Intellectual Property", "Legal Structure", "Compliance"],
-      "Operations & Execution": ["Process Management", "Quality Control", "Scaling Operations"],
-      "Strategy & Vision": ["Strategic Planning", "Vision Development", "Goal Setting"],
-      "Personal & Entrepreneurial Skills": ["Entrepreneurial Mindset", "Personal Development", "Skill Building"]
+      "Market & Customer Discovery": [
+        "Understanding Pain Points & Market Needs",
+        "Customer Segmentation & Persona Development",
+        "Validating Problem-Solution Fit",
+        "Early Adopter Identification",
+        "Competitive Research & Gap Analysis"
+      ],
+      "Business Model & Strategy": [
+        "Developing a Viable Business Model",
+        "Monetization & Revenue Strategy",
+        "Strategic Differentiation & Positioning",
+        "Market Sizing & Opportunity Assessment",
+        "Building a Strategic Roadmap"
+      ],
+      "Product Development & MVP": [
+        "MVP Definition & Scope",
+        "Build vs. Buy Decisions",
+        "Iterative Development & Testing",
+        "Product-Market Fit Validation",
+        "Technical Debt & Trade-offs"
+      ],
+      "Finance & Fundraising": [
+        "Basic Financial Literacy & Projections",
+        "Cash Flow Management",
+        "Understanding Funding Stages",
+        "Preparing Investor Materials",
+        "Managing Dilution & Cap Tables"
+      ],
+      "Legal & Compliance": [
+        "Choosing the Right Legal Structure",
+        "Founder Agreements & Equity Split",
+        "Intellectual Property Basics",
+        "Regulatory Awareness",
+        "Essential Contracts & Agreements"
+      ],
+      "Marketing & Sales": [
+        "Defining Value Proposition",
+        "Channel Strategy & Selection",
+        "Building Initial Customer Pipeline",
+        "Pricing & Packaging Strategy",
+        "Measuring Marketing & Sales Effectiveness"
+      ],
+      "Team & Culture": [
+        "Co-founder Dynamics & Complementary Skills",
+        "Early Hiring & Role Clarity",
+        "Building Culture from Day One",
+        "Equity Compensation & Incentives",
+        "Remote vs. In-Person Team Decisions"
+      ],
+      "Pitching & Storytelling": [
+        "Crafting a Compelling Narrative",
+        "Pitch Deck Essentials",
+        "Delivering with Confidence",
+        "Handling Tough Questions",
+        "Tailoring Messages to Audiences"
+      ],
+      "Founder Mindset & Resilience": [
+        "Managing Uncertainty & Stress",
+        "Learning from Failure",
+        "Building Founder Network & Support",
+        "Time Management & Prioritization",
+        "Maintaining Work-Life Balance"
+      ],
+      "Operations & Execution": [
+        "Setting Up Core Processes",
+        "Task Prioritization & Focus",
+        "Tools & Systems Selection",
+        "Measuring Progress & KPIs",
+        "Balancing Speed with Quality"
+      ]
     },
     "Industry-Specific": {
-      "Industry Trends & Future of Work": ["Emerging Trends", "Future Predictions", "Market Evolution"],
-      "Ecosystem & Market Specifics": ["Market Analysis", "Competitive Landscape", "Industry Dynamics"],
-      "Product & Technology Vision": ["Technology Roadmap", "Product Innovation", "Technical Vision"],
-      "Business Model & Go-to-Market Strategy": ["Market Strategy", "Business Model Innovation", "Launch Strategy"],
-      "Founder & Team Vision": ["Founder Vision", "Team Alignment", "Leadership Vision"]
+      "Deep Industry & Market Dynamics": [
+        "Sector-Specific Trends & Evolution",
+        "Key Players & Incumbent Analysis",
+        "Customer Behavior Patterns in Industry",
+        "Regulatory & Compliance Landscape",
+        "Supply Chain & Distribution Channels"
+      ],
+      "Technology & Product Infrastructure": [
+        "Industry-Standard Tech Stacks",
+        "Integration & Interoperability Requirements",
+        "Security & Data Privacy Standards",
+        "Scalability Considerations",
+        "Emerging Tech & Innovation Opportunities"
+      ],
+      "Legal, Regulatory & Compliance Frameworks": [
+        "Industry-Specific Regulations",
+        "Licensing & Certification Requirements",
+        "Data Governance & Privacy Laws",
+        "Industry Standards & Best Practices",
+        "Risk Management & Insurance"
+      ],
+      "Financial & Economic Nuances": [
+        "Industry-Specific Unit Economics",
+        "Funding Landscape & Investor Expectations",
+        "Pricing Models & Benchmarks",
+        "Revenue Recognition & Accounting",
+        "Economic Cycles & Industry Resilience"
+      ],
+      "Go-to-Market & Growth Channels": [
+        "Effective Customer Acquisition Channels",
+        "Partnership & Ecosystem Strategies",
+        "Sales Cycles & Buying Processes",
+        "Marketing Tactics & Messaging",
+        "Community & Network Effects"
+      ]
     }
   },
   EEA: {
     General: {
-      "Quantity and Quality of Startups": ["Startup Success Rate", "Innovation Level"],
-      "Availability of Funding and Investment": ["Angel Investors", "Venture Capital (VC) Firms", "Corporate Venture Capital", "Crowdfunding Platforms"],
-      "Support Systems and Infrastructure": ["Coworking Spaces and Innovation Hubs", "Professional Services", "Physical Infrastructure"],
-      "Networking and Community": ["Industry Clusters"],
-      "Government and Policy": ["Intellectual Property Protection", "Tax Policies", "Government Support Programs"],
-      "Culture and Mindset": ["Entrepreneurial Culture", "Risk Tolerance", "Openness to Innovation"],
-      "Recurring problems": ["Negative reputation", "Impactful external problem", "Made in reputation problem"]
+      "Funding & Capital Landscape": [
+        "Venture Capital Availability",
+        "Angel Investor Networks",
+        "Government Funding Programs",
+        "Alternative Funding Sources"
+      ],
+      "Talent & Human Capital": [
+        "Skilled Workforce Availability",
+        "Educational Institution Quality",
+        "Entrepreneurial Experience Pool",
+        "Talent Attraction & Retention"
+      ],
+      "General Regulatory & Legal Framework": [
+        "Startup-Friendly Regulations",
+        "Intellectual Property Protection",
+        "Tax Policies & Incentives",
+        "Ease of Doing Business"
+      ],
+      "Market Access & Commercialization Culture": [
+        "Entrepreneurial Culture & Mindset",
+        "Risk Tolerance",
+        "Market Openness",
+        "Success Stories & Role Models"
+      ],
+      "Infrastructure & Support Networks": [
+        "Coworking Spaces & Innovation Hubs",
+        "Incubators & Accelerators",
+        "Mentorship Networks",
+        "Physical & Digital Infrastructure"
+      ]
     },
     "Industry-Specific": {
-      "Quantity and Quality of Startups": ["Density of Startups"],
-      "Availability of Funding and Investment": ["Government Grants and Funding"],
-      "Talent and Human Capital": ["Skilled Workforce", "Educational Institutions", "Entrepreneurial Experience", "Talent Attraction and Retention"],
-      "Support Systems and Infrastructure": ["Incubators and Accelerators", "Mentorship Networks"],
-      "Networking and Community": ["Startup Events and Meetups", "Informal Networks", "Community Culture"],
-      "Government and Policy": ["Startup-Friendly Regulations"],
-      "Culture and Mindset": ["Success Stories and Role Models"],
-      "Startup Domains": ["Domain-Specific Depth and Expertise", "Domain-Relevant Resources and Infrastructure", "Market Opportunity and Adoption within the Domain", "Domain-Focused Networking and Collaboration"],
-      "Environmental Awareness": ["Awareness of influential players", "Awareness of living costs", "Awareness of hiring costs", "Knowledge channel"]
+      "Sector-Specific Regulations & Compliance": [
+        "Industry Regulatory Bodies",
+        "Compliance Requirements",
+        "Licensing & Certifications",
+        "Industry Standards"
+      ],
+      "Value Chain & Supply Chain Dynamics": [
+        "Supplier Networks",
+        "Distribution Channels",
+        "Logistics Infrastructure",
+        "Value Chain Integration"
+      ],
+      "Industry-Specific Technology & Innovation Trends": [
+        "Emerging Technologies",
+        "Innovation Hotspots",
+        "R&D Infrastructure",
+        "Technology Adoption Rates"
+      ],
+      "Competitive Landscape & Incumbent Dynamics": [
+        "Market Leaders & Incumbents",
+        "Competitive Intensity",
+        "Market Concentration",
+        "Barriers to Entry"
+      ],
+      "Niche Customer Segments & Go-to-Market Channels": [
+        "Target Customer Segments",
+        "Distribution Networks",
+        "Marketing Channels",
+        "Partnership Opportunities"
+      ]
     }
+  },
+  GEB: {
+    "Core Mindset & Learning Orientation": [
+      "Defining Failure: Personal Defeat vs. Learning Opportunity",
+      "Mentoring & Fostering Resilience in Others",
+      "Responding to a Subordinate's Costly Mistake",
+      "Analyzing and Iterating After a Launch Failure",
+      "Processing Harsh but Partially True Public Criticism"
+    ],
+    "Resilience & Response to Adversity": [
+      "Coping with Sudden Market Shifts",
+      "Navigating Unexpected Regulatory Setbacks",
+      "Dealing with a Co-founder Departure",
+      "Managing Financial Stress During Cash Flow Crisis",
+      "Handling Public Relations Disasters"
+    ],
+    "Adaptability & Strategic Flexibility": [
+      "Pivoting Business Model in Response to Market Feedback",
+      "Adjusting Product Strategy Based on Competitive Moves",
+      "Reacting to Technological Disruption",
+      "Balancing Flexibility with Strategic Focus",
+      "Experimenting with New Approaches"
+    ],
+    "Leadership & Team Empowerment": [
+      "Delegating High-Stakes Decisions",
+      "Empowering Team Members to Take Initiative",
+      "Building Trust Through Transparency",
+      "Handling Disagreements Among Leadership",
+      "Motivating Teams During Uncertain Times"
+    ],
+    "Communication & Stakeholder Management": [
+      "Delivering Bad News to Investors",
+      "Managing Customer Expectations",
+      "Communicating Vision to Diverse Audiences",
+      "Handling Difficult Conversations with Co-founders",
+      "Building Relationships with Key Partners"
+    ],
+    "Ethical Integrity & Foundational Values": [
+      "Making Ethical Trade-offs Under Pressure",
+      "Maintaining Transparency with Stakeholders",
+      "Balancing Profit with Social Responsibility",
+      "Handling Conflicts of Interest",
+      "Standing by Core Values During Growth"
+    ],
+    "Decision-Making Under Ambiguity": [
+      "Making Decisions with Incomplete Information",
+      "Weighing Short-term vs. Long-term Outcomes",
+      "Managing Multiple Conflicting Priorities",
+      "Deciding When to Seek External Advice",
+      "Evaluating Risk-Reward Trade-offs"
+    ],
+    "Calculated Risk-Taking & Opportunity Assessment": [
+      "Identifying and Evaluating New Opportunities",
+      "Deciding Whether to Enter a New Market",
+      "Assessing Partnership Risks and Benefits",
+      "Balancing Innovation with Operational Stability",
+      "Committing Resources to Unproven Ideas"
+    ],
+    "Innovation & Creative Problem-Solving": [
+      "Overcoming Resource Constraints",
+      "Finding Creative Solutions to Complex Problems",
+      "Encouraging Innovation Within the Team",
+      "Balancing Innovation with Execution",
+      "Leveraging Constraints as Opportunities"
+    ],
+    "External Focus & Market Responsiveness": [
+      "Actively Seeking Customer Feedback",
+      "Monitoring Competitive Landscape",
+      "Responding to Changing Market Needs",
+      "Building Customer-Centric Processes",
+      "Staying Ahead of Industry Trends"
+    ],
+    "Strategic Vision & Long-Term Planning": [
+      "Defining and Communicating Long-Term Vision",
+      "Aligning Short-Term Actions with Long-Term Goals",
+      "Scenario Planning for Future Uncertainties",
+      "Building Strategic Partnerships",
+      "Maintaining Strategic Focus Amid Distractions"
+    ],
+    "Resource Management & Scalability": [
+      "Allocating Limited Resources Effectively",
+      "Planning for Sustainable Growth",
+      "Managing Burn Rate and Runway",
+      "Building Scalable Processes",
+      "Deciding When to Invest in Infrastructure"
+    ],
+    "Founder Self-Awareness & Negative Pattern Mitigation": [
+      "Recognizing Personal Biases and Blind Spots",
+      "Managing Ego and Overconfidence",
+      "Seeking and Acting on Feedback",
+      "Addressing Negative Behavioral Patterns",
+      "Building Self-Awareness Through Reflection"
+    ],
+    "Building & Leveraging Relationships": [
+      "Networking Effectively",
+      "Building Strategic Alliances",
+      "Leveraging Mentors and Advisors",
+      "Cultivating Investor Relationships",
+      "Building Community and Ecosystem Ties"
+    ],
+    "Governance & Principled Competition": [
+      "Establishing Board Governance Practices",
+      "Competing Ethically in the Market",
+      "Managing Conflicts with Investors",
+      "Balancing Control with Collaboration",
+      "Maintaining Accountability to Stakeholders"
+    ]
   }
 };
 
@@ -96,11 +337,12 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
     behavioralCode: "",
     indexCode: "",
     stage: "",
+    targetEcosystem: "",
     category: "",
     subCategory: "",
-    scope: "General" as "General" | "Industry-Specific",
+    scope: "General" as "" | "General" | "Industry-Specific",
     industry: "",
-    answerType: "" as "single-choice" | "multiple-choice" | "ranking" | "matching",
+    answerType: "" as "" | "single-choice" | "multiple-choice" | "ranking" | "matching",
     choices: [] as string[],
     columnA: [] as string[],
     columnB: [] as string[],
@@ -123,6 +365,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
         behavioralCode: editingQuestion.behavioralCode || "",
         indexCode: editingQuestion.indexCode || "",
         stage: editingQuestion.stage || "",
+        targetEcosystem: editingQuestion.targetEcosystem || "",
         category: editingQuestion.category || "",
         subCategory: editingQuestion.subCategory || "",
         scope: editingQuestion.scope || "General",
@@ -173,6 +416,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       behavioralCode: "",
       indexCode: "",
       stage: "",
+      targetEcosystem: "",
       category: "",
       subCategory: "",
       scope: "General",
@@ -192,21 +436,42 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
   };
 
   const isStep1Valid = () => {
-    const requiredFields = [
-      questionData.questionText.trim(),
-      questionData.answerType,
-      questionData.behavioralCode,
-      questionData.stage,
-      questionData.indexCode,
-      questionData.scope
-    ];
-
-    // If scope is "Industry-Specific", industry is also required
-    if (questionData.scope === "Industry-Specific") {
-      requiredFields.push(questionData.industry);
+    const baseValid = questionData.questionText.trim() !== "" &&
+                      questionData.answerType !== "" &&
+                      questionData.behavioralCode !== "" &&
+                      questionData.indexCode !== "";
+    
+    if (questionData.indexCode === "FPA") {
+      const fpaValid = questionData.stage !== "" &&
+                       questionData.scope !== "" &&
+                       questionData.category !== "" &&
+                       questionData.subCategory !== "";
+      
+      if (questionData.scope === "Industry-Specific") {
+        return baseValid && fpaValid && questionData.industry !== "";
+      }
+      return baseValid && fpaValid;
     }
-
-    return requiredFields.every(field => field);
+    
+    if (questionData.indexCode === "EEA") {
+      const eeaValid = questionData.targetEcosystem !== "" &&
+                       questionData.scope !== "" &&
+                       questionData.category !== "" &&
+                       questionData.subCategory !== "";
+      
+      if (questionData.scope === "Industry-Specific") {
+        return baseValid && eeaValid && questionData.industry !== "";
+      }
+      return baseValid && eeaValid;
+    }
+    
+    if (questionData.indexCode === "GEB") {
+      return baseValid && 
+             questionData.category !== "" && 
+             questionData.subCategory !== "";
+    }
+    
+    return false;
   };
 
   const handleNext = () => {
@@ -243,6 +508,7 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
       behavioralCode: questionData.behavioralCode,
       indexCode: questionData.indexCode,
       stage: questionData.stage,
+      targetEcosystem: questionData.targetEcosystem,
       subCategory: questionData.subCategory,
       scope: questionData.scope,
       industry: questionData.industry,
@@ -479,33 +745,18 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="stage">Select a Stage</Label>
-              <Select 
-                value={questionData.stage} 
-                onValueChange={(value) => setQuestionData(prev => ({ ...prev, stage: value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Choose a stage" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Pre-seed">Pre-seed</SelectItem>
-                  <SelectItem value="Seed">Seed</SelectItem>
-                  <SelectItem value="Early Stage">Early Stage</SelectItem>
-                  <SelectItem value="Growth Stage">Growth Stage</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="index-code">Select an Index Code</Label>
               <Select 
                 value={questionData.indexCode} 
                 onValueChange={(value) => setQuestionData(prev => ({ 
                   ...prev, 
                   indexCode: value, 
+                  stage: "",
+                  targetEcosystem: "",
                   category: "", 
                   subCategory: "",
-                  scope: "General" 
+                  scope: "General",
+                  industry: ""
                 }))}
               >
                 <SelectTrigger className="w-full">
@@ -519,86 +770,273 @@ export function CreateQuestionModal({ open, onOpenChange, onQuestionCreated, edi
               </Select>
             </div>
 
-            {questionData.indexCode && (
-              <div className="space-y-4">
-                <Label>Scope</Label>
-                <RadioGroup 
-                  value={questionData.scope} 
-                  onValueChange={(value: "General" | "Industry-Specific") => setQuestionData(prev => ({ 
-                    ...prev, 
-                    scope: value,
-                    category: "",
-                    subCategory: ""
-                  }))}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="General" id="general" />
-                    <Label htmlFor="general">General</Label>
+            {/* FPA-specific fields */}
+            {questionData.indexCode === "FPA" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="stage">Stage</Label>
+                  <Select 
+                    value={questionData.stage} 
+                    onValueChange={(value) => setQuestionData(prev => ({ ...prev, stage: value }))}
+                  >
+                    <SelectTrigger id="stage">
+                      <SelectValue placeholder="Select stage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Pre-seed">Pre-seed</SelectItem>
+                      <SelectItem value="Seed">Seed</SelectItem>
+                      <SelectItem value="Early Stage">Early Stage</SelectItem>
+                      <SelectItem value="Growth Stage">Growth Stage</SelectItem>
+                      <SelectItem value="Scale-up">Scale-up</SelectItem>
+                      <SelectItem value="Mature">Mature</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-4">
+                  <Label>Scope</Label>
+                  <RadioGroup 
+                    value={questionData.scope} 
+                  onValueChange={(value: "" | "General" | "Industry-Specific") => setQuestionData(prev => ({
+                      ...prev, 
+                      scope: value,
+                      category: "",
+                      subCategory: ""
+                    }))}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="General" id="fpa-general" />
+                      <Label htmlFor="fpa-general">General</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Industry-Specific" id="fpa-industry" />
+                      <Label htmlFor="fpa-industry">Industry-Specific</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                {questionData.scope && (
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Select 
+                      value={questionData.category} 
+                      onValueChange={(value) => setQuestionData(prev => ({ ...prev, category: value, subCategory: "" }))}
+                    >
+                      <SelectTrigger id="category">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(questionTaxonomy.FPA[questionData.scope]).map((cat) => (
+                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Industry-Specific" id="industry-specific" />
-                    <Label htmlFor="industry-specific">Industry-Specific</Label>
+                )}
+
+                {questionData.category && (
+                  <div className="space-y-2">
+                    <Label htmlFor="subCategory">Sub-Category</Label>
+                    <Select 
+                      value={questionData.subCategory} 
+                      onValueChange={(value) => setQuestionData(prev => ({ ...prev, subCategory: value }))}
+                    >
+                      <SelectTrigger id="subCategory">
+                        <SelectValue placeholder="Select sub-category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {questionTaxonomy.FPA[questionData.scope][questionData.category]?.map((subCat) => (
+                          <SelectItem key={subCat} value={subCat}>{subCat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                </RadioGroup>
-              </div>
+                )}
+
+                {questionData.scope === "Industry-Specific" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="industry">Industry</Label>
+                    <Select 
+                      value={questionData.industry} 
+                      onValueChange={(value) => setQuestionData(prev => ({ ...prev, industry: value }))}
+                    >
+                      <SelectTrigger id="industry">
+                        <SelectValue placeholder="Select industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="EdTech">EdTech</SelectItem>
+                        <SelectItem value="FinTech">FinTech</SelectItem>
+                        <SelectItem value="HealthTech">HealthTech</SelectItem>
+                        <SelectItem value="SaaS">SaaS</SelectItem>
+                        <SelectItem value="E-commerce">E-commerce</SelectItem>
+                        <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="Agriculture">Agriculture</SelectItem>
+                        <SelectItem value="Real Estate">Real Estate</SelectItem>
+                        <SelectItem value="Energy">Energy</SelectItem>
+                        <SelectItem value="Transportation">Transportation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </>
             )}
 
-            {questionData.indexCode && questionData.scope && (
-              <div className="space-y-2">
-                <Label htmlFor="category">Select a Category</Label>
-                <Select 
-                  value={questionData.category} 
-                  onValueChange={(value) => setQuestionData(prev => ({ ...prev, category: value, subCategory: "" }))}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(questionTaxonomy[questionData.indexCode as keyof typeof questionTaxonomy]?.[questionData.scope] || {}).map((category) => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* EEA-specific fields */}
+            {questionData.indexCode === "EEA" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="target-ecosystem">Target Ecosystem</Label>
+                  <Select 
+                    value={questionData.targetEcosystem} 
+                    onValueChange={(value) => setQuestionData(prev => ({ ...prev, targetEcosystem: value }))}
+                  >
+                    <SelectTrigger id="target-ecosystem">
+                      <SelectValue placeholder="Select target ecosystem" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USA">USA</SelectItem>
+                      <SelectItem value="Europe">Europe</SelectItem>
+                      <SelectItem value="Asia">Asia</SelectItem>
+                      <SelectItem value="Latin America">Latin America</SelectItem>
+                      <SelectItem value="Middle East">Middle East</SelectItem>
+                      <SelectItem value="Africa">Africa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-4">
+                  <Label>Scope</Label>
+                  <RadioGroup 
+                    value={questionData.scope} 
+                    onValueChange={(value: "" | "General" | "Industry-Specific") => setQuestionData(prev => ({ 
+                      ...prev, 
+                      scope: value,
+                      category: "",
+                      subCategory: ""
+                    }))}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="General" id="eea-general" />
+                      <Label htmlFor="eea-general">General</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Industry-Specific" id="eea-industry" />
+                      <Label htmlFor="eea-industry">Industry-Specific</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                {questionData.scope && (
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Select 
+                      value={questionData.category} 
+                      onValueChange={(value) => setQuestionData(prev => ({ ...prev, category: value, subCategory: "" }))}
+                    >
+                      <SelectTrigger id="category">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(questionTaxonomy.EEA[questionData.scope]).map((cat) => (
+                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {questionData.category && (
+                  <div className="space-y-2">
+                    <Label htmlFor="subCategory">Sub-Category</Label>
+                    <Select 
+                      value={questionData.subCategory} 
+                      onValueChange={(value) => setQuestionData(prev => ({ ...prev, subCategory: value }))}
+                    >
+                      <SelectTrigger id="subCategory">
+                        <SelectValue placeholder="Select sub-category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {questionTaxonomy.EEA[questionData.scope][questionData.category]?.map((subCat) => (
+                          <SelectItem key={subCat} value={subCat}>{subCat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {questionData.scope === "Industry-Specific" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="industry">Industry</Label>
+                    <Select 
+                      value={questionData.industry} 
+                      onValueChange={(value) => setQuestionData(prev => ({ ...prev, industry: value }))}
+                    >
+                      <SelectTrigger id="industry">
+                        <SelectValue placeholder="Select industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="EdTech">EdTech</SelectItem>
+                        <SelectItem value="FinTech">FinTech</SelectItem>
+                        <SelectItem value="HealthTech">HealthTech</SelectItem>
+                        <SelectItem value="SaaS">SaaS</SelectItem>
+                        <SelectItem value="E-commerce">E-commerce</SelectItem>
+                        <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="Agriculture">Agriculture</SelectItem>
+                        <SelectItem value="Real Estate">Real Estate</SelectItem>
+                        <SelectItem value="Energy">Energy</SelectItem>
+                        <SelectItem value="Transportation">Transportation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </>
             )}
 
-            {questionData.category && questionTaxonomy[questionData.indexCode as keyof typeof questionTaxonomy]?.[questionData.scope]?.[questionData.category] && (
-              <div className="space-y-2">
-                <Label htmlFor="sub-category">Select a Sub-Category</Label>
-                <Select 
-                  value={questionData.subCategory} 
-                  onValueChange={(value) => setQuestionData(prev => ({ ...prev, subCategory: value }))}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose a sub-category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {questionTaxonomy[questionData.indexCode as keyof typeof questionTaxonomy]?.[questionData.scope]?.[questionData.category]?.map((subCat) => (
-                      <SelectItem key={subCat} value={subCat}>{subCat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            {/* GEB-specific fields */}
+            {questionData.indexCode === "GEB" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select 
+                    value={questionData.category} 
+                    onValueChange={(value) => setQuestionData(prev => ({ ...prev, category: value, subCategory: "" }))}
+                  >
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(questionTaxonomy.GEB).map((cat) => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {questionData.scope === "Industry-Specific" && (
-              <div className="space-y-2">
-                <Label htmlFor="industry">Select an Industry</Label>
-                <Select 
-                  value={questionData.industry} 
-                  onValueChange={(value) => setQuestionData(prev => ({ ...prev, industry: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose an industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="technology">Technology</SelectItem>
-                    <SelectItem value="healthcare">Healthcare</SelectItem>
-                    <SelectItem value="finance">Finance</SelectItem>
-                    <SelectItem value="retail">Retail</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                {questionData.category && (
+                  <div className="space-y-2">
+                    <Label htmlFor="subCategory">Sub-Category</Label>
+                    <Select 
+                      value={questionData.subCategory} 
+                      onValueChange={(value) => setQuestionData(prev => ({ ...prev, subCategory: value }))}
+                    >
+                      <SelectTrigger id="subCategory">
+                        <SelectValue placeholder="Select sub-category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {questionTaxonomy.GEB[questionData.category]?.map((subCat) => (
+                          <SelectItem key={subCat} value={subCat}>{subCat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="p-4 bg-muted/50 rounded-lg border border-border mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Note:</strong> GEB (General Entrepreneurial Behavior) questions focus on behavioral competencies and don't require Stage, Scope, or Industry selection.
+                  </p>
+                </div>
+              </>
             )}
           </div>
         );

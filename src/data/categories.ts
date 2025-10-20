@@ -317,3 +317,19 @@ export const industries = [
   "Energy",
   "Transportation"
 ];
+
+// Helper function to get all categories for a specific assessment type
+export const getAllCategoriesForAssessment = (assessmentType: keyof typeof assessmentCategories): string[] => {
+  const assessment = assessmentCategories[assessmentType];
+  if (!assessment) return [];
+  
+  // GEB has flat structure, FPA/EEA have general/industrySpecific
+  if (assessmentType === 'GEB') {
+    return Object.keys(assessment);
+  }
+  
+  return [
+    ...Object.keys((assessment as any).general),
+    ...Object.keys((assessment as any).industrySpecific)
+  ];
+};

@@ -33,6 +33,11 @@ export const CategorySelectionModal = ({
   const assessmentType = getAssessmentTypeFromName(questionnaireName);
   const categories = assessmentCategories[assessmentType];
 
+  // Get categories based on structure (GEB is flat, FPA/EEA have general/industrySpecific)
+  const allCategories = assessmentType === 'GEB' 
+    ? Object.keys(categories)
+    : [...Object.keys((categories as any).general), ...Object.keys((categories as any).industrySpecific)];
+
   // Calculate total questions (5 questions per category for now)
   const totalQuestions = selectedCategories.length * 5;
 
@@ -63,43 +68,65 @@ export const CategorySelectionModal = ({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* General Categories */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-foreground">General</h3>
-            <div className="space-y-2">
-              {categories.general.map((category) => (
-                <div key={category} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={category}
-                    checked={selectedCategories.includes(category)}
-                    onCheckedChange={() => handleCategoryToggle(category)}
-                  />
-                  <Label htmlFor={category} className="text-sm font-normal cursor-pointer">
-                    {category}
-                  </Label>
-                </div>
-              ))}
+          {assessmentType === 'GEB' ? (
+            /* GEB has flat structure - no General/Industry-Specific distinction */
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">Categories</h3>
+              <div className="space-y-2">
+                {allCategories.map((category) => (
+                  <div key={category} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={category}
+                      checked={selectedCategories.includes(category)}
+                      onCheckedChange={() => handleCategoryToggle(category)}
+                    />
+                    <Label htmlFor={category} className="text-sm font-normal cursor-pointer">
+                      {category}
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            /* FPA and EEA have General and Industry-Specific categories */
+            <>
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-foreground">General</h3>
+                <div className="space-y-2">
+                  {Object.keys((categories as any).general).map((category) => (
+                    <div key={category} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={category}
+                        checked={selectedCategories.includes(category)}
+                        onCheckedChange={() => handleCategoryToggle(category)}
+                      />
+                      <Label htmlFor={category} className="text-sm font-normal cursor-pointer">
+                        {category}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-          {/* Industry-Specific Categories */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-foreground">Industry-Specific</h3>
-            <div className="space-y-2">
-              {categories.industrySpecific.map((category) => (
-                <div key={category} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={category}
-                    checked={selectedCategories.includes(category)}
-                    onCheckedChange={() => handleCategoryToggle(category)}
-                  />
-                  <Label htmlFor={category} className="text-sm font-normal cursor-pointer">
-                    {category}
-                  </Label>
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-foreground">Industry-Specific</h3>
+                <div className="space-y-2">
+                  {Object.keys((categories as any).industrySpecific).map((category) => (
+                    <div key={category} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={category}
+                        checked={selectedCategories.includes(category)}
+                        onCheckedChange={() => handleCategoryToggle(category)}
+                      />
+                      <Label htmlFor={category} className="text-sm font-normal cursor-pointer">
+                        {category}
+                      </Label>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
+            </>
+          )}
 
           {/* Total Questions Display */}
           <div className="p-4 bg-muted rounded-md border">

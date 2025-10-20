@@ -95,10 +95,14 @@ const FacultyDashboard = () => {
     const assessment = assessmentCategories[assessmentType as keyof typeof assessmentCategories];
     
     if (assessment) {
-      // Return both general and industry-specific categories
+      // GEB has flat structure, FPA/EEA have general/industrySpecific
+      if (assessmentType === 'GEB') {
+        return Object.keys(assessment);
+      }
+      // Return both general and industry-specific categories for FPA/EEA
       return [
-        ...assessment.general,
-        ...assessment.industrySpecific
+        ...Object.keys((assessment as any).general),
+        ...Object.keys((assessment as any).industrySpecific)
       ];
     }
     

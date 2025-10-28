@@ -1,5 +1,5 @@
 export type FunctionalPartnerType = 'Individual' | 'Organizational';
-export type PartnerStatus = 'Pending' | 'Approved' | 'Active' | 'Inactive' | 'Suspended';
+export type PartnerStatus = 'Active' | 'Inactive';
 
 export interface FunctionalPartner {
   id: string;

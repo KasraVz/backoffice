@@ -1,12 +1,8 @@
 export const getPartnerStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
     case 'Active':
-    case 'Approved':
       return 'default';
-    case 'Pending':
-      return 'secondary';
     case 'Inactive':
-    case 'Suspended':
       return 'destructive';
     default:
       return 'outline';

@@ -52,17 +52,6 @@ export default function FunctionalPartnerDirectory() {
     return matchesType && matchesStatus && matchesSearch;
   });
 
-  const handleApprove = async (partnerId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await functionalPartnerService.updatePartnerStatus(partnerId, 'Approved');
-      toast.success('Partner approved successfully');
-      loadPartners();
-    } catch (error) {
-      toast.error('Failed to approve partner');
-    }
-  };
-
   const handleToggleStatus = async (partner: FunctionalPartner, e: React.MouseEvent) => {
     e.stopPropagation();
     const newStatus: PartnerStatus = partner.status === 'Active' ? 'Inactive' : 'Active';
@@ -161,8 +150,6 @@ export default function FunctionalPartnerDirectory() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Approved">Approved</SelectItem>
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="Inactive">Inactive</SelectItem>
                 </SelectContent>
@@ -247,23 +234,13 @@ export default function FunctionalPartnerDirectory() {
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                            {partner.status === 'Pending' && (
-                              <Button 
-                                size="sm" 
-                                onClick={(e) => handleApprove(partner.id, e)}
-                              >
-                                Approve
-                              </Button>
-                            )}
-                            {(partner.status === 'Active' || partner.status === 'Inactive') && (
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={(e) => handleToggleStatus(partner, e)}
-                              >
-                                {partner.status === 'Active' ? 'Deactivate' : 'Activate'}
-                              </Button>
-                            )}
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={(e) => handleToggleStatus(partner, e)}
+                            >
+                              {partner.status === 'Active' ? 'Deactivate' : 'Activate'}
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>

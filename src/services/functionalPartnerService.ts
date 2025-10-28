@@ -41,7 +41,7 @@ const generateMockPartners = (): FunctionalPartner[] => [
   {
     id: 'fp3',
     type: 'Individual',
-    status: 'Pending',
+    status: 'Inactive',
     primaryContactName: 'Emma Rodriguez',
     primaryContactEmail: 'emma.rodriguez@example.com',
     primaryContactPhone: '+1 (555) 456-7890',

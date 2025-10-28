@@ -52,17 +52,6 @@ export default function FunctionalPartnerProfilePage() {
     }
   };
 
-  const handleApprove = async () => {
-    if (!partnerId) return;
-    try {
-      await functionalPartnerService.updatePartnerStatus(partnerId, 'Approved');
-      toast.success('Partner approved successfully');
-      loadPartnerData(partnerId);
-    } catch (error) {
-      toast.error('Failed to approve partner');
-    }
-  };
-
   const handleToggleStatus = async () => {
     if (!partner || !partnerId) return;
     const newStatus = partner.status === 'Active' ? 'Inactive' : 'Active';
@@ -136,14 +125,9 @@ export default function FunctionalPartnerProfilePage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                {partner.status === 'Pending' && (
-                  <Button onClick={handleApprove}>Approve Partner</Button>
-                )}
-                {(partner.status === 'Active' || partner.status === 'Inactive') && (
-                  <Button variant="outline" onClick={handleToggleStatus}>
-                    {partner.status === 'Active' ? 'Deactivate' : 'Activate'}
-                  </Button>
-                )}
+                <Button variant="outline" onClick={handleToggleStatus}>
+                  {partner.status === 'Active' ? 'Deactivate' : 'Activate'}
+                </Button>
               </div>
             </div>
 

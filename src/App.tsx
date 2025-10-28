@@ -13,6 +13,8 @@ import IdentityVerificationQueue from "./pages/users/IdentityVerificationQueue";
 import TeamProfilesPage from "./pages/users/TeamProfilesPage";
 import FeedbackSubmissions from "./pages/users/FeedbackSubmissions";
 import TestTakerEditRequests from "./pages/users/TestTakerEditRequests";
+import LeaderboardConfigPage from "./pages/gamification/LeaderboardConfigPage";
+import BadgeManagementPage from "./pages/gamification/BadgeManagementPage";
 import Questionnaires from "./pages/Questionnaires";
 import QuestionnaireManagement from "./pages/QuestionnaireManagement";
 import QuestionnaireBuilder from "./pages/QuestionnaireBuilder";
@@ -82,6 +84,10 @@ const App = () => (
             <Route path="/test-takers/teams" element={<ProtectedRoute><TeamProfilesPage /></ProtectedRoute>} />
             <Route path="/test-takers/feedback" element={<ProtectedRoute><FeedbackSubmissions /></ProtectedRoute>} />
             <Route path="/test-takers/verification" element={<ProtectedRoute><IdentityVerificationQueue /></ProtectedRoute>} />
+            
+            {/* Gamification Routes */}
+            <Route path="/gamification/leaderboard" element={<ProtectedRoute><LeaderboardConfigPage /></ProtectedRoute>} />
+            <Route path="/gamification/badges" element={<ProtectedRoute><BadgeManagementPage /></ProtectedRoute>} />
             
             {/* Backward compatibility redirects */}
             <Route path="/users/directory" element={<Navigate to="/test-takers/directory" replace />} />

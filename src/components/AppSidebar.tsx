@@ -1,4 +1,4 @@
-import { Users, ChevronRight, ChevronDown, FileText, Handshake, ShoppingCart, CreditCard, FileBarChart, Ticket, MessageCircle, Zap, Award, UserCog, UserCheck, Shield, CheckCircle, Activity, MessageSquare, Database, BarChart3, Settings, Globe, DollarSign, Receipt, TrendingUp, AlertTriangle, Wrench, FileCheck, History, Edit, Coins, Trophy, Gavel, Lock, UserPlus, Eye, GraduationCap, BookOpen, ClipboardList, Users2, LogOut } from "lucide-react";
+import { Users, ChevronRight, ChevronDown, FileText, Handshake, ShoppingCart, CreditCard, FileBarChart, Ticket, MessageCircle, Zap, Award, UserCog, UserCheck, Shield, CheckCircle, Activity, MessageSquare, Database, BarChart3, Settings, Globe, DollarSign, Receipt, TrendingUp, AlertTriangle, Wrench, FileCheck, History, Edit, Coins, Trophy, Gavel, Lock, UserPlus, Eye, GraduationCap, BookOpen, ClipboardList, Users2, LogOut, Star } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
@@ -19,6 +19,16 @@ const mainMenuItems = [{
   }, {
     title: "Feedback Submissions",
     url: "/test-takers/feedback"
+  }]
+  }, {
+  title: "Gamification",
+  icon: Trophy,
+  children: [{
+    title: "Leaderboard Config",
+    url: "/gamification/leaderboard"
+  }, {
+    title: "Badge Management",
+    url: "/gamification/badges"
   }]
   }, {
   title: "Questionnaires",

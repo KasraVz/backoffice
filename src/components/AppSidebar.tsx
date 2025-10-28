@@ -48,6 +48,9 @@ const mainMenuItems = [{
       title: "Referral Dashboard",
       url: "/partners/functional/referrals"
     }, {
+      title: "Partner Edit Requests",
+      url: "/partners/functional/edit-requests"
+    }, {
       title: "Portal Settings",
       url: "/partners/functional/settings"
     }]
@@ -101,6 +104,13 @@ const mainMenuItems = [{
   }, {
     title: "Gateway Configuration",
     url: "/payments/gateway"
+  }]
+}, {
+  title: "Financial Aid",
+  icon: DollarSign,
+  children: [{
+    title: "Aid Applications",
+    url: "/financials/aid-applications"
   }]
 }, {
   title: "Report & Certs",

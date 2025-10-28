@@ -21,6 +21,12 @@ import UserSubmissionReview from "./pages/UserSubmissionReview";
 import SubmissionDetails from "./pages/SubmissionDetails";
 import PerformanceAnalytics from "./pages/PerformanceAnalytics";
 import OperationalPartnerDirectory from "./pages/partners/operational/PartnerDirectory";
+import FunctionalPartnerDirectory from "./pages/partners/functional/FunctionalPartnerDirectory";
+import FunctionalPartnerProfilePage from "./pages/partners/functional/FunctionalPartnerProfilePage";
+import PartnerEditRequests from "./pages/partners/functional/PartnerEditRequests";
+import ReferralDashboard from "./pages/partners/functional/ReferralDashboard";
+import PortalSettings from "./pages/partners/functional/PortalSettings";
+import FinancialAidApplicationsPage from "./pages/financials/FinancialAidApplicationsPage";
 
 import AssignQuestionnaireReview from "./pages/partners/operational/AssignQuestionnaireReview";
 import PromptCriteriaLibrary from "./pages/partners/operational/PromptCriteriaLibrary";
@@ -91,6 +97,13 @@ const App = () => (
             
             
             
+            {/* Functional Partners Routes */}
+            <Route path="/partners/functional/directory" element={<ProtectedRoute><FunctionalPartnerDirectory /></ProtectedRoute>} />
+            <Route path="/partners/functional/profile/:partnerId" element={<ProtectedRoute><FunctionalPartnerProfilePage /></ProtectedRoute>} />
+            <Route path="/partners/functional/edit-requests" element={<ProtectedRoute><PartnerEditRequests /></ProtectedRoute>} />
+            <Route path="/partners/functional/referrals" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
+            <Route path="/partners/functional/settings" element={<ProtectedRoute><PortalSettings /></ProtectedRoute>} />
+            
             {/* Operational Partners Routes */}
             <Route path="/partners/operational/directory" element={<ProtectedRoute><OperationalPartnerDirectory /></ProtectedRoute>} />
             
@@ -118,6 +131,9 @@ const App = () => (
             <Route path="/orders/pricing" element={<ProtectedRoute><PricingDashboardPage /></ProtectedRoute>} />
             <Route path="/orders/coupons" element={<ProtectedRoute><DiscountCodesPage /></ProtectedRoute>} />
             <Route path="/orders/create" element={<ProtectedRoute><CreateOrderPage /></ProtectedRoute>} />
+
+            {/* Financial Aid Routes */}
+            <Route path="/financials/aid-applications" element={<ProtectedRoute><FinancialAidApplicationsPage /></ProtectedRoute>} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

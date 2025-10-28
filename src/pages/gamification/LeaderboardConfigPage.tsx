@@ -19,7 +19,7 @@ import { getTimeframeLabel, getAssessmentTypeColor } from "@/lib/leaderboardUtil
 import { formatDateTime } from "@/lib/utils";
 import { Trophy, TrendingUp, Users, Calendar, RefreshCw, Eye, Edit, Plus, Trash2 } from "lucide-react";
 
-export default function LeaderboardConfigPage() {
+const LeaderboardConfigPage = () => {
   const [configurations, setConfigurations] = useState<LeaderboardConfiguration[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -552,4 +552,6 @@ export default function LeaderboardConfigPage() {
       </Dialog>
     </SidebarProvider>
   );
-}
+};
+
+export default LeaderboardConfigPage;

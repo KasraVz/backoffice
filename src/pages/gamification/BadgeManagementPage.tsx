@@ -23,7 +23,7 @@ const iconMap = {
   Trophy, Award, Star, Zap, Flame, Rocket
 };
 
-export default function BadgeManagementPage() {
+const BadgeManagementPage = () => {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -821,4 +821,6 @@ export default function BadgeManagementPage() {
       </Dialog>
     </SidebarProvider>
   );
-}
+};
+
+export default BadgeManagementPage;

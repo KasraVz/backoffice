@@ -21,16 +21,6 @@ const mainMenuItems = [{
     url: "/test-takers/feedback"
   }]
   }, {
-  title: "Gamification",
-  icon: Trophy,
-  children: [{
-    title: "Leaderboard Config",
-    url: "/gamification/leaderboard"
-  }, {
-    title: "Badge Management",
-    url: "/gamification/badges"
-  }]
-  }, {
   title: "Questionnaires",
   icon: FileText,
   children: [{
@@ -158,8 +148,11 @@ const mainMenuItems = [{
     title: "Content Moderation Queue",
     url: "/community/moderation"
   }, {
-    title: "Leaderboard Management",
-    url: "/community/leaderboard"
+    title: "Leaderboard Config",
+    url: "/gamification/leaderboard"
+  }, {
+    title: "Badge Management",
+    url: "/gamification/badges"
   }, {
     title: "Ambassador Program",
     url: "/community/ambassadors"

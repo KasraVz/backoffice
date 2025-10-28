@@ -5,17 +5,20 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 const mainMenuItems = [{
-  title: "Users",
+  title: "Test Takers",
   icon: Users,
   children: [{
-    title: "User Directory",
-    url: "/users/directory"
+    title: "Test Taker Directory",
+    url: "/test-takers/directory"
+  }, {
+    title: "Edit Requests",
+    url: "/test-takers/edit-requests"
   }, {
     title: "Team Profiles",
-    url: "/users/teams"
+    url: "/test-takers/teams"
   }, {
     title: "Feedback Submissions",
-    url: "/users/feedback"
+    url: "/test-takers/feedback"
   }]
   }, {
   title: "Questionnaires",

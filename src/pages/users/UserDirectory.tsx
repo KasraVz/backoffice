@@ -25,8 +25,8 @@ const mockUsers = [
 ];
 
 const kpiData = [
-  { title: "Total Users", value: "1,247", icon: Users },
-  { title: "New Users (Last 30 Days)", value: "89", icon: UserPlus },
+  { title: "Total Test Takers", value: "1,247", icon: Users },
+  { title: "New Test Takers (Last 30 Days)", value: "89", icon: UserPlus },
   { title: "Total Assessments Completed", value: "3,456", icon: TrendingUp },
 ];
 
@@ -181,7 +181,7 @@ const UserDirectory = () => {
         <div className="flex-1 flex flex-col">
           <header className="h-14 flex items-center border-b bg-background px-6 mx-[27px]">
             <SidebarTrigger className="mr-4" />
-            <h1 className="text-lg font-semibold">User Management</h1>
+            <h1 className="text-lg font-semibold">Test Taker Management</h1>
           </header>
           <main className="flex-1 p-6 bg-background mx-[27px] space-y-6">
             {/* KPI Dashboard */}
@@ -214,14 +214,14 @@ const UserDirectory = () => {
             {/* Tabbed Interface */}
             <Tabs defaultValue="directory" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="directory">User Directory</TabsTrigger>
+                <TabsTrigger value="directory">Test Taker Directory</TabsTrigger>
                 <TabsTrigger value="verification">Identity Verification Queue</TabsTrigger>
               </TabsList>
               
               <TabsContent value="directory" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Users</CardTitle>
+                    <CardTitle>Test Takers</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -276,7 +276,7 @@ const UserDirectory = () => {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => navigate(`/users/profile/${user.id}`)}>
+                                  <DropdownMenuItem onClick={() => navigate(`/test-takers/profile/${user.id}`)}>
                                     <Edit className="mr-2 h-4 w-4" />
                                     Edit/View Profile
                                   </DropdownMenuItem>
@@ -342,13 +342,13 @@ const UserDirectory = () => {
               </TabsContent>
             </Tabs>
 
-            {/* Edit User Modal */}
+            {/* Edit Test Taker Modal */}
             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
               <DialogContent className="sm:max-w-[700px]">
                 <DialogHeader>
                   <DialogTitle>Edit Profile: {selectedUser?.name}</DialogTitle>
                   <DialogDescription>
-                    View and manage user profile information and assessment history
+                    View and manage test taker profile information and assessment history
                   </DialogDescription>
                 </DialogHeader>
                 {selectedUser && (

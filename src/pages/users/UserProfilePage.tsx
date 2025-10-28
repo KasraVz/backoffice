@@ -332,11 +332,11 @@ const UserProfilePage = () => {
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/users">Users</BreadcrumbLink>
+                    <BreadcrumbLink href="/test-takers/directory">Test Takers</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/users/directory">User Directory</BreadcrumbLink>
+                    <BreadcrumbLink href="/test-takers/directory">Test Taker Directory</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>

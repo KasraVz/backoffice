@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -12,6 +12,7 @@ import UserProfilePage from "./pages/users/UserProfilePage";
 import IdentityVerificationQueue from "./pages/users/IdentityVerificationQueue";
 import TeamProfilesPage from "./pages/users/TeamProfilesPage";
 import FeedbackSubmissions from "./pages/users/FeedbackSubmissions";
+import TestTakerEditRequests from "./pages/users/TestTakerEditRequests";
 import Questionnaires from "./pages/Questionnaires";
 import QuestionnaireManagement from "./pages/QuestionnaireManagement";
 import QuestionnaireBuilder from "./pages/QuestionnaireBuilder";
@@ -74,13 +75,20 @@ const App = () => (
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
             
-            {/* User Management Routes */}
-            <Route path="/users/directory" element={<ProtectedRoute><UserDirectory /></ProtectedRoute>} />
-            <Route path="/users/profile/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
-            <Route path="/users/teams" element={<ProtectedRoute><TeamProfilesPage /></ProtectedRoute>} />
-            <Route path="/users/verification" element={<ProtectedRoute><IdentityVerificationQueue /></ProtectedRoute>} />
+            {/* Test Takers Routes */}
+            <Route path="/test-takers/directory" element={<ProtectedRoute><UserDirectory /></ProtectedRoute>} />
+            <Route path="/test-takers/profile/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
+            <Route path="/test-takers/edit-requests" element={<ProtectedRoute><TestTakerEditRequests /></ProtectedRoute>} />
+            <Route path="/test-takers/teams" element={<ProtectedRoute><TeamProfilesPage /></ProtectedRoute>} />
+            <Route path="/test-takers/feedback" element={<ProtectedRoute><FeedbackSubmissions /></ProtectedRoute>} />
+            <Route path="/test-takers/verification" element={<ProtectedRoute><IdentityVerificationQueue /></ProtectedRoute>} />
             
-            <Route path="/users/feedback" element={<ProtectedRoute><FeedbackSubmissions /></ProtectedRoute>} />
+            {/* Backward compatibility redirects */}
+            <Route path="/users/directory" element={<Navigate to="/test-takers/directory" replace />} />
+            <Route path="/users/profile/:userId" element={<Navigate to="/test-takers/profile/:userId" replace />} />
+            <Route path="/users/teams" element={<Navigate to="/test-takers/teams" replace />} />
+            <Route path="/users/feedback" element={<Navigate to="/test-takers/feedback" replace />} />
+            <Route path="/users/verification" element={<Navigate to="/test-takers/verification" replace />} />
             
             <Route path="/questionnaires" element={<ProtectedRoute><Questionnaires /></ProtectedRoute>} />
             <Route path="/questionnaires/management" element={<ProtectedRoute><QuestionnaireManagement /></ProtectedRoute>} />
